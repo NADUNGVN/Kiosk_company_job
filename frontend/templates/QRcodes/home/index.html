@@ -1,0 +1,596 @@
+{% extends "QRcodes/layouts/base.html" %}
+
+{% block title %} Dashboard {% endblock %}
+
+<!-- Specific CSS goes HERE -->
+{% block stylesheets %}{% endblock stylesheets %}
+
+{% block content %}
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+
+<!-- [ Main Content ] start -->
+<div class="pc-container">
+    <div class="pcoded-content">
+        <!-- [ breadcrumb ] start -->
+        <div class="page-header">
+            <div class="page-block">
+                <div class="row align-items-center">
+                    <div class="col-md-6">
+                        <div class="page-header-title">
+                            <h5 class="m-b-10">Dashboard sale</h5>
+                        </div>
+                        <ul class="breadcrumb">
+                            <li class="breadcrumb-item"><a href="index.html">Home</a></li>
+                            <li class="breadcrumb-item">Dashboard sale</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- [ breadcrumb ] end -->
+        <!-- [ Main Content ] start -->
+        <div class="row">
+            <!-- support-section start -->
+            <div class="col-xl-6 col-md-12">
+                <div class="card flat-card">
+                    <div class="row-table">
+                        <div class="col-sm-6 card-body br">
+                            <div class="row">
+                                <div class="col-sm-4">
+                                    <i class="material-icons-two-tone text-primary mb-1">group</i>
+                                </div>
+                                <div class="col-sm-8 text-md-center">
+                                    <h5>{{ total_customer }}</h5>
+                                    <span>Người dân</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-6 d-none d-md-table-cell d-lg-table-cell d-xl-table-cell card-body br">
+                            <div class="row">
+                                <div class="col-sm-4">
+                                    <i class="material-icons-two-tone text-primary mb-1">language</i>
+                                </div>
+                                <div class="col-sm-8 text-md-center">
+                                    <h5>10</h5>
+                                    <span>KHU PHỐ</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-6 card-body">
+                            <div class="row">
+                                <div class="col-sm-4">
+                                    <i class="material-icons-two-tone text-primary mb-1">unarchive</i>
+                                </div>
+                                <div class="col-sm-8 text-md-center">
+                                    <h5>600</h5>
+                                    <span>HỘ GIA ĐÌNH</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row-table">
+                        <div class="col-sm-6 card-body br">
+                            <div class="row">
+                                <div class="col-sm-4">
+                                    <i class="material-icons-two-tone text-primary mb-1">swap_horizontal_circle</i>
+                                </div>
+                                <div class="col-sm-8 text-md-center">
+                                    <h5>3550</h5>
+                                    <span>ĐÃ ĐÓNG</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-6 d-none d-md-table-cell d-lg-table-cell d-xl-table-cell card-body br">
+                            <div class="row">
+                                <div class="col-sm-4">
+                                    <i class="material-icons-two-tone text-primary mb-1">cloud_download</i>
+                                </div>
+                                <div class="col-sm-8 text-md-center">
+                                    <h5>3550</h5>
+                                    <span>CHƯA ĐÓNG</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-6 card-body">
+                            <div class="row">
+                                <div class="col-sm-4">
+                                    <i class="material-icons-two-tone text-primary mb-1">shopping_cart</i>
+                                </div>
+                                <div class="col-sm-8 text-md-center">
+                                    <h5>100%</h5>
+                                    <span>Order</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="card support-bar overflow-hidden">
+                            <div class="card-body pb-0">
+                                <h2 class="m-0">53.94%</h2>
+                                <span class="text-primary">Conversion Rate</span>
+                                <p class="mb-3 mt-3">Number of conversions divided by the total visitors. </p>
+                            </div>
+                            <div id="support-chart"></div>
+                            <div class="card-footer border-0 bg-primary text-white background-pattern-white">
+                                <div class="row text-center">
+                                    <div class="col">
+                                        <h4 class="m-0 text-white">10</h4>
+                                        <span>2018</span>
+                                    </div>
+                                    <div class="col">
+                                        <h4 class="m-0 text-white">15</h4>
+                                        <span>2017</span>
+                                    </div>
+                                    <div class="col">
+                                        <h4 class="m-0 text-white">13</h4>
+                                        <span>2016</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card support-bar overflow-hidden">
+                            <div class="card-body pb-0">
+                                <h2 class="m-0">1432</h2>
+                                <span class="text-primary">Order delivered</span>
+                                <p class="mb-3 mt-3">Total number of order delivered in this month.</p>
+                            </div>
+                            <div class="card-footer border-0">
+                                <div class="row text-center">
+                                    <div class="col">
+                                        <h4 class="m-0">130</h4>
+                                        <span>May</span>
+                                    </div>
+                                    <div class="col">
+                                        <h4 class="m-0">251</h4>
+                                        <span>June</span>
+                                    </div>
+                                    <div class="col">
+                                        <h4 class="m-0 ">235</h4>
+                                        <span>July</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div id="support-chart1"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xl-6 col-md-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h5>Department wise monthly sales report</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row pb-2">
+                            <div class="col-auto m-b-10">
+                                <h3 class="mb-1">$21,356.46</h3>
+                                <span>Total Sales</span>
+                            </div>
+                            <div class="col-auto m-b-10">
+                                <h3 class="mb-1">$1935.6</h3>
+                                <span>Average</span>
+                            </div>
+                        </div>
+                        <div id="account-chart"></div>
+                    </div>
+                </div>
+            </div>
+            <!-- support-section end -->
+            <!-- customer-section start -->
+            <div class="col-xl-6 col-md-12">
+                <div class="card">
+                    <div class="card-body">
+                        <h6>Mức độ hài lòng khách hàng</h6>
+                        <span>It takes continuous effort to maintain high customer satisfaction levels Internal and
+                            external.</span>
+                        <div class="row d-flex justify-content-center align-items-center">
+                            <div class="col">
+                                <div id="satisfaction-chart"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card table-card">
+                    <div class="card-header">
+                        <h5>DANH SÁCH CÁN BỘ</h5>
+                    </div>
+                    <div class="pro-scroll" style="height:255px;position:relative;">
+                        <div class="card-body p-0">
+                            <div class="table-responsive">
+                                
+                                <table class="table table-hover m-b-0">
+                                    <thead>
+                                        <tr>
+                                            <th>Tên</th>
+                                            <th>Dịch vụ</th>
+                                            <th>Trạng thái</th>
+                                            <th>Quầy</th>
+                                            <th>Action</th>
+                                        </tr>
+                                    </thead>
+                                 <tbody>
+                                    {% for nhan_vien in danh_sach_nhan_vien %}
+                                    <tr>
+                                        <td>{{ nhan_vien.name }}</td>
+                                        <td><img src="" alt="" class="img-20"></td>
+                                        {% if nhan_vien.is_active == 1 %}
+                                        <td><div><label class="badge bg-light-success">Hoạt động</label></div></td>
+                                        {% else %}
+                                        <td><div><label class="badge bg-light-danger">Công tác</label></div></td>
+                                        {% endif %}
+                                        <td>{{ nhan_vien.assigned_service_id }}</td>
+                                        <td>
+                                            <!-- Hidden input để lưu ID của nhân viên -->
+                                            <input type="hidden" class="editEmployeeId" name="id" value="{{ nhan_vien.id }}">
+                                            <!-- Biểu tượng chỉnh sửa -->
+                                            <a href="#" class="editEmployee"><i class="icon feather icon-edit f-16 text-success"></i></a>
+                                            <!-- Biểu tượng xóa -->
+                                            <a href="#"><i class="feather icon-trash-2 ms-3 f-16 text-danger"></i></a>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+</tbody>
+
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xl-6 col-md-12">
+                <div class="row">
+                    <div class="col-sm-6">
+                        <div class="card prod-p-card background-pattern">
+                            <div class="card-body">
+                                <div class="row align-items-center m-b-0">
+                                    <div class="col">
+                                        <h6 class="m-b-5">Total Profit</h6>
+                                        <h3 class="m-b-0">$1,783</h3>
+                                    </div>
+                                    <div class="col-auto">
+                                        <i class="material-icons-two-tone text-primary">card_giftcard</i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-6">
+                        <div class="card prod-p-card bg-primary background-pattern-white">
+                            <div class="card-body">
+                                <div class="row align-items-center m-b-0">
+                                    <div class="col">
+                                        <h6 class="m-b-5 text-white">Total Orders</h6>
+                                        <h3 class="m-b-0 text-white">15,830</h3>
+                                    </div>
+                                    <div class="col-auto">
+                                        <i class="material-icons-two-tone text-white">local_mall</i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-6">
+                        <div class="card prod-p-card bg-primary background-pattern-white">
+                            <div class="card-body">
+                                <div class="row align-items-center m-b-0">
+                                    <div class="col">
+                                        <h6 class="m-b-5 text-white">Average Price</h6>
+                                        <h3 class="m-b-0 text-white">$6,780</h3>
+                                    </div>
+                                    <div class="col-auto">
+                                        <i class="material-icons-two-tone text-white">monetization_on</i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-6">
+                        <div class="card prod-p-card background-pattern">
+                            <div class="card-body">
+                                <div class="row align-items-center m-b-0">
+                                    <div class="col">
+                                        <h6 class="m-b-5">Product Sold</h6>
+                                        <h3 class="m-b-0">6,784</h3>
+                                    </div>
+                                    <div class="col-auto">
+                                        <i class="material-icons-two-tone text-primary">local_offer</i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card feed-card">
+                    <div class="card-header">
+                        <h5>Feeds</h5>
+                    </div>
+                    <div class="feed-scroll" style="height:385px;position:relative;">
+                        <div class="card-body">
+                            <div class="row m-b-25 align-items-center">
+                                <div class="col-auto p-r-0">
+                                    <i data-feather="bell" class="bg-light-primary feed-icon p-2 wid-30 hei-30"></i>
+                                </div>
+                                <div class="col">
+                                    <a href="#!">
+                                        <h6 class="m-b-5">You have 3 pending tasks. <span
+                                                class="text-muted float-end f-14">Just Now</span></h6>
+                                    </a>
+                                </div>
+                            </div>
+                            <div class="row m-b-25 align-items-center">
+                                <div class="col-auto p-r-0">
+                                    <i data-feather="shopping-cart"
+                                        class="bg-light-danger feed-icon p-2 wid-30 hei-30"></i>
+                                </div>
+                                <div class="col">
+                                    <a href="#!">
+                                        <h6 class="m-b-5">New order received <span class="text-muted float-end f-14">30
+                                                min ago</span></h6>
+                                    </a>
+                                </div>
+                            </div>
+                            <div class="row m-b-25 align-items-center">
+                                <div class="col-auto p-r-0">
+                                    <i data-feather="file-text"
+                                        class="bg-light-success feed-icon p-2 wid-30 hei-30"></i>
+                                </div>
+                                <div class="col">
+                                    <a href="#!">
+                                        <h6 class="m-b-5">You have 3 pending tasks. <span
+                                                class="text-muted float-end f-14">Just Now</span></h6>
+                                    </a>
+                                </div>
+                            </div>
+                            <div class="row m-b-25 align-items-center">
+                                <div class="col-auto p-r-0">
+                                    <i data-feather="bell" class="bg-light-primary feed-icon p-2 wid-30 hei-30"></i>
+                                </div>
+                                <div class="col">
+                                    <a href="#!">
+                                        <h6 class="m-b-5">You have 4 tasks Done. <span
+                                                class="text-muted float-end f-14">1 hours ago</span></h6>
+                                    </a>
+                                </div>
+                            </div>
+                            <div class="row m-b-25 align-items-center">
+                                <div class="col-auto p-r-0">
+                                    <i data-feather="file-text"
+                                        class="bg-light-success feed-icon p-2 wid-30 hei-30"></i>
+                                </div>
+                                <div class="col">
+                                    <a href="#!">
+                                        <h6 class="m-b-5">You have 2 pending tasks. <span
+                                                class="text-muted float-end f-14">Just Now</span></h6>
+                                    </a>
+                                </div>
+                            </div>
+                            <div class="row m-b-25 align-items-center">
+                                <div class="col-auto p-r-0">
+                                    <i data-feather="shopping-cart"
+                                        class="bg-light-danger feed-icon p-2 wid-30 hei-30"></i>
+                                </div>
+                                <div class="col">
+                                    <a href="#!">
+                                        <h6 class="m-b-5">New order received <span class="text-muted float-end f-14">4
+                                                hours ago</span></h6>
+                                    </a>
+                                </div>
+                            </div>
+                            <div class="row m-b-25 align-items-center">
+                                <div class="col-auto p-r-0">
+                                    <i data-feather="shopping-cart"
+                                        class="bg-light-danger feed-icon p-2 wid-30 hei-30"></i>
+                                </div>
+                                <div class="col">
+                                    <a href="#!">
+                                        <h6 class="m-b-5">New order Done <span class="text-muted float-end f-14">Just
+                                                Now</span></h6>
+                                    </a>
+                                </div>
+                            </div>
+                            <div class="row m-b-25 align-items-center">
+                                <div class="col-auto p-r-0">
+                                    <i data-feather="file-text"
+                                        class="bg-light-success feed-icon p-2 wid-30 hei-30"></i>
+                                </div>
+                                <div class="col">
+                                    <a href="#!">
+                                        <h6 class="m-b-5">You have 5 pending tasks. <span
+                                                class="text-muted float-end f-14">5 hours ago</span></h6>
+                                    </a>
+                                </div>
+                            </div>
+                            <div class="row m-b-0 align-items-center">
+                                <div class="col-auto p-r-0">
+                                    <i data-feather="bell" class="bg-light-primary feed-icon p-2 wid-30 hei-30"></i>
+                                </div>
+                                <div class="col">
+                                    <a href="#!">
+                                        <h6 class="m-b-5">You have 4 tasks Done. <span
+                                                class="text-muted float-end f-14">2 hours ago</span></h6>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- customer-section end -->
+        </div>
+        <!-- [ Main Content ] end -->
+    </div>
+</div>
+<!-- [ Main Content ] end -->
+
+
+<!-- modal edit -->
+
+<!-- Modal -->
+<div class="modal fade" id="editEmployeeModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Chỉnh sửa nhân viên</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <!-- Form chỉnh sửa thông tin nhân viên -->
+                <form method="post">
+                    {% csrf_token %}
+                    <!-- Các trường thông tin -->
+                    <div class="form-group">
+                        <input type="" id="editEmployeeId" name="id">
+                        <label for="editEmployeeName">Tên</label>
+                        <input type="text" class="form-control" id="editEmployeeName" name="name">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="editEmployeeStatus">Trạng thái</label>
+                        <select class="form-control" id="editEmployeeStatus" name="status">
+                            <option value="1">Hoạt động</option>
+                            <option value="0">Công tác</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="editEmployeeService">Quầy</label>
+                        <input type="text" class="form-control" id="editEmployeeService" name="service">
+                    </div>
+                    <!-- Hidden input để lưu ID của nhân viên -->
+                    <input type="" id="editEmployeeId" name="id">
+                    <button class="btn btn-primary" type="submit" name="btnCapNhat" value="Lưu thay đổi">Lưu thay đổi</button>
+                    
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    $(document).ready(function () {
+   
+        // Xử lý sự kiện khi nhấn vào biểu tượng chỉnh sửa
+        $('table').on('click', '.icon-edit', function () {
+            var row = $(this).closest('tr');
+            var name = row.find('td:eq(0)').text();
+            var status = row.find('td:eq(2) .badge').text().trim() === "Hoạt động" ? 1 : 0;
+            var service = row.find('td:eq(3)').text();
+            var employeeId = $(this).siblings('.editEmployeeId').val();
+            console.log(employeeId)
+
+            // Đưa dữ liệu vào form chỉnh sửa
+            $('#editEmployeeId').val(employeeId);
+            $('#editEmployeeName').val(name);
+            $('#editEmployeeStatus').val(status);
+            $('#editEmployeeService').val(service);
+          
+      
+
+            // Hiển thị modal chỉnh sửa
+            $('#editEmployeeModal').modal('show');
+        });
+
+
+        $('#editEmployeeModal .close').click(function () {
+            $('#editEmployeeModal').modal('hide');
+        });
+        // Xử lý sự kiện khi nút Lưu thay đổi được nhấn
+        $('#editEmployeeForm').submit(function (e) {
+            e.preventDefault();
+            // Đưa dữ liệu từ form vào đây và thực hiện lưu dữ liệu
+            var formData = new FormData(this);
+            // Lấy giá trị employeeId từ trường ẩn trong form
+            var employeeId = $('#editEmployeeService').val();
+            var csrftoken = $('input[name="csrfmiddlewaretoken"]').val();
+            var csrftoken = $('input[name="csrfmiddlewaretoken"]').val();
+        
+        
+    });
+        });
+   
+</script>
+
+
+<!-- end modal edit -->
+
+<script>
+    (function () {
+        fetch('{% url "customer:feedback_statistics" %}')
+            .then(response => response.json())
+            .then(data => {
+                var statistics = data.statistics;
+
+                // Tạo mảng chứa series và labels
+                var series = [];
+                var labels = [];
+
+                // Lặp qua mỗi mục trong dữ liệu để cập nhật series và labels
+                statistics.forEach(function (item) {
+                    series.push(item.count);
+                    labels.push(item.feedback);
+                });
+
+                var options = {
+                    chart: {
+                        height: 260,
+                        type: 'pie',
+                    },
+                    series: series,
+                    labels: labels,
+                    legend: {
+                        show: true,
+                        offsetY: 50,
+                    },
+                    dataLabels: {
+                        enabled: true,
+                        dropShadow: {
+                            enabled: false,
+                        }
+                    },
+                    theme: {
+                        monochrome: {
+                            enabled: true,
+                            color: '#7267EF',
+                        }
+                    },
+                    responsive: [{
+                        breakpoint: 768,
+                        options: {
+                            chart: {
+                                height: 320,
+
+                            },
+                            legend: {
+                                position: 'bottom',
+                                offsetY: 0,
+                            }
+                        }
+                    }]
+                };
+
+                // Render biểu đồ với dữ liệu mới
+                var chart = new ApexCharts(document.querySelector("#satisfaction-chart"), options);
+                chart.render();
+            })
+            .catch(error => console.error('Error:', error));
+    })();
+
+</script>
+
+
+
+{% endblock content %}
+
+<!-- Specific Page JS goes HERE  -->
+{% block javascripts %}
+
+<script src="/static/assets/js/plugins/apexcharts.min.js"></script>
+<script src="/static/assets/js/pages/dashboard-sale.js"></script>
+
+{% endblock javascripts %}

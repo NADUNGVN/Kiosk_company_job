@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chatbot</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        .chat-box {
+            width: 100%;
+            max-width: 600px;
+            margin: 0 auto;
+            border: 1px solid #ccc;
+            padding: 20px;
+            border-radius: 10px;
+        }
+        .chat-log {
+            max-height: 300px;
+            overflow-y: auto;
+            margin-bottom: 20px;
+        }
+        .chat-log div {
+            margin-bottom: 10px;
+        }
+        .user {
+            font-weight: bold;
+            color: blue;
+        }
+        .bot {
+            font-weight: bold;
+            color: green;
+        }
+        .input-box {
+            display: flex;
+        }
+        .input-box input {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        .input-box button {
+            padding: 10px;
+            border: none;
+            background-color: #28a745;
+            color: white;
+            border-radius: 5px;
+            margin-left: 10px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="chat-box">
+        <h1>Chatbot</h1>
+        <div class="chat-log" id="chat-log"></div>
+        <div class="input-box">
+            <input type="text" id="question" name="question" placeholder="Nhập câu hỏi của bạn...">
+            <button onclick="sendQuestion()">Gửi</button>
+        </div>
+    </div>
+
+    <script>
+        function sendQuestion() {
+            const question = document.getElementById('question').value;
+            if (!question.trim()) {
+                alert("Vui lòng nhập câu hỏi.");
+                return;
+            }
+            const csrfToken = '{{ csrf_token }}';
+
+            fetch('', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    'X-CSRFToken': csrfToken
+                },
+                body: `question=${encodeURIComponent(question)}`
+            })
+            .then(response => response.json())
+            .then(data => {
+                const chatLog = document.getElementById('chat-log');
+                const userMessage = document.createElement('div');
+                userMessage.className = 'user';
+                userMessage.innerText = `Bạn: ${data.question}`;
+                chatLog.appendChild(userMessage);
+
+                const botMessage = document.createElement('div');
+                botMessage.className = 'bot';
+                botMessage.innerText = `Bot: ${data.response}`;
+                chatLog.appendChild(botMessage);
+
+                // Cuộn xuống cuối
+                chatLog.scrollTop = chatLog.scrollHeight;
+
+                // Xóa ô nhập sau khi gửi
+                document.getElementById('question').value = '';
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        }
+    </script>
+</body>
+</html>

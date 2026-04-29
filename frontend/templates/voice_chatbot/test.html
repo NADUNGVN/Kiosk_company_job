@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Voice Interaction</title>
+    <style>
+        #responseText {
+            margin-top: 20px;
+            font-size: 18px;
+        }
+        .notification {
+            margin-top: 10px;
+            font-size: 16px;
+            color: #007bff;
+        }
+    </style>
+</head>
+<body>
+    <button id="startButton">Bắt đầu</button>
+    <audio id="greetingAudio" src="/media/audio/greeting.mp3" preload="auto"></audio>
+    <audio id="responseAudio" preload="auto"></audio>
+    <div id="responseText"></div>
+    <div id="notification" class="notification"></div>
+
+    <script>
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+
+        const csrftoken = getCookie('csrftoken');
+
+        const recognition = new webkitSpeechRecognition();
+        recognition.lang = 'vi-VN';
+        recognition.continuous = false;
+
+        recognition.onstart = () => {
+            console.log("Microphone đang mở và nhận diện giọng nói.");
+            document.getElementById('notification').innerText = "Microphone đang hoạt động. Bắt đầu nói vào.";
+        };
+
+        recognition.onend = () => {
+            console.log("Microphone đã dừng.");
+            document.getElementById('notification').innerText = "Microphone đã dừng.";
+        };
+
+        recognition.onresult = (event) => {
+            const speechResult = event.results[0][0].transcript;
+            fetch('/process_request/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': csrftoken,
+                },
+                body: JSON.stringify({ speech_text: speechResult }),
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log(data.message);
+                document.getElementById('responseText').innerText = data.message;
+
+                const audioElement = document.getElementById('responseAudio');
+                audioElement.src = data.audio_url;
+                audioElement.style.display = 'block';
+                audioElement.play()
+                .then(() => {
+                    audioElement.onended = () => {
+                        if (data.ket_thuc === 1) {
+                            console.log("Kết thúc phiên.");
+                            recognition.stop();
+                            setTimeout(() => {
+                                location.reload();
+                            }, 500);  // Đợi một chút trước khi reload để đảm bảo microphone được tắt
+                        } else {
+                            recognition.start();
+                        }
+                    };
+                })
+                .catch(error => console.error('Error playing audio:', error));
+            })
+            .catch(error => console.error('Error:', error));
+        };
+
+        document.getElementById('startButton').addEventListener('click', () => {
+            const greetingAudio = document.getElementById('greetingAudio');
+            greetingAudio.play()
+            .then(() => {
+                greetingAudio.onended = () => {
+                    recognition.start();
+                };
+            })
+            .catch(error => console.error('Error playing greeting audio:', error));
+        });
+    </script>
+</body>
+</html>

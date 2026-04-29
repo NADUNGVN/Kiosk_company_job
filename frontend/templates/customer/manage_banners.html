@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>QUẢN LÝ BANNER</title>
+    <!-- Link đến Bootstrap CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Thêm CSS tùy chỉnh -->
+    <style>
+        body {
+            background-color: #f0f2f5; /* Màu nền sáng nhẹ */
+            font-family: Arial, sans-serif;
+            color: #212529; /* Màu chữ chính */
+        }
+
+        h1, h2 {
+            color: #343a40; /* Màu chữ cho tiêu đề */
+        }
+
+        .container {
+            max-width: 1200px; /* Chiều rộng tối đa của container */
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem; /* Khoảng cách giữa các trường form */
+        }
+
+        .card {
+            border-radius: 0.5rem; /* Bo tròn các góc của card */
+            border: 1px solid #dee2e6; /* Đường viền card */
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Đổ bóng nhẹ cho card */
+            background-color: #ffffff; /* Màu nền của card */
+        }
+
+        .card-img-top {
+            height: 200px; /* Chiều cao cố định cho hình ảnh trong card */
+            object-fit: cover; /* Cắt hình ảnh để vừa với kích thước */
+        }
+
+        .card-body {
+            padding: 1.25rem; /* Padding cho card body */
+        }
+
+        .btn-primary {
+            background-color: #007bff; /* Màu nền của nút primary */
+            border-color: #007bff; /* Màu viền của nút primary */
+        }
+
+        .btn-primary:hover {
+            background-color: #0056b3; /* Màu nền khi hover trên nút primary */
+            border-color: #004085; /* Màu viền khi hover trên nút primary */
+        }
+
+        .btn-secondary {
+            background-color: #6c757d; /* Màu nền của nút secondary */
+            border-color: #6c757d; /* Màu viền của nút secondary */
+        }
+
+        .btn-secondary:hover {
+            background-color: #5a6268; /* Màu nền khi hover trên nút secondary */
+            border-color: #4e555b; /* Màu viền khi hover trên nút secondary */
+        }
+
+        .btn-success {
+            background-color: #28a745; /* Màu nền của nút success */
+            border-color: #28a745; /* Màu viền của nút success */
+        }
+
+        .btn-success:hover {
+            background-color: #218838; /* Màu nền khi hover trên nút success */
+            border-color: #1e7e34; /* Màu viền khi hover trên nút success */
+        }
+
+        .btn-danger {
+            background-color: #dc3545; /* Màu nền của nút danger */
+            border-color: #dc3545; /* Màu viền của nút danger */
+        }
+
+        .btn-danger:hover {
+            background-color: #c82333; /* Màu nền khi hover trên nút danger */
+            border-color: #bd2130; /* Màu viền khi hover trên nút danger */
+        }
+
+        .btn {
+            border-radius: 0.25rem; /* Bo tròn các góc của nút */
+        }
+
+        .btn-success {
+            background-color: #28a745; /* Màu nền của nút success */
+        }
+
+        .btn-danger {
+            background-color: #dc3545; /* Màu nền của nút danger */
+        }
+
+        .btn-secondary {
+            background-color: #6c757d; /* Màu nền của nút secondary */
+        }
+
+        .btn-primary {
+            background-color: #007bff; /* Màu nền của nút primary */
+        }
+
+        .btn-success, .btn-danger, .btn-secondary, .btn-primary {
+            color: #ffffff; /* Màu chữ của các nút */
+        }
+
+        .btn:hover {
+            color: #ffffff; /* Màu chữ khi hover trên các nút */
+        }
+
+        .card-title {
+            color: #343a40; /* Màu chữ tiêu đề trong card */
+        }
+
+        .card-text {
+            color: #6c757d; /* Màu chữ nội dung trong card */
+        }
+    </style>
+</head>
+<body>
+    <div class="container mt-5">
+        <h1 class="mb-4">{% if banner %}CẬP NHẬT HÌNH ẢNH{% else %}THÊM HÌNH ẢNH{% endif %}</h1>
+
+        <!-- Form để thêm hoặc cập nhật ảnh -->
+        <form method="post" enctype="multipart/form-data" class="mb-4">
+            {% csrf_token %}
+            <div class="form-group">
+                {{ form.name.label_tag }}
+                {{ form.name }}
+            </div>
+            <div class="form-group">
+                {{ form.image.label_tag }}
+                {{ form.image }}
+            </div>
+            <div class="form-group">
+                {{ form.time.label_tag }}
+              
+            </div>
+            <button type="submit" class="btn btn-primary">{% if banner %}CẬP NHẬT{% else %}THÊM{% endif %} Banner</button>
+            {% if banner %}
+                <button type="submit" name="delete" class="btn btn-danger">XÓA</button>
+            {% endif %}
+        </form>
+
+        <!-- Danh sách ảnh hiện tại -->
+        <h2 class="mb-4">HÌNH ẢNH HIỆN TẠI</h2>
+        <div class="row">
+            {% for banner in banners %}
+                <div class="col-md-4 mb-4">
+                    <div class="card">
+                        <img src="{{ banner.image.url }}" class="card-img-top" alt="{{ banner.name }}">
+                        <div class="card-body">
+                            <h5 class="card-title">{{ banner.name }}</h5>
+                            <p class="card-text">{{ banner.time }}</p>
+                            <a href="{% url 'customer:manage_banners' banner.id %}" class="btn btn-secondary">CHỈNH SỬA</a>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+
+        <a href="{% url 'customer:manage_banners' %}" class="btn btn-success">Add New Banner</a>
+    </div>
+
+    <!-- Link đến Bootstrap JS và dependencies -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

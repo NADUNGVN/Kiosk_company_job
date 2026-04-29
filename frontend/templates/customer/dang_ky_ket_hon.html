@@ -1,0 +1,1235 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Đăng ký kết hôn – Làm thủ tục toàn trình</title>
+  <link rel="icon" href="{% static 'Qrcodes/img/file_moi/ararlogo-preview.png' %}">
+  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700;800&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0
+    }
+
+    :root {
+      --green-dark: #1a5c2a;
+      --green-main: #246b35;
+      --green-pale: #e8f5ec;
+      --orange: #e07b39;
+      --text-dark: #1a2e1f;
+      --radius: 14px;
+      --shadow: 0 4px 20px rgba(0, 0, 0, .10)
+    }
+
+    body {
+      font-family: 'Be Vietnam Pro', sans-serif;
+      background: #f0f4f1;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column
+    }
+
+    /* HEADER */
+    header {
+      background: linear-gradient(90deg, #bb141a, #8b0f14);
+      height: 110px;
+      display: flex;
+      align-items: center;
+      padding: 0 32px;
+      gap: 20px;
+      box-shadow: 0 3px 12px rgba(0, 0, 0, .25);
+      flex-shrink: 0
+    }
+
+    header img.logo {
+      height: 80px;
+      object-fit: contain
+    }
+
+    header .header-title {
+      flex: 1;
+      text-align: center;
+      color: #FFCB05;
+      font-size: 1.45rem;
+      font-weight: 800;
+      letter-spacing: .5px;
+      line-height: 1.3
+    }
+
+    header .back-btn {
+      background: rgba(255, 255, 255, .15);
+      border: 2px solid rgba(255, 255, 255, .4);
+      color: #fff;
+      padding: 10px 20px;
+      border-radius: 50px;
+      font-size: .95rem;
+      font-weight: 600;
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: background .2s;
+      white-space: nowrap
+    }
+
+    header .back-btn:hover {
+      background: rgba(255, 255, 255, .28)
+    }
+
+    /* MODAL */
+    .ttc-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, .55);
+      z-index: 9999;
+      align-items: center;
+      justify-content: center
+    }
+
+    .ttc-overlay.show {
+      display: flex
+    }
+
+    .ttc-modal {
+      background: #fff;
+      border-radius: 16px;
+      width: 90%;
+      max-width: 520px;
+      box-shadow: 0 16px 50px rgba(0, 0, 0, .25);
+      animation: popIn .2s ease;
+      overflow: hidden
+    }
+
+    @keyframes popIn {
+      from {
+        transform: scale(.88);
+        opacity: 0
+      }
+
+      to {
+        transform: scale(1);
+        opacity: 1
+      }
+    }
+
+    .ttc-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 20px 24px 16px;
+      border-bottom: 1px solid #eee
+    }
+
+    .ttc-header h3 {
+      font-size: 1.1rem;
+      font-weight: 800;
+      color: var(--text-dark)
+    }
+
+    .ttc-close {
+      background: none;
+      border: none;
+      font-size: 1.2rem;
+      cursor: pointer;
+      color: #999;
+      text-decoration: none
+    }
+
+    .ttc-body {
+      padding: 20px 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px
+    }
+
+    .ttc-field label {
+      display: block;
+      font-size: .85rem;
+      font-weight: 600;
+      color: #444;
+      margin-bottom: 6px
+    }
+
+    .ttc-field .req {
+      color: #e53935
+    }
+
+    .ttc-field select {
+      width: 100%;
+      padding: 11px 14px;
+      border: 1.5px solid #d8e8dc;
+      border-radius: 8px;
+      font-size: .95rem;
+      font-family: inherit;
+      color: var(--text-dark);
+      background: #fff;
+      outline: none;
+      cursor: pointer;
+      transition: border-color .2s
+    }
+
+    .ttc-field select:focus {
+      border-color: var(--green-main)
+    }
+
+    .ttc-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 24px;
+      border-top: 1px solid #eee
+    }
+
+    .ttc-btn-cancel {
+      background: none;
+      border: 1.5px solid #ccc;
+      color: #555;
+      padding: 10px 24px;
+      border-radius: 50px;
+      font-size: .95rem;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: inherit;
+      text-decoration: none;
+      display: inline-block
+    }
+
+    .ttc-btn-confirm {
+      background: linear-gradient(135deg, #e07b39, #c45f1e);
+      color: #fff;
+      border: none;
+      padding: 10px 30px;
+      border-radius: 50px;
+      font-size: .95rem;
+      font-weight: 700;
+      cursor: pointer;
+      font-family: inherit;
+      box-shadow: 0 4px 14px rgba(196, 95, 30, .35)
+    }
+
+    /* MAIN */
+    .main-content {
+      display: none;
+      flex: 1
+    }
+
+    .main-content.visible {
+      display: block
+    }
+
+    .page-wrapper {
+      max-width: 980px;
+      width: 100%;
+      margin: 28px auto;
+      padding: 0 20px 180px
+    }
+
+    .page-title {
+      font-size: 1.35rem;
+      font-weight: 800;
+      color: var(--text-dark);
+      margin-bottom: 20px
+    }
+
+    /* STEPS BAR */
+    .steps-bar {
+      background: #fff;
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 20px 36px;
+      margin-bottom: 18px;
+      display: flex;
+      align-items: flex-start
+    }
+
+    .step {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      position: relative
+    }
+
+    .step:not(:last-child)::after {
+      content: '';
+      position: absolute;
+      top: 17px;
+      left: 50%;
+      right: -50%;
+      height: 2px;
+      background: #d8e8dc;
+      z-index: 0
+    }
+
+    .step.done:not(:last-child)::after {
+      background: var(--green-main)
+    }
+
+    .step-circle {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: .95rem;
+      position: relative;
+      z-index: 1;
+      border: 2px solid #d8e8dc;
+      background: #fff;
+      color: #aaa;
+      transition: all .3s
+    }
+
+    .step.active .step-circle {
+      background: var(--orange);
+      border-color: var(--orange);
+      color: #fff;
+      box-shadow: 0 4px 12px rgba(224, 123, 57, .4)
+    }
+
+    .step.done .step-circle {
+      background: var(--green-main);
+      border-color: var(--green-main);
+      color: #fff
+    }
+
+    .step-label {
+      font-size: .8rem;
+      font-weight: 600;
+      color: #aaa;
+      margin-top: 8px
+    }
+
+    .step.active .step-label {
+      color: var(--orange)
+    }
+
+    .step.done .step-label {
+      color: var(--green-main)
+    }
+
+    /* STEP PANELS */
+    .step-panel {
+      display: none
+    }
+
+    .step-panel.active {
+      display: block
+    }
+
+    /* CARD */
+    .card {
+      background: #fff;
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 24px 28px;
+      margin-bottom: 18px
+    }
+
+    .card-title {
+      font-size: 1.05rem;
+      font-weight: 800;
+      color: var(--text-dark);
+      margin-bottom: 16px;
+      padding-bottom: 12px;
+      border-bottom: 2px solid var(--green-pale)
+    }
+
+    /* SUMMARY */
+    .ttc-summary {
+      background: #f7fbf8;
+      border: 1.5px solid #c8e6d0;
+      border-radius: 10px;
+      padding: 16px 20px;
+      margin-bottom: 20px
+    }
+
+    .ttc-summary-title {
+      font-size: .88rem;
+      font-weight: 700;
+      color: var(--green-dark);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 12px
+    }
+
+    .ttc-summary-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px 24px
+    }
+
+    .ttc-s-row {
+      display: flex;
+      align-items: baseline;
+      gap: 6px;
+      font-size: .85rem
+    }
+
+    .ttc-s-label {
+      color: #888;
+      white-space: nowrap
+    }
+
+    .ttc-s-val {
+      font-weight: 600;
+      color: var(--text-dark)
+    }
+
+    /* STEP NOTE */
+    .step-note {
+      background: #fff8f0;
+      border-left: 4px solid var(--orange);
+      border-radius: 0 8px 8px 0;
+      padding: 12px 16px;
+      font-size: .88rem;
+      color: #7a4a1e;
+      margin-bottom: 18px;
+      display: flex;
+      align-items: center;
+      gap: 8px
+    }
+
+    /* ID BOX */
+    .id-box {
+      background: #f7fbf8;
+      border: 1.5px solid #d4e8d9;
+      border-radius: 10px;
+      padding: 16px 20px;
+      margin-bottom: 22px
+    }
+
+    .id-box-title {
+      font-weight: 700;
+      font-size: .88rem;
+      color: var(--green-dark);
+      margin-bottom: 12px
+    }
+
+    .id-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px 24px
+    }
+
+    .id-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: .88rem;
+      color: #444
+    }
+
+    .id-row i {
+      color: var(--green-main);
+      width: 16px;
+      text-align: center;
+      flex-shrink: 0
+    }
+
+    .id-row .id-label {
+      color: #888;
+      margin-right: 4px
+    }
+
+    .id-row .id-value {
+      font-weight: 600;
+      color: var(--text-dark)
+    }
+
+    /* FORM */
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px
+    }
+
+    .form-group.full {
+      grid-column: 1/-1
+    }
+
+    .form-group label {
+      font-size: .85rem;
+      font-weight: 600;
+      color: #444
+    }
+
+    .form-group label .req {
+      color: #e53935
+    }
+
+    .form-group input {
+      padding: 12px 14px;
+      border: 1.5px solid #d8e8dc;
+      border-radius: 8px;
+      font-size: .95rem;
+      font-family: inherit;
+      color: var(--text-dark);
+      background: #fff;
+      outline: none;
+      transition: border-color .2s
+    }
+
+    .form-group input:focus {
+      border-color: var(--green-main)
+    }
+
+    .form-group input::placeholder {
+      color: #bbb
+    }
+
+    /* FORM TỜ KHAI (BƯỚC 2) */
+    .form-section {
+      margin-bottom: 24px
+    }
+
+    .form-section-title {
+      font-size: 1rem;
+      font-weight: 800;
+      color: var(--green-dark);
+      margin-bottom: 16px;
+      padding: 8px 14px;
+      background: var(--green-pale);
+      border-radius: 8px;
+      border-left: 4px solid var(--green-main);
+    }
+
+    .form-field-row {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      margin-bottom: 12px
+    }
+
+    .form-field-inline {
+      display: flex;
+      align-items: flex-end;
+      gap: 16px;
+      flex-wrap: wrap;
+      margin-bottom: 12px
+    }
+
+    .field-label {
+      font-size: .83rem;
+      font-weight: 600;
+      color: #444;
+      line-height: 1.4
+    }
+
+    .field-input {
+      width: 100%;
+      padding: 9px 12px;
+      border: 1.5px solid #d0ddd4;
+      border-radius: 7px;
+      font-size: .9rem;
+      font-family: inherit;
+      color: var(--text-dark);
+      outline: none;
+      transition: border-color .2s
+    }
+
+    .field-input:focus {
+      border-color: var(--green-main)
+    }
+
+    .field-input-sm {
+      flex: 1;
+      min-width: 100px;
+      padding: 9px 12px;
+      border: 1.5px solid #d0ddd4;
+      border-radius: 7px;
+      font-size: .9rem;
+      font-family: inherit;
+      color: var(--text-dark);
+      outline: none;
+      transition: border-color .2s
+    }
+
+    .field-input-sm:focus {
+      border-color: var(--green-main)
+    }
+
+    .field-select {
+      width: 100%;
+      padding: 9px 12px;
+      border: 1.5px solid #d0ddd4;
+      border-radius: 7px;
+      font-size: .9rem;
+      font-family: inherit;
+      color: var(--text-dark);
+      background: #fff;
+      outline: none;
+      cursor: pointer
+    }
+
+    .field-select-sm {
+      flex: 1;
+      min-width: 100px;
+      padding: 9px 12px;
+      border: 1.5px solid #d0ddd4;
+      border-radius: 7px;
+      font-size: .9rem;
+      font-family: inherit;
+      color: var(--text-dark);
+      background: #fff;
+      outline: none;
+      cursor: pointer
+    }
+
+    .inline-group {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      flex: 1
+    }
+
+    .inline-group.flex-2 {
+      flex: 2
+    }
+
+    .inline-group.flex-3 {
+      flex: 3
+    }
+
+    .checkbox-group {
+      display: flex;
+      gap: 20px;
+      align-items: center;
+      flex-wrap: wrap
+    }
+
+    .cb-label {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: .88rem;
+      color: #444;
+      cursor: pointer;
+      font-weight: 500
+    }
+
+    .cb-label input {
+      accent-color: var(--green-main);
+      width: 15px;
+      height: 15px;
+      cursor: pointer
+    }
+
+    .section-divider {
+      border: none;
+      border-top: 2px solid var(--green-pale);
+      margin: 20px 0
+    }
+
+    .form-legal-note {
+      background: #f9f9f9;
+      border-radius: 8px;
+      padding: 14px 16px;
+      margin-top: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px
+    }
+
+    .form-legal-note p {
+      font-size: .78rem;
+      color: #666;
+      line-height: 1.6;
+      font-style: italic
+    }
+
+    /* STEP 3 PLACEHOLDER */
+    .dev-notice {
+      background: #fff;
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 48px 28px;
+      text-align: center
+    }
+
+    .dev-notice i {
+      font-size: 3rem;
+      color: #ccc;
+      margin-bottom: 16px;
+      display: block
+    }
+
+    .dev-notice h3 {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: #aaa;
+      margin-bottom: 8px
+    }
+
+    .dev-notice p {
+      color: #bbb;
+      font-size: .9rem
+    }
+
+    /* BOTTOM BAR */
+    .bottom-bar {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: #fff;
+      border-top: 3px solid var(--green-dark);
+      box-shadow: 0 -4px 20px rgba(0, 0, 0, .10);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 36px;
+      z-index: 100
+    }
+
+    .bottom-bar .left {
+      font-size: .9rem;
+      color: #777
+    }
+
+    .bottom-bar .left strong {
+      color: var(--text-dark)
+    }
+
+    .bottom-bar .right {
+      display: flex;
+      gap: 12px
+    }
+
+    .btn-outline {
+      background: none;
+      border: 1.5px solid #ccc;
+      color: #555;
+      padding: 11px 26px;
+      border-radius: 50px;
+      font-size: .95rem;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: inherit;
+      transition: all .18s;
+      display: flex;
+      align-items: center;
+      gap: 8px
+    }
+
+    .btn-outline:hover {
+      border-color: #888;
+      color: #222
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--green-main), var(--green-dark));
+      color: #fff;
+      border: none;
+      padding: 11px 30px;
+      border-radius: 50px;
+      font-size: .95rem;
+      font-weight: 700;
+      cursor: pointer;
+      font-family: inherit;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: 0 4px 14px rgba(36, 107, 53, .35);
+      transition: all .2s
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 6px 18px rgba(36, 107, 53, .45)
+    }
+  </style>
+</head>
+
+<body>
+
+  <header>
+    <img src="{% static 'QRcodes/img/file_moi/ararlogo-preview.png' %}" alt="Logo" class="logo">
+    <div class="header-title">
+      TRUNG TÂM PHỤC VỤ HÀNH CHÍNH CÔNG<br>
+      <span style="font-size:.85rem;font-weight:500;color:rgba(255,203,5,.8);">Phường Xuân Hòa</span>
+    </div>
+    <a href="{% url 'customer:lam-thu-tuc' %}" class="back-btn">
+      <i class="fas fa-arrow-left"></i> Quay lại
+    </a>
+  </header>
+
+  <!-- MODAL: THÔNG TIN CHUNG -->
+  <div class="ttc-overlay" id="ttc-overlay">
+    <div class="ttc-modal">
+      <div class="ttc-header">
+        <h3>Thông tin chung</h3>
+        <a href="{% url 'customer:lam-thu-tuc' %}" class="ttc-close">✕</a>
+      </div>
+      <div class="ttc-body">
+        <div class="ttc-field">
+          <label>Cấp thực hiện <span class="req">*</span></label>
+          <select id="ttc-cap">
+            <option>Cấp Xã</option>
+            <option>Cấp Huyện</option>
+            <option>Cấp Tỉnh</option>
+          </select>
+        </div>
+        <div class="ttc-field">
+          <label>Tỉnh thành <span class="req">*</span></label>
+          <select id="ttc-tinh">
+            <option>Tỉnh Đồng Nai</option>
+            <option>Thành phố Hà Nội</option>
+            <option>Thành phố Hồ Chí Minh</option>
+          </select>
+        </div>
+        <div class="ttc-field">
+          <label>Thủ tục hành chính <span class="req">*</span></label>
+          <select id="ttc-thu-tuc">
+            <option>Thủ tục đăng ký kết hôn</option>
+          </select>
+        </div>
+        <div class="ttc-field">
+          <label>Cơ quan thực hiện <span class="req">*</span></label>
+          <select id="ttc-co-quan">
+            <option>UBND Phường Xuân Hòa</option>
+            <option>UBND phường Trần Biên, Tỉnh Đồng Nai</option>
+          </select>
+        </div>
+        <div class="ttc-field">
+          <label>Đơn vị tiếp nhận <span class="req">*</span></label>
+          <select id="ttc-don-vi">
+            <option value="">Tìm kiếm...</option>
+            <option>Bộ phận Một cửa Phường Xuân Hòa</option>
+          </select>
+        </div>
+        <div class="ttc-field">
+          <label>Đối tượng thực hiện</label>
+          <select id="ttc-doi-tuong">
+            <option>Làm thủ tục cho bản thân</option>
+            <option>Làm thủ tục cho người khác</option>
+          </select>
+        </div>
+      </div>
+      <div class="ttc-footer">
+        <a href="{% url 'customer:lam-thu-tuc' %}" class="ttc-btn-cancel">Hủy</a>
+        <button class="ttc-btn-confirm" onclick="confirmTTC()">Xác nhận</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- NỘI DUNG CHÍNH -->
+  <div class="main-content" id="main-content">
+    <div class="page-wrapper">
+
+      <div class="page-title">Thủ tục đăng ký kết hôn</div>
+
+      <!-- STEPS BAR -->
+      <div class="steps-bar">
+        <div class="step active" id="dot-1">
+          <div class="step-circle">1</div>
+          <div class="step-label">Thông tin chủ hồ sơ</div>
+        </div>
+        <div class="step" id="dot-2">
+          <div class="step-circle">2</div>
+          <div class="step-label">Kê khai thông tin</div>
+        </div>
+        <div class="step" id="dot-3">
+          <div class="step-circle">3</div>
+          <div class="step-label">Xác nhận thông tin</div>
+        </div>
+      </div>
+
+      <!-- PANEL 1: THÔNG TIN CHỦ HỒ SƠ -->
+      <div class="step-panel active" id="panel-1">
+        <div class="card">
+          <div class="ttc-summary">
+            <div class="ttc-summary-title"><i class="fas fa-info-circle" style="color:var(--green-main);"></i> Thông tin
+              chung đã chọn</div>
+            <div class="ttc-summary-grid">
+              <div class="ttc-s-row"><span class="ttc-s-label">Thủ tục hành chính:</span><span class="ttc-s-val"
+                  id="sum-thu-tuc">—</span></div>
+              <div class="ttc-s-row"><span class="ttc-s-label">Cấp thực hiện:</span><span class="ttc-s-val"
+                  id="sum-cap">—</span></div>
+              <div class="ttc-s-row"><span class="ttc-s-label">Cơ quan thực hiện:</span><span class="ttc-s-val"
+                  id="sum-co-quan">—</span></div>
+              <div class="ttc-s-row"><span class="ttc-s-label">Tỉnh thành:</span><span class="ttc-s-val"
+                  id="sum-tinh">—</span></div>
+              <div class="ttc-s-row"><span class="ttc-s-label">Đơn vị tiếp nhận:</span><span class="ttc-s-val"
+                  id="sum-don-vi">—</span></div>
+              <div class="ttc-s-row"><span class="ttc-s-label">Đối tượng thực hiện:</span><span class="ttc-s-val"
+                  id="sum-doi-tuong">—</span></div>
+            </div>
+          </div>
+
+          <div class="card-title">Thông tin chủ hồ sơ</div>
+          <div class="step-note"><i class="fas fa-info-circle"></i> Vui lòng kiểm tra và bổ sung đầy đủ thông tin bên
+            dưới để tiếp tục thực hiện thủ tục.</div>
+
+          <div class="id-box">
+            <div class="id-box-title"><i class="fas fa-id-card"></i>&nbsp; Thông tin định danh</div>
+            <div class="id-grid">
+              <div class="id-row"><i class="fas fa-user"></i><span class="id-label">Họ và tên:</span><span
+                  class="id-value" id="display-hoten">—</span></div>
+              <div class="id-row"><i class="fas fa-globe"></i><span class="id-label">Quốc tịch:</span><span
+                  class="id-value">Việt Nam</span></div>
+              <div class="id-row"><i class="fas fa-venus-mars"></i><span class="id-label">Giới tính:</span><span
+                  class="id-value" id="display-gioitinh">—</span></div>
+              <div class="id-row"><i class="fas fa-address-card"></i><span class="id-label">Loại giấy tờ:</span><span
+                  class="id-value">Căn cước công dân</span></div>
+              <div class="id-row"><i class="fas fa-calendar-alt"></i><span class="id-label">Ngày tháng năm
+                  sinh:</span><span class="id-value" id="display-ngaysinh">—</span></div>
+              <div class="id-row"><i class="fas fa-hashtag"></i><span class="id-label">Số giấy tờ:</span><span
+                  class="id-value" id="display-sgt">—</span></div>
+              <div class="id-row" style="grid-column:1/-1"><i class="fas fa-map-marker-alt"></i><span
+                  class="id-label">Địa chỉ chi tiết:</span><span class="id-value" id="display-diachi">—</span></div>
+            </div>
+          </div>
+
+          <div class="form-grid">
+            <div class="form-group"><label>Ngày cấp <span class="req">*</span></label><input type="date" id="f-ngaycap">
+            </div>
+            <div class="form-group"><label>Nơi cấp <span class="req">*</span></label><input type="text" id="f-noicap"
+                placeholder="Nhập nơi cấp hoặc chọn"></div>
+            <div class="form-group"><label>Số điện thoại <span class="req">*</span></label><input type="tel" id="f-sdt"
+                placeholder="ví dụ: 0987654321"></div>
+            <div class="form-group"><label>Thư điện tử</label><input type="email" id="f-email"
+                placeholder="ví dụ: abc@gmail.com"></div>
+            <div class="form-group full"><label>Địa chỉ chi tiết <span class="req">*</span></label><input type="text"
+                id="f-diachi-input" placeholder="ví dụ: Tòa nhà Keangnam Landmark 72, E6 Phạm Hùng, Hà Nội"></div>
+          </div>
+        </div>
+      </div><!-- end panel-1 -->
+
+      <!-- PANEL 2: KÊ KHAI THÔNG TIN -->
+      <div class="step-panel" id="panel-2">
+        <div class="card">
+          <div class="card-title" style="text-align:center;border-bottom-color:var(--green-pale);">
+            NỘI DUNG MẪU HỘ TỊCH ĐIỆN TỬ TƯƠNG TÁC ĐĂNG KÝ KẾT HÔN
+          </div>
+
+          <!-- PHẦN I: BÊN NỮ -->
+          <div class="form-section">
+            <div class="form-section-title">I. Thông tin bên nữ</div>
+
+            <div class="form-field-row">
+              <label class="field-label">(1) Ảnh (trường hợp làm thủ tục đăng ký kết hôn có yếu tố nước ngoài):</label>
+              <input type="text" class="field-input" id="nu-1">
+            </div>
+            <div class="form-field-row">
+              <label class="field-label">(2) Họ, chữ đệm, tên:</label>
+              <input type="text" class="field-input" id="nu-2" placeholder="Nhập họ tên đầy đủ">
+            </div>
+            <div class="form-field-inline">
+              <div class="inline-group">
+                <label class="field-label">(3) Ngày, tháng, năm sinh:</label>
+                <input type="date" class="field-input-sm" id="nu-3">
+              </div>
+              <div class="inline-group">
+                <label class="field-label">(4) Dân tộc:</label>
+                <select class="field-select-sm" id="nu-4">
+                  <option>-- Chọn --</option>
+                  <option>Kinh</option>
+                  <option>Tày</option>
+                  <option>Thái</option>
+                  <option>Mường</option>
+                  <option>Khmer</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-field-inline">
+              <div class="inline-group">
+                <label class="field-label">(5) Quốc tịch:</label>
+                <select class="field-select-sm" id="nu-5">
+                  <option>-- Chọn --</option>
+                  <option>Việt Nam</option>
+                  <option>Khác</option>
+                </select>
+              </div>
+              <div class="inline-group flex-2">
+                <label class="field-label">(6) Số định danh cá nhân:</label>
+                <input type="text" class="field-input-sm" id="nu-6" placeholder="Số CCCD/CMND">
+              </div>
+            </div>
+            <div class="form-field-inline">
+              <div class="inline-group flex-2">
+                <label class="field-label">(7) Giấy tờ tùy thân:</label>
+                <select class="field-select-sm" id="nu-7">
+                  <option>-- Chọn --</option>
+                  <option>Căn cước công dân</option>
+                  <option>Chứng minh nhân dân</option>
+                  <option>Hộ chiếu</option>
+                </select>
+              </div>
+              <div class="inline-group flex-2">
+                <label class="field-label">Số:</label>
+                <input type="text" class="field-input-sm" id="nu-7-so">
+              </div>
+            </div>
+            <div class="form-field-inline">
+              <div class="inline-group">
+                <label class="field-label">Ngày cấp:</label>
+                <input type="date" class="field-input-sm" id="nu-ngaycap">
+              </div>
+              <div class="inline-group flex-3">
+                <label class="field-label">Cơ quan cấp:</label>
+                <input type="text" class="field-input-sm" id="nu-cqcap" placeholder="Cơ quan cấp giấy tờ">
+              </div>
+            </div>
+            <div class="form-field-row">
+              <label class="field-label">(8) Loại cư trú:</label>
+              <select class="field-select" id="nu-8">
+                <option>-- Chọn --</option>
+                <option>Thường trú</option>
+                <option>Tạm trú</option>
+                <option>Nơi đang sinh sống</option>
+              </select>
+            </div>
+            <div class="form-field-inline">
+              <label class="field-label">(9) Nơi cư trú (nơi thường trú/nơi tạm trú/nơi đang sinh sống):</label>
+              <div class="checkbox-group">
+                <label class="cb-label"><input type="checkbox" id="nu-9-tn"> Trong nước</label>
+                <label class="cb-label"><input type="checkbox" id="nu-9-nn"> Nước ngoài</label>
+              </div>
+            </div>
+            <div class="form-field-row" style="max-width:220px">
+              <label class="field-label">(10) Kết hôn lần thứ mấy:</label>
+              <input type="number" class="field-input-sm" id="nu-10" min="1" value="1" style="width:80px">
+            </div>
+            <div class="form-field-row">
+              <label class="field-label">Tình trạng hôn nhân:</label>
+              <select class="field-select" id="nu-hn">
+                <option>-- Chọn --</option>
+                <option>Chưa kết hôn</option>
+                <option>Đã ly hôn</option>
+                <option>Vợ/chồng đã chết</option>
+              </select>
+            </div>
+          </div>
+
+          <hr class="section-divider">
+
+          <!-- PHẦN II: BÊN NAM -->
+          <div class="form-section">
+            <div class="form-section-title">II. Thông tin bên nam</div>
+
+            <div class="form-field-row">
+              <label class="field-label">(11) Họ, chữ đệm, tên:</label>
+              <input type="text" class="field-input" id="nam-11" placeholder="Nhập họ tên đầy đủ">
+            </div>
+            <div class="form-field-inline">
+              <div class="inline-group">
+                <label class="field-label">(12) Ngày, tháng, năm sinh:</label>
+                <input type="date" class="field-input-sm" id="nam-12">
+              </div>
+              <div class="inline-group">
+                <label class="field-label">(13) Dân tộc:</label>
+                <select class="field-select-sm" id="nam-13">
+                  <option>-- Chọn --</option>
+                  <option>Kinh</option>
+                  <option>Tày</option>
+                  <option>Thái</option>
+                  <option>Mường</option>
+                  <option>Khmer</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-field-inline">
+              <div class="inline-group">
+                <label class="field-label">(14) Quốc tịch:</label>
+                <select class="field-select-sm" id="nam-14">
+                  <option>-- Chọn --</option>
+                  <option>Việt Nam</option>
+                  <option>Khác</option>
+                </select>
+              </div>
+              <div class="inline-group flex-2">
+                <label class="field-label">(15) Số định danh cá nhân:</label>
+                <input type="text" class="field-input-sm" id="nam-15" placeholder="Số CCCD/CMND">
+              </div>
+            </div>
+            <div class="form-field-inline">
+              <div class="inline-group flex-2">
+                <label class="field-label">(16) Giấy tờ tùy thân:</label>
+                <select class="field-select-sm" id="nam-16">
+                  <option>-- Chọn --</option>
+                  <option>Căn cước công dân</option>
+                  <option>Chứng minh nhân dân</option>
+                  <option>Hộ chiếu</option>
+                </select>
+              </div>
+              <div class="inline-group flex-2">
+                <label class="field-label">Số:</label>
+                <input type="text" class="field-input-sm" id="nam-16-so">
+              </div>
+            </div>
+            <div class="form-field-inline">
+              <div class="inline-group">
+                <label class="field-label">Ngày cấp:</label>
+                <input type="date" class="field-input-sm" id="nam-ngaycap">
+              </div>
+              <div class="inline-group flex-3">
+                <label class="field-label">Cơ quan cấp:</label>
+                <input type="text" class="field-input-sm" id="nam-cqcap" placeholder="Cơ quan cấp giấy tờ">
+              </div>
+            </div>
+            <div class="form-field-row">
+              <label class="field-label">(17) Loại cư trú:</label>
+              <select class="field-select" id="nam-17">
+                <option>-- Chọn --</option>
+                <option>Thường trú</option>
+                <option>Tạm trú</option>
+                <option>Nơi đang sinh sống</option>
+              </select>
+            </div>
+            <div class="form-field-inline">
+              <label class="field-label">(18) Nơi cư trú (nơi thường trú/nơi tạm trú/nơi đang sinh sống):</label>
+              <div class="checkbox-group">
+                <label class="cb-label"><input type="checkbox" id="nam-18-tn"> Trong nước</label>
+                <label class="cb-label"><input type="checkbox" id="nam-18-nn"> Nước ngoài</label>
+              </div>
+            </div>
+            <div class="form-field-row" style="max-width:220px">
+              <label class="field-label">(19) Kết hôn lần thứ mấy:</label>
+              <input type="number" class="field-input-sm" id="nam-19" min="1" value="1" style="width:80px">
+            </div>
+            <div class="form-field-row">
+              <label class="field-label">Tình trạng hôn nhân:</label>
+              <select class="field-select" id="nam-hn">
+                <option>-- Chọn --</option>
+                <option>Chưa kết hôn</option>
+                <option>Đã ly hôn</option>
+                <option>Vợ/chồng đã chết</option>
+              </select>
+            </div>
+            <div class="form-field-row">
+              <label class="field-label">Loại đăng ký:</label>
+              <label class="cb-label"><input type="checkbox" id="loai-dky" checked> Đăng ký lần đầu</label>
+            </div>
+            <div class="form-field-inline">
+              <label class="field-label">(20) Đề nghị cấp bản sao:</label>
+              <div class="checkbox-group">
+                <label class="cb-label"><input type="radio" name="cap-bansao" value="co"> Có</label>
+                <label class="cb-label"><input type="radio" name="cap-bansao" value="khong" checked> Không</label>
+              </div>
+            </div>
+            <div class="form-field-row">
+              <label class="field-label">(21) Hồ sơ đính kèm theo quy định.</label>
+            </div>
+          </div>
+
+          <div class="form-legal-note">
+            <p>* Người yêu cầu cam đoan các thông tin cung cấp là đúng sự thật, việc kết hôn của hai bên là hoàn toàn tự
+              nguyện, không vi phạm quy định của Luật hôn nhân và gia đình Việt Nam, chịu hoàn toàn trách nhiệm trước
+              pháp luật về nội dung cam đoan của mình.</p>
+            <p>* Mẫu điện tử tương tác ghi nhận thời gian (giờ, phút, giây, ngày, tháng, năm) hoàn tất việc cung cấp
+              thông tin; người yêu cầu trước đó đã đăng nhập vào hệ thống, thực hiện xác thực điện tử theo quy định.</p>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- PANEL 3: XÁC NHẬN THÔNG TIN -->
+      <div class="step-panel" id="panel-3">
+        <div class="dev-notice">
+          <i class="fas fa-check-circle"></i>
+          <h3>Bước 3: Xác nhận thông tin</h3>
+          <p>Nội dung bước này đang được phát triển. Vui lòng chờ cập nhật!</p>
+        </div>
+      </div>
+
+    </div><!-- end page-wrapper -->
+  </div><!-- end main-content -->
+
+  <!-- BOTTOM BAR -->
+  <div class="bottom-bar">
+    <div class="left">Bước <strong id="bar-step">1</strong> / 3 &nbsp;·&nbsp; <span id="bar-label">Thông tin chủ hồ
+        sơ</span></div>
+    <div class="right">
+      <button class="btn-outline" id="btn-back" onclick="prevStep()"><i class="fas fa-arrow-left"></i> Quay lại</button>
+      <button class="btn-primary" id="btn-next" onclick="nextStep()">Tiếp theo <i
+          class="fas fa-arrow-right"></i></button>
+    </div>
+  </div>
+
+  <script>
+    let currentStep = 1;
+    const stepLabels = ['Thông tin chủ hồ sơ', 'Kê khai thông tin', 'Xác nhận thông tin'];
+
+    window.addEventListener('DOMContentLoaded', () => {
+      document.getElementById('ttc-overlay').classList.add('show');
+    });
+
+    function confirmTTC() {
+      const donVi = document.getElementById('ttc-don-vi').value;
+      if (!donVi) { document.getElementById('ttc-don-vi').style.borderColor = '#e53935'; return; }
+      document.getElementById('sum-thu-tuc').textContent = document.getElementById('ttc-thu-tuc').value;
+      document.getElementById('sum-cap').textContent = document.getElementById('ttc-cap').value;
+      document.getElementById('sum-co-quan').textContent = document.getElementById('ttc-co-quan').value;
+      document.getElementById('sum-tinh').textContent = document.getElementById('ttc-tinh').value;
+      document.getElementById('sum-don-vi').textContent = donVi;
+      document.getElementById('sum-doi-tuong').textContent = document.getElementById('ttc-doi-tuong').value;
+      document.getElementById('ttc-overlay').classList.remove('show');
+      document.getElementById('main-content').classList.add('visible');
+    }
+
+    function validateStep1() {
+      const fields = ['f-ngaycap', 'f-noicap', 'f-sdt', 'f-diachi-input'];
+      fields.forEach(id => document.getElementById(id).style.borderColor = '#d8e8dc');
+      let ok = true;
+      if (!document.getElementById('f-ngaycap').value) { document.getElementById('f-ngaycap').style.borderColor = '#e53935'; ok = false; }
+      if (!document.getElementById('f-noicap').value.trim()) { document.getElementById('f-noicap').style.borderColor = '#e53935'; ok = false; }
+      if (!document.getElementById('f-sdt').value.trim()) { document.getElementById('f-sdt').style.borderColor = '#e53935'; ok = false; }
+      if (!document.getElementById('f-diachi-input').value.trim()) { document.getElementById('f-diachi-input').style.borderColor = '#e53935'; ok = false; }
+      if (!ok) document.getElementById('f-ngaycap').scrollIntoView({ behavior: 'smooth', block: 'center' });
+      return ok;
+    }
+
+    function goToStep(n) {
+      document.querySelectorAll('.step-panel').forEach(p => p.classList.remove('active'));
+      document.getElementById('panel-' + n).classList.add('active');
+      [1, 2, 3].forEach(i => {
+        const dot = document.getElementById('dot-' + i);
+        dot.classList.remove('active', 'done');
+        if (i < n) dot.classList.add('done');
+        else if (i === n) dot.classList.add('active');
+      });
+      document.getElementById('bar-step').textContent = n;
+      document.getElementById('bar-label').textContent = stepLabels[n - 1];
+      document.getElementById('btn-back').style.display = (n === 1) ? 'none' : 'flex';
+      document.getElementById('btn-next').innerHTML = (n === 3)
+        ? 'Hoàn thành <i class="fas fa-check"></i>'
+        : 'Tiếp theo <i class="fas fa-arrow-right"></i>';
+      currentStep = n;
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function nextStep() {
+      if (currentStep === 1 && !validateStep1()) return;
+      if (currentStep < 3) goToStep(currentStep + 1);
+    }
+
+    function prevStep() {
+      if (currentStep > 1) goToStep(currentStep - 1);
+    }
+
+    // Ẩn nút "Quay lại" ở bước 1 lúc đầu
+    document.getElementById('btn-back').style.display = 'none';
+  </script>
+</body>
+
+</html>

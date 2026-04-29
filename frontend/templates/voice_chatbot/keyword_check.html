@@ -1,0 +1,213 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>Keyword Check</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        function addKeyword() {
+            var newKeywords = $('#new_keywords').val();
+            var isBadLanguage = $('#is_bad_language').is(':checked');
+            $.post("{% url 'voice_chatbot:add_keyword' counter.id %}", {
+                new_keywords: newKeywords,
+                is_bad_language: isBadLanguage,
+                csrfmiddlewaretoken: '{{ csrf_token }}'
+            }, function(data) {
+                $('#response_text').html(data.response_text).fadeIn().delay(3000).fadeOut();
+                location.reload();
+            });
+        }
+
+        function updateKeywords() {
+            var keywords = $('#keywords').val();
+            var bad_keywords = $('#bad_keywords').val();
+            $.post("{% url 'voice_chatbot:keyword_check' counter.id %}", {
+                update_keywords: true,
+                keywords: keywords,
+                bad_keywords: bad_keywords,
+                csrfmiddlewaretoken: '{{ csrf_token }}'
+            }, function(data) {
+                $('#response_text').html(data.response_text).fadeIn().delay(3000).fadeOut();
+                location.reload();
+            });
+        }
+    </script>
+    <style>
+        .response-text {
+            display: none;
+        }
+        .unlock-btn-keywords {
+          background-color: #28a745; /* Màu xanh lá cây cho nút từ khóa */
+          color: white;
+      }
+      .unlock-btn-bad-keywords {
+          background-color: #dc3545; /* Màu đỏ cho nút từ nhạy cảm */
+          color: white;
+      }
+      .btn-update {
+          display: block;
+          margin: 20px auto; /* Tăng khoảng cách và căn giữa nút */
+          padding: 10px 20px; /* Tăng kích thước nút */
+          font-size: 18px; /* Tăng kích thước chữ */
+      }
+      #bad_keywords {
+          background-color: #f8d7da; /* Màu nền nhạt cho textarea nhạy cảm */
+      }
+      .center-button {
+        text-align: center; /* Căn giữa nội dung */
+        margin-top: 10px; /* Khoảng cách trên nút */
+    }
+    </style>
+    <style>
+        img {
+          max-width: 100%;
+          height: auto;
+        }
+    
+        th {
+          font-size: 20px;
+          text-align: center;
+    
+        }
+    
+        td {
+          font-size: 20px;
+          width: 500px;
+        }
+    
+        div.scroll {
+          background-color: white;
+          width: 600px;
+          height: 150px;
+          overflow: auto;
+          text-align: justify;
+          padding: 20px;
+        }
+    
+        body {
+    
+    
+          background-size: 100% 100%;
+          max-width: 100%;
+        }
+    
+        span {
+          font-size: 24px
+        }
+    
+        #services {
+          padding: 30px 0 30px 0;
+        }
+    
+    
+    
+        button {
+          background-color: rgb(50, 140, 165);
+          color: whitesmoke;
+          border: 0;
+          -webkit-box-shadow: none;
+          box-shadow: none;
+          font-size: 15px;
+          font-weight: 50;
+          border-radius: 7px;
+          padding: 15px 35px;
+          cursor: pointer;
+          white-space: nowrap;
+          margin: 10px;
+    
+    
+        }
+    
+    
+        
+    
+      </style>
+</head>
+<header style="background:  #cd181e; height: 110px;" id="header">
+    <div class="container">
+      <div class="row">
+        <div class="col-2 logo float-left">
+          <a href="{% url 'customer:trang-chu' %}" class="scrollto"><img style='margin: 20px 0;'
+              src="{% static 'Qrcodes/img/file_moi/ararlogo-preview.png' %}" alt="" class="img-fluid"></a>
+        </div>
+        <div style="width: 80px; ;" class="col-8 text-center mx-auto">
+          <a href="{% url 'customer:trang-chu' %}" class="">
+            <img style='margin: -10px 0px 0 -400px; max-height: 100px;' src="{% static 'Qrcodes/img/file_moi/logo.png' %}"
+              alt="" class="img-fluid">
+          </a>
+          <span style="color: #FFCB05; font-family: 'Be Vietnam Pro'; position: absolute; top: 0; ">
+            TRUNG TÂM PHỤC VỤ HÀNH CHÍNH CÔNG <br> PHƯỜNG XUÂN HÒA
+          </span>
+        </div>
+        <div class="col-2 logo float-right">
+          <a href="{% url 'customer:trang-chu' %}" class="scrollto"><img style="max-height: 90px; margin: 0px 0 0 100px;"
+              src="{% static 'Qrcodes/img/file_moi/lo-go-q3.png' %}" alt="" class="img-fluid float-right"></a>
+        </div>
+      </div>
+    </div>
+  </header>
+<body>
+  <div class="container mt-5">
+    <h1 class="mb-4 text-center">Kiểm tra từ khóa cho quầy: {{ counter.name }}</h1>
+    <div id="response_text" class="alert alert-info response-text">{{ response_text|safe }}</div>
+        
+    <div class="row">
+        <div class="col-6">
+            <h2 class="mt-3 mb-3">Danh sách từ khóa</h2>
+            <div class="form-group">
+                <textarea id="keywords" class="form-control" rows="5" placeholder="Danh sách từ khóa" disabled>{{ keywords }}</textarea>
+            </div>
+            <div class="center-button">
+              <button type="button" class="btn unlock-btn-keywords" onclick="unlockTextarea('keywords')">Mở khóa từ khóa</button>
+          </div>
+        </div>
+
+        <div class="col-6">
+            <h2 class="mt-3 mb-3">Danh sách từ nhạy cảm</h2>
+            <div class="form-group">
+                <textarea id="bad_keywords" class="form-control" rows="5" placeholder="Danh sách từ nhạy cảm" disabled>{{ bad_keywords }}</textarea>
+            </div>
+            <div class="center-button">
+              <button type="button" class="btn unlock-btn-bad-keywords" onclick="unlockTextarea('bad_keywords')">Mở khóa từ nhạy cảm</button>
+          </div>
+        </div>
+    </div>
+
+    <button type="button" class="btn btn-primary btn-update" onclick="updateKeywords()">Cập nhật từ khóa</button>
+
+    <span>Chú ý: Vui lòng nhấn cập nhật sau khi hoàn thành thêm từ khóa</span>
+</div>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+    const textareas = document.querySelectorAll("textarea");
+
+    textareas.forEach(textarea => {
+        textarea.disabled = true; // Mặc định khóa textarea
+
+        textarea.addEventListener("blur", function() {
+            textarea.disabled = true; // Khóa lại khi textarea mất focus
+        });
+    });
+});
+
+function unlockTextarea(id) {
+    const textarea = document.getElementById(id);
+    if (textarea) {
+        textarea.disabled = false; // Mở khóa textarea
+        textarea.focus(); // Tự động focus vào textarea
+    }
+}
+
+
+
+</script>
+    
+    
+
+    
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

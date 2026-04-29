@@ -1,0 +1,32 @@
+{% extends 'QRcodes/_Master.html' %}
+{% load static %}
+
+{% block title_tab %} aâ {% endblock %}
+
+{% block content %}
+
+    <!-- Breadcrumb Start -->
+    <div class="breadcrumb-wrap">
+        <div class="container-fluid">
+            <ul class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{% url 'qrcode:trang-chu' %}">Trang chủ</a></li>
+         
+            </ul>
+        </div>
+    </div>
+    <!-- Breadcrumb End -->
+
+    <!-- Checkout Start -->
+    <div class="checkout">
+        <div class="container-fluid">
+            <div class="text-center">
+                
+                <p><h2 style="margin-top:40pt">Hoàn thành thủ tục. Vui lòng đến quầy thanh toán.</h2></p>
+                <p><h4>Cảm ơn bạn đã sử dụng dịch vụ của chúng tôi. </h4></p>
+                <br>
+            </div>
+        </div>
+    </div>
+    <!-- Checkout End -->
+
+{% endblock %}

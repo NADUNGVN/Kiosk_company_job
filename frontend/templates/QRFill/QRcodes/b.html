@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Upload and Fill Data</title>
+</head>
+<style>
+    #loading-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+        display: none;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
+    }
+
+    #loading-spinner {
+        border: 4px solid #f3f3f3;
+        border-top: 4px solid #3498db;
+        border-radius: 50%;
+        width: 50px;
+        height: 50px;
+        animation: spin 2s linear infinite;
+    }
+
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+
+    #loading-text {
+        color: #ffffff;
+        font-size: 16px;
+        margin-top: 10px;
+    }
+</style>
+<body>
+    {{message|safe}}
+    <form method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        <input type="file" name="upload_file_1">
+        <button id="reloadButton" type="submit" >Upload and Fill Data</button>
+    </form>
+    <div id="loading-overlay">
+        <div id="loading-spinner"></div>
+        <div id="loading-text">CHỌN VÀO WORD VÀ NHẤN OK</div>
+    </div>
+</body>
+</html>
+
+<script>
+    document.getElementById("reloadButton").addEventListener("click", function() {
+        // Hiển thị hiệu ứng chờ và chữ "Hiệu ứng reload..."
+        document.getElementById("loading-overlay").style.display = "flex";
+
+        // Gửi request về server (nếu cần)
+
+        // Thực hiện reload trang
+        location.reload();
+    });
+
+    // Ẩn hiệu ứng chờ sau khi trang đã reload xong
+    window.addEventListener("load", function() {
+        document.getElementById("loading-overlay").style.display = "none";
+    });
+</script>

@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Khách Hàng Chờ</title>
+</head>
+<body>
+    <h1>Danh Sách Khách Hàng Chờ</h1>
+  <button type="button" onclick="tai_lai_trang()">Cập nhật</button>
+  <script>
+    function tai_lai_trang(){
+        location.reload();
+    }
+</script>
+
+    
+    <div class="table-wrapper-scroll-y my-custom-scrollbar">
+        <table  class="table table-bordered table-striped mb-0">
+          <thead>
+            <tr>
+            
+              <th scope="col">HỌ VÀ TÊN</th>
+              <th scope="col">SỐ THỨ TỰ</th>
+        
+            </tr>
+          </thead>
+          <tbody>
+            {% for customer in waiting_customers%}
+            <tr>
+              
+              <td>{{customer.name }}</td>
+              <td>{{customer.ticket_number}}</td>
+             
+            </tr>
+      
+            
+            {% endfor %}
+          </tbody>
+
+        </table>
+      </div>
+  
+</body>
+</html>

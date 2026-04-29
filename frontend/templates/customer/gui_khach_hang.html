@@ -1,0 +1,162 @@
+
+{% load static %}<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bảng khách hàng</title>
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,500,600,700,700i|Montserrat:300,400,500,600,700" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.1.3/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Open Sans', sans-serif;
+            background-size: cover;
+        }
+        header {
+            background: #cd181e;
+            padding: 10px 0;
+        }
+        .header-text {
+            color: #FFCB05;
+            font-family: 'Be Vietnam Pro', sans-serif;
+            font-size: 16px;
+            line-height: 1.4;
+        }
+        .logo img {
+            max-height: 60px;
+            width: auto;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            padding: 8px;
+            border: 2px solid #529432;
+            text-align: center;
+        }
+        th {
+            background: #ABDD93;
+            font-size: 18px;
+        }
+        td {
+            font-size: 16px;
+        }
+        .file-links {
+            margin-top: 20px;
+        }
+        .file-links ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        .file-links li {
+            margin-bottom: 10px;
+        }
+        .file-links a {
+            color: #0056b3;
+            text-decoration: none;
+        }
+        @media (max-width: 768px) {
+            .header-text {
+                font-size: 14px;
+            }
+            .logo img {
+                max-height: 40px;
+            }
+            th, td {
+                font-size: 14px;
+                padding: 5px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-3 text-start logo">
+                    <a href="{% url 'customer:trang-chu' %}">
+                        <img src="{% static 'QRcodes/img/file_moi/ararlogo-preview.png' %}" alt="Logo" class="img-fluid">
+                    </a>
+                </div>
+                <div class="col-6 text-center">
+                    <span class="header-text">
+                        TRUNG TÂM PHỤC VỤ HÀNH CHÍNH CÔNG 
+                        <br>PHƯỜNG XUÂN HÒA
+                    </span>
+                </div>
+                <div class="col-3 text-end logo">
+                    <a href="{% url 'customer:trang-chu' %}">
+                        <img src="{% static 'QRcodes/img/file_moi/lo-go-q3.png' %}" alt="Logo" class="img-fluid">
+                    </a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="container mt-4">
+        <h2 class="text-center mb-4">CHÀO MỪNG {{ khach_hang.0.name }} ĐẾN VỚI DỊCH VỤ CÔNG TẠI UBND QUAN 3</h2>
+
+        <div class="table-responsive">
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>HỌ VÀ TÊN</th>
+                        <th>SỐ THỨ TỰ</th>
+                        <th>DỊCH VỤ</th>
+                        <th>ĐANG XỬ LÝ</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>{{ khach_hang.0.name }}</td>
+                        <td>{{ khach_hang.0.ticket_number }}</td>
+                        <td>{{ khach_hang.0.service }}</td>
+                        <td>{{ dem }}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <section class="file-links">
+            <h3>XEM THÔNG TIN</h3>
+            <ul>
+                <li><a href="{% static 'QRcodes/files/ma_qr/thu_tuc_hanh_chinh_linh_vuc_dau_tu_cong.pdf' %}" target="_blank">THỦ TỤC HÀNH CHÍNH LĨNH VỰC ĐẦU TƯ CÔNG</a></li>
+                <li><a href="{% static 'QRcodes/files/ma_qr/thu_tuc_hanh_chinh_linh_vuc_dat_dai.pdf' %}" target="_blank">THỦ TỤC HÀNH CHÍNH LĨNH VỰC ĐẤT ĐAI</a></li>
+                <li><a href="{% static 'QRcodes/files/ma_qr/thuc_tuc_hanh_chinh_linh_vuc_tin_nguong_ton_giao.pdf' %}" target="_blank">TÍN NGƯỠNG VÀ TÔN GIÁO</a></li>
+                <li><a href="{% static 'QRcodes/files/ma_qr/qui_dinh_noi_bo_thu_tuc_hanh_chinh_cung_cap_thong_tin_quy_hoach.pdf' %}" target="_blank">THÔNG TIN QUY HOẠCH</a></li>
+                <li><a href="{% static 'QRcodes/files/ho_tich.pdf' %}" target="_blank">THỦ TỤC HÀNH CHÍNH LĨNH VỰC HỘ TỊCH</a></li>
+                <li><a href="{% static 'QRcodes/files/manual.pdf' %}" target="_blank">VĂN BẢN PHÁP LUẬT</a></li>
+                <li><a href="{% static 'QRcodes/files/ma_qr/thu_tuc_hanh chinh_linh_vuc_bao_tro_xa_hoi.pdf' %}" target="_blank">BẢO TRỢ XẢ HỘI</a></li>
+                <li><a href="{% static 'QRcodes/files/ma_qr/thu_tuc_hanh_chinh_ling_vuc_boi_thuong_nha_nuoc.pdf' %}" target="_blank">BỒI THƯỜNG NHÀ NƯỚC</a></li>
+            </ul>
+        </section>
+    </main>
+
+    <script>
+        function AutoRefresh(t) {
+            setTimeout(() => location.reload(true), t);
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log({{ a }});
+            AutoRefresh(30000);
+
+            const savedTimer = localStorage.getItem("countdownTimer");
+            const waitingTimeInSeconds = {{ a }} * 60;
+
+            if (savedTimer) {
+                startCountdown(parseInt(savedTimer, 10));
+            } else {
+                startCountdown(waitingTimeInSeconds);
+            }
+        });
+
+        function startCountdown(seconds) {
+            // Implement your countdown logic here
+        }
+    </script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.1.3/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

@@ -1,0 +1,52 @@
+<!-- voice_chatbot/templates/index.html -->
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Voice Chatbot</title>
+</head>
+<body>
+    <h1>Voice Chatbot</h1>
+
+    <button onclick="startListening()">Start Listening</button>
+    
+    <div id="response"></div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        function startListening() {
+            $.ajax({
+                url: "{% url 'listen' %}",
+                method: "POST",
+                beforeSend: function(xhr, settings) {
+                    xhr.setRequestHeader("X-CSRFToken", "{{ csrf_token }}");
+                },
+                success: function(data) {
+                    $('#response').text(data.response);
+                    textToSpeech(data.response);
+                },
+                error: function(xhr, errmsg, err) {
+                    console.log(xhr.status + ": " + xhr.responseText);
+                }
+            });
+        }
+    
+        function textToSpeech(text) {
+            $.ajax({
+                url: "{% url 'text_to_speech' %}",
+                method: "POST",
+                data: {'text': text},
+                beforeSend: function(xhr, settings) {
+                    xhr.setRequestHeader("X-CSRFToken", "{{ csrf_token }}");
+                },
+                success: function(data) {
+                    console.log("Text to speech: " + text);
+                },
+                error: function(xhr, errmsg, err) {
+                    console.log(xhr.status + ": " + xhr.responseText);
+                }
+            });
+        }
+    </script>
+    
+</body>
+</html>

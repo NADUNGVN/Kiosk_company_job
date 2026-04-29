@@ -1,0 +1,727 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Làm Thủ Tục Toàn Trình</title>
+  <link rel="icon" href="{% static 'Qrcodes/img/file_moi/ararlogo-preview.png' %}">
+  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --green-dark: #1a5c2a;
+      --green-main: #246b35;
+      --green-light: #2e8b45;
+      --green-pale: #e8f5ec;
+      --gold: #c9a227;
+      --text-dark: #1a2e1f;
+      --text-mid: #3d5c47;
+      --radius: 14px;
+      --shadow: 0 4px 20px rgba(0,0,0,.10);
+    }
+    body {
+      font-family: 'Be Vietnam Pro', sans-serif;
+      background: #f0f4f1;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* HEADER */
+    header {
+      background: linear-gradient(90deg, #bb141a 0%, #8b0f14 100%);
+      height: 110px;
+      display: flex;
+      align-items: center;
+      padding: 0 32px;
+      gap: 20px;
+      box-shadow: 0 3px 12px rgba(0,0,0,.25);
+      flex-shrink: 0;
+    }
+    header img.logo { height: 80px; object-fit: contain; }
+    header .header-title {
+      flex: 1; text-align: center;
+      color: #FFCB05; font-size: 1.45rem;
+      font-weight: 800; letter-spacing: .5px; line-height: 1.3;
+    }
+    header .back-btn {
+      background: rgba(255,255,255,.15);
+      border: 2px solid rgba(255,255,255,.4);
+      color: #fff; padding: 10px 20px;
+      border-radius: 50px; font-size: .95rem; font-weight: 600;
+      text-decoration: none; display: flex; align-items: center;
+      gap: 8px; transition: background .2s; white-space: nowrap;
+    }
+    header .back-btn:hover { background: rgba(255,255,255,.28); }
+
+    /* MAIN LAYOUT */
+    .page-wrapper {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      max-width: 960px;
+      width: 100%;
+      margin: 28px auto 0;
+      padding: 0 20px;
+      /* leave room for bottom panel */
+      padding-bottom: 160px;
+    }
+
+    /* TAB BAR */
+    .tab-bar {
+      display: flex;
+      background: #fff;
+      border-radius: 50px;
+      padding: 6px;
+      box-shadow: var(--shadow);
+      margin-bottom: 20px;
+      gap: 4px;
+    }
+    .tab-btn {
+      flex: 1;
+      border: none;
+      background: transparent;
+      padding: 12px 10px;
+      border-radius: 50px;
+      font-family: inherit;
+      font-size: .95rem;
+      font-weight: 600;
+      color: #6b8c75;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: all .25s;
+    }
+    .tab-btn:hover { color: var(--green-main); background: var(--green-pale); }
+    .tab-btn.active {
+      background: var(--green-main);
+      color: #fff;
+      box-shadow: 0 3px 12px rgba(36,107,53,.35);
+    }
+    .tab-btn.active i { color: #fff; }
+    .tab-btn i { color: #aaa; transition: color .25s; }
+
+    /* TAB CONTENT */
+    .tab-pane { display: none; }
+    .tab-pane.active { display: block; }
+
+    /* SEARCH BAR (tab 2) */
+    .search-wrap {
+      position: relative; margin-bottom: 18px;
+    }
+    .search-wrap input {
+      width: 100%; padding: 14px 20px 14px 48px;
+      border: 2px solid #d4e8d9; border-radius: 50px;
+      font-size: 1rem; font-family: inherit; outline: none;
+      color: var(--text-dark); background: #fff;
+      box-shadow: var(--shadow);
+      transition: border-color .2s;
+    }
+    .search-wrap input:focus { border-color: var(--green-main); }
+    .search-wrap i {
+      position: absolute; left: 18px; top: 50%;
+      transform: translateY(-50%);
+      color: var(--green-main); font-size: 1.1rem;
+    }
+
+    /* LIST */
+    .proc-list {
+      background: #fff;
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+    /* scrollable area */
+    .proc-scroll {
+      max-height: 420px;
+      overflow-y: auto;
+      padding: 8px 0;
+    }
+    .proc-scroll::-webkit-scrollbar { width: 6px; }
+    .proc-scroll::-webkit-scrollbar-track { background: #f0f4f1; }
+    .proc-scroll::-webkit-scrollbar-thumb { background: #b2d4bc; border-radius: 3px; }
+
+    .proc-item {
+      display: flex;
+      align-items: center;
+      padding: 16px 20px;
+      border-bottom: 1px solid #eaf2ec;
+      cursor: default;
+      transition: background .18s;
+      gap: 12px;
+      flex-wrap: nowrap;
+    }
+    .proc-item:hover { background: var(--green-pale); }
+    .proc-item:last-child { border-bottom: none; }
+    .proc-item:hover { background: var(--green-pale); }
+    .proc-item.selected { background: #d4edda; }
+
+    .proc-bullet {
+      width: 10px; height: 10px;
+      border-radius: 50%;
+      background: var(--green-main);
+      flex-shrink: 0;
+    }
+    .proc-name {
+      flex: 1;
+      font-size: .95rem;
+      font-weight: 500;
+      color: var(--text-dark);
+      min-width: 0;
+    }
+    .proc-actions {
+      display: flex;
+      gap: 8px;
+      flex-shrink: 0;
+      margin-left: auto;
+      padding-left: 8px;
+    }
+    .btn-sm {
+      border: none; border-radius: 50px;
+      padding: 7px 16px; font-size: .82rem;
+      font-weight: 700; cursor: pointer;
+      font-family: inherit; transition: all .18s;
+      display: flex; align-items: center; gap: 5px;
+    }
+    .btn-fill-sm {
+      background: #f0f7f2; color: var(--green-dark);
+      border: 1.5px solid #b2d4bc;
+    }
+    .btn-fill-sm:hover { background: #ddf0e4; }
+    .btn-print-sm {
+      background: var(--green-main); color: #fff;
+      box-shadow: 0 2px 8px rgba(36,107,53,.25);
+    }
+    .btn-print-sm:hover { background: var(--green-dark); }
+
+    /* MẪU ĐƠN list (tab 3) */
+    .mau-don-item {
+      display: flex; align-items: center;
+      padding: 16px 20px;
+      border-bottom: 1px solid #eaf2ec;
+      cursor: default; gap: 12px;
+      transition: background .18s;
+      flex-wrap: nowrap;
+    }
+    .mau-don-item:hover { background: var(--green-pale); }
+    .mau-don-icon {
+      width: 38px; height: 38px;
+      background: var(--green-pale); border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      color: var(--green-main); font-size: 1rem; flex-shrink: 0;
+    }
+    .mau-don-info { flex: 1; min-width: 0; }
+    .mau-don-name { font-weight: 600; font-size: .95rem; color: var(--text-dark); }
+    .mau-don-note { font-size: .78rem; color: #6b8c75; margin-top: 2px; }
+
+    /* MODAL */
+    .dev-modal-overlay {
+      display: none;
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,.45);
+      z-index: 9999;
+      align-items: center;
+      justify-content: center;
+    }
+    .dev-modal-overlay.show { display: flex; }
+    .dev-modal {
+      background: #fff;
+      border-radius: 16px;
+      padding: 32px 36px;
+      text-align: center;
+      max-width: 360px;
+      width: 90%;
+      box-shadow: 0 10px 40px rgba(0,0,0,.25);
+      animation: popIn .2s ease;
+    }
+    @keyframes popIn {
+      from { transform: scale(.85); opacity: 0; }
+      to   { transform: scale(1);   opacity: 1; }
+    }
+    .dev-modal i { font-size: 2.5rem; color: var(--green-main); margin-bottom: 14px; display: block; }
+    .dev-modal h3 { font-size: 1.1rem; font-weight: 800; color: var(--text-dark); margin-bottom: 6px; }
+    .dev-modal p  { font-size: .9rem; color: #6b8c75; margin-bottom: 20px; }
+    .dev-modal button {
+      background: var(--green-main); color: #fff;
+      border: none; border-radius: 50px;
+      padding: 10px 28px; font-size: .95rem;
+      font-weight: 700; cursor: pointer;
+      font-family: inherit;
+    }
+    .dev-modal button:hover { background: var(--green-dark); }
+
+    /* BOTTOM PANEL */
+    .bottom-panel {
+      position: fixed;
+      bottom: 0; left: 0; right: 0;
+      background: #fff;
+      border-top: 3px solid var(--green-dark);
+      box-shadow: 0 -4px 20px rgba(0,0,0,.12);
+      z-index: 100;
+    }
+    .info-panel {
+      display: flex;
+      align-items: center;
+      padding: 14px 28px;
+      gap: 20px;
+    }
+    .info-panel-icon {
+      width: 46px; height: 46px;
+      background: var(--green-main);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      color: #fff; font-size: 1.1rem; flex-shrink: 0;
+    }
+    .info-panel-title {
+      font-weight: 700; color: var(--green-dark);
+      font-size: .95rem; margin-bottom: 2px;
+    }
+    .info-panel-fields {
+      display: flex; gap: 24px; flex-wrap: wrap;
+    }
+    .info-field { font-size: .88rem; color: #555; }
+    .info-field strong { color: var(--text-dark); margin-right: 6px; }
+    .info-field span { color: #aaa; font-style: italic; }
+    .info-panel-btn {
+      margin-left: auto;
+      background: linear-gradient(135deg, var(--green-main), var(--green-dark));
+      color: #fff; border: none; border-radius: 50px;
+      padding: 12px 28px; font-size: .95rem;
+      font-weight: 700; cursor: pointer; font-family: inherit;
+      display: flex; align-items: center; gap: 8px;
+      box-shadow: 0 4px 14px rgba(36,107,53,.35);
+      transition: all .2s;
+    }
+    .info-panel-btn:hover { transform: translateY(-1px); box-shadow: 0 6px 18px rgba(36,107,53,.45); }
+    /* THÔNG TIN CHUNG MODAL */
+    .ttc-overlay {
+      display: none;
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,.55);
+      z-index: 9998;
+      align-items: center;
+      justify-content: center;
+    }
+    .ttc-overlay.show { display: flex; }
+    .ttc-modal {
+      background: #fff;
+      border-radius: 16px;
+      width: 90%; max-width: 520px;
+      box-shadow: 0 16px 50px rgba(0,0,0,.25);
+      animation: popIn .2s ease;
+      overflow: hidden;
+    }
+    .ttc-header {
+      display: flex; align-items: center;
+      justify-content: space-between;
+      padding: 20px 24px 16px;
+      border-bottom: 1px solid #eee;
+    }
+    .ttc-header h3 { font-size: 1.1rem; font-weight: 800; color: var(--text-dark); }
+    .ttc-close {
+      background: none; border: none; font-size: 1.2rem;
+      cursor: pointer; color: #999; transition: color .15s;
+    }
+    .ttc-close:hover { color: #333; }
+    .ttc-body { padding: 20px 24px; display: flex; flex-direction: column; gap: 14px; }
+    .ttc-field label {
+      display: block; font-size: .85rem; font-weight: 600;
+      color: #444; margin-bottom: 6px;
+    }
+    .ttc-field .req { color: #e53935; }
+    .ttc-field select {
+      width: 100%; padding: 11px 14px;
+      border: 1.5px solid #d8e8dc; border-radius: 8px;
+      font-size: .95rem; font-family: inherit;
+      color: var(--text-dark); background: #fff;
+      outline: none; cursor: pointer;
+      appearance: auto;
+      transition: border-color .2s;
+    }
+    .ttc-field select:focus { border-color: var(--green-main); }
+    .ttc-footer {
+      display: flex; align-items: center;
+      justify-content: space-between;
+      padding: 16px 24px;
+      border-top: 1px solid #eee;
+    }
+    .ttc-btn-cancel {
+      background: none; border: 1.5px solid #ccc;
+      color: #555; padding: 10px 24px;
+      border-radius: 50px; font-size: .95rem;
+      font-weight: 600; cursor: pointer; font-family: inherit;
+      transition: all .18s;
+    }
+    .ttc-btn-cancel:hover { border-color: #999; color: #222; }
+    .ttc-btn-confirm {
+      background: linear-gradient(135deg, #e07b39, #c45f1e);
+      color: #fff; border: none;
+      padding: 10px 30px;
+      border-radius: 50px; font-size: .95rem;
+      font-weight: 700; cursor: pointer; font-family: inherit;
+      box-shadow: 0 4px 14px rgba(196,95,30,.35);
+      transition: all .18s;
+    }
+    .ttc-btn-confirm:hover { transform: translateY(-1px); box-shadow: 0 6px 18px rgba(196,95,30,.45); }
+  </style>
+</head>
+<body>
+
+<header>
+  <img src="{% static 'QRcodes/img/file_moi/ararlogo-preview.png' %}" alt="Logo" class="logo">
+  <div class="header-title">
+    TRUNG TÂM PHỤC VỤ HÀNH CHÍNH CÔNG<br>
+    <span style="font-size:.85rem;font-weight:500;color:rgba(255,203,5,.8);">Phường Xuân Hòa</span>
+  </div>
+  <a href="{% url 'customer:chon-dich-vu' %}" class="back-btn">
+    <i class="fas fa-arrow-left"></i> Quay lại
+  </a>
+</header>
+
+<div class="page-wrapper">
+
+  <!-- TAB BAR -->
+  <div class="tab-bar">
+    <button class="tab-btn active" onclick="switchTab('thu-tuc')" id="tab-thu-tuc">
+      <i class="fas fa-list-ul"></i> Thủ tục phổ biến
+    </button>
+    <button class="tab-btn" onclick="switchTab('tim-kiem')" id="tab-tim-kiem">
+      <i class="fas fa-magnifying-glass"></i> Tìm kiếm
+    </button>
+    <button class="tab-btn" onclick="switchTab('mau-don')" id="tab-mau-don">
+      <i class="fas fa-file-alt"></i> Mẫu đơn
+    </button>
+  </div>
+
+  <!-- TAB 1: THỦ TỤC PHỔ BIẾN -->
+  <div class="tab-pane active" id="pane-thu-tuc">
+    <div class="proc-list">
+      <div class="proc-scroll" id="list-thu-tuc">
+
+        <div class="proc-item ket-hon-item">
+          <div class="proc-bullet"></div>
+          <div class="proc-name">1. (1.000894) Thủ tục đăng ký kết hôn</div>
+          <div class="proc-actions">
+            <a href="{% url 'customer:dang-ky-ket-hon' %}" class="btn-sm btn-fill-sm ket-hon-btn"><i class="fas fa-pen"></i> Điền thông tin</a>
+          </div>
+        </div>
+        <div class="proc-item">
+          <div class="proc-bullet"></div>
+          <div class="proc-name">2. (1.000782) Cấp giấy xác nhận tình trạng hôn nhân</div>
+          <div class="proc-actions">
+            <button class="btn-sm btn-fill-sm" onclick="showDevModal()"><i class="fas fa-pen"></i> Điền thông tin</button>
+          </div>
+        </div>
+        <div class="proc-item">
+          <div class="proc-bullet"></div>
+          <div class="proc-name">3. (1.000113) Đăng ký khai sinh</div>
+          <div class="proc-actions">
+            <button class="btn-sm btn-fill-sm" onclick="showDevModal()"><i class="fas fa-pen"></i> Điền thông tin</button>
+          </div>
+        </div>
+        <div class="proc-item">
+          <div class="proc-bullet"></div>
+          <div class="proc-name">4. (1.000146) Đăng ký khai tử</div>
+          <div class="proc-actions">
+            <button class="btn-sm btn-fill-sm" onclick="showDevModal()"><i class="fas fa-pen"></i> Điền thông tin</button>
+          </div>
+        </div>
+        <div class="proc-item">
+          <div class="proc-bullet"></div>
+          <div class="proc-name">5. (1.003292) Đăng ký thường trú</div>
+          <div class="proc-actions">
+            <button class="btn-sm btn-fill-sm" onclick="showDevModal()"><i class="fas fa-pen"></i> Điền thông tin</button>
+          </div>
+        </div>
+        <div class="proc-item">
+          <div class="proc-bullet"></div>
+          <div class="proc-name">6. (2.000804) Thay đổi thông tin trong cơ sở dữ liệu về cư trú</div>
+          <div class="proc-actions">
+            <button class="btn-sm btn-fill-sm" onclick="showDevModal()"><i class="fas fa-pen"></i> Điền thông tin</button>
+          </div>
+        </div>
+        <div class="proc-item">
+          <div class="proc-bullet"></div>
+          <div class="proc-name">7. (1.000256) Đăng ký nhận cha, mẹ, con</div>
+          <div class="proc-actions">
+            <button class="btn-sm btn-fill-sm" onclick="showDevModal()"><i class="fas fa-pen"></i> Điền thông tin</button>
+          </div>
+        </div>
+        <div class="proc-item">
+          <div class="proc-bullet"></div>
+          <div class="proc-name">8. (1.000267) Đăng ký giám hộ</div>
+          <div class="proc-actions">
+            <button class="btn-sm btn-fill-sm" onclick="showDevModal()"><i class="fas fa-pen"></i> Điền thông tin</button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB 2: TÌM KIẾM -->
+  <div class="tab-pane" id="pane-tim-kiem">
+    <div class="search-wrap">
+      <i class="fas fa-magnifying-glass"></i>
+      <input type="text" id="search-input" placeholder="Nhập từ khóa để tìm thủ tục hoặc mẫu đơn..."
+             oninput="doSearch(this.value)">
+    </div>
+    <div class="proc-list">
+      <div class="proc-scroll" id="search-results">
+        <div style="padding:28px;text-align:center;color:#aaa;">
+          <i class="fas fa-magnifying-glass" style="font-size:2rem;margin-bottom:10px;display:block;"></i>
+          Nhập từ khóa để bắt đầu tìm kiếm
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB 3: MẪU ĐƠN -->
+  <div class="tab-pane" id="pane-mau-don">
+    <div class="proc-list">
+      <div class="proc-scroll">
+
+        <div class="mau-don-item">
+          <div class="mau-don-icon"><i class="fas fa-file-alt"></i></div>
+          <div class="mau-don-info">
+            <div class="mau-don-name">Tờ khai đăng ký kết hôn</div>
+            <div class="mau-don-note">Mẫu số 02 — Thông tư 04/2020/TT-BTP</div>
+          </div>
+          <div class="proc-actions">
+            <a href="{% url 'customer:dang-ky-ket-hon' %}" class="btn-sm btn-fill-sm"><i class="fas fa-pen"></i> Điền thông tin</a>
+          </div>
+        </div>
+        <div class="mau-don-item">
+          <div class="mau-don-icon"><i class="fas fa-file-alt"></i></div>
+          <div class="mau-don-info">
+            <div class="mau-don-name">Tờ khai cấp giấy xác nhận tình trạng hôn nhân</div>
+            <div class="mau-don-note">Mẫu số 07 — Thông tư 04/2020/TT-BTP</div>
+          </div>
+          <div class="proc-actions">
+            <button class="btn-sm btn-fill-sm" onclick="showDevModal()"><i class="fas fa-pen"></i> Điền thông tin</button>
+          </div>
+        </div>
+        <div class="mau-don-item">
+          <div class="mau-don-icon"><i class="fas fa-file-alt"></i></div>
+          <div class="mau-don-info">
+            <div class="mau-don-name">Tờ khai đăng ký khai sinh</div>
+            <div class="mau-don-note">Mẫu số 01 — Thông tư 04/2020/TT-BTP</div>
+          </div>
+          <div class="proc-actions">
+            <button class="btn-sm btn-fill-sm" onclick="showDevModal()"><i class="fas fa-pen"></i> Điền thông tin</button>
+          </div>
+        </div>
+        <div class="mau-don-item">
+          <div class="mau-don-icon"><i class="fas fa-file-alt"></i></div>
+          <div class="mau-don-info">
+            <div class="mau-don-name">Tờ khai đăng ký khai tử</div>
+            <div class="mau-don-note">Mẫu số 03 — Thông tư 04/2020/TT-BTP</div>
+          </div>
+          <div class="proc-actions">
+            <button class="btn-sm btn-fill-sm" onclick="showDevModal()"><i class="fas fa-pen"></i> Điền thông tin</button>
+          </div>
+        </div>
+        <div class="mau-don-item">
+          <div class="mau-don-icon"><i class="fas fa-file-alt"></i></div>
+          <div class="mau-don-info">
+            <div class="mau-don-name">Tờ khai đăng ký giám hộ</div>
+            <div class="mau-don-note">Mẫu số 09 — Thông tư 04/2020/TT-BTP</div>
+          </div>
+          <div class="proc-actions">
+            <button class="btn-sm btn-fill-sm" onclick="showDevModal()"><i class="fas fa-pen"></i> Điền thông tin</button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+</div><!-- end page-wrapper -->
+
+<!-- MODAL: THÔNG TIN CHUNG -->
+<div class="ttc-overlay" id="ttc-overlay" onclick="closeThongTinChung()">
+  <div class="ttc-modal" onclick="event.stopPropagation()">
+    <div class="ttc-header">
+      <h3>Thông tin chung</h3>
+      <button class="ttc-close" onclick="closeThongTinChung()">✕</button>
+    </div>
+    <div class="ttc-body">
+      <div class="ttc-field">
+        <label>Cấp thực hiện <span class="req">*</span></label>
+        <select id="ttc-cap">
+          <option>Cấp Xã</option>
+          <option>Cấp Huyện</option>
+          <option>Cấp Tỉnh</option>
+        </select>
+      </div>
+      <div class="ttc-field">
+        <label>Tỉnh thành <span class="req">*</span></label>
+        <select id="ttc-tinh">
+          <option>Tỉnh Đồng Nai</option>
+          <option>Thành phố Hà Nội</option>
+          <option>Thành phố Hồ Chí Minh</option>
+        </select>
+      </div>
+      <div class="ttc-field">
+        <label>Thủ tục hành chính <span class="req">*</span></label>
+        <select id="ttc-thu-tuc">
+          <option>Thủ tục đăng ký kết hôn</option>
+        </select>
+      </div>
+      <div class="ttc-field">
+        <label>Cơ quan thực hiện <span class="req">*</span></label>
+        <select id="ttc-co-quan">
+          <option>UBND Phường Xuân Hòa</option>
+          <option>UBND phường Trần Biên, Tỉnh Đồng Nai</option>
+        </select>
+      </div>
+      <div class="ttc-field">
+        <label>Đơn vị tiếp nhận <span class="req">*</span></label>
+        <select id="ttc-don-vi">
+          <option value="">Tìm kiếm...</option>
+          <option>Bộ phận Một cửa Phường Xuân Hòa</option>
+        </select>
+      </div>
+      <div class="ttc-field">
+        <label>Đối tượng thực hiện</label>
+        <select id="ttc-doi-tuong">
+          <option>Làm thủ tục cho bản thân</option>
+          <option>Làm thủ tục cho người khác</option>
+        </select>
+      </div>
+    </div>
+    <div class="ttc-footer">
+      <button class="ttc-btn-cancel" onclick="closeThongTinChung()">Hủy</button>
+      <button class="ttc-btn-confirm" onclick="confirmThongTinChung()">Xác nhận</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL -->
+<div class="dev-modal-overlay" id="dev-modal-overlay" onclick="hideDevModal()">
+  <div class="dev-modal" onclick="event.stopPropagation()">
+    <i class="fas fa-tools"></i>
+    <h3>Chức năng đang được phát triển</h3>
+    <p>Tính năng này sẽ sớm được hoàn thiện. Vui lòng quay lại sau!</p>
+    <button onclick="hideDevModal()">Đã hiểu</button>
+  </div>
+</div>
+
+<!-- BOTTOM PANEL -->
+<div class="bottom-panel">
+  <div class="info-panel">
+    <div class="info-panel-icon"><i class="fas fa-user-check"></i></div>
+    <div>
+      <div class="info-panel-title">Thông tin thực hiện</div>
+      <div class="info-panel-fields">
+        <div class="info-field">
+          <strong>Thủ tục:</strong>
+          <span id="selected-proc">Chưa chọn thủ tục</span>
+        </div>
+        <div class="info-field">
+          <strong>Quầy:</strong>
+          <span id="selected-counter">Chưa chọn thủ tục</span>
+        </div>
+      </div>
+    </div>
+    <button class="info-panel-btn" onclick="alert('Vui lòng chọn một thủ tục để tiếp tục.')">
+      <i class="fas fa-arrow-right"></i> Tiếp tục
+    </button>
+  </div>
+</div>
+
+<script>
+  // All procedures data for search
+  const allProcs = [
+    { name: '1. (1.000894) Thủ tục đăng ký kết hôn', counter: 'Tư pháp' },
+    { name: '2. (1.000782) Cấp giấy xác nhận tình trạng hôn nhân', counter: 'Tư pháp' },
+    { name: '3. (1.000113) Đăng ký khai sinh', counter: 'Tư pháp' },
+    { name: '4. (1.000146) Đăng ký khai tử', counter: 'Tư pháp' },
+    { name: '5. (1.003292) Đăng ký thường trú', counter: 'Công an' },
+    { name: '6. (2.000804) Thay đổi thông tin trong cơ sở dữ liệu về cư trú', counter: 'Công an' },
+    { name: '7. (1.000256) Đăng ký nhận cha, mẹ, con', counter: 'Tư pháp' },
+    { name: '8. (1.000267) Đăng ký giám hộ', counter: 'Tư pháp' },
+  ];
+
+  // Đóng modal khi browser restore trang từ bfcache (nhấn back)
+  window.addEventListener('pageshow', function() {
+    closeThongTinChung();
+  });
+
+  function openThongTinChung() {
+    document.getElementById('ttc-overlay').classList.add('show');
+  }
+  function closeThongTinChung() {
+    document.getElementById('ttc-overlay').classList.remove('show');
+  }
+  function confirmThongTinChung() {
+    const donVi = document.getElementById('ttc-don-vi').value;
+    if (!donVi) {
+      document.getElementById('ttc-don-vi').style.borderColor = '#e53935';
+      return;
+    }
+    // Lưu thông tin chung vào sessionStorage
+    sessionStorage.setItem('ttc_cap',      document.getElementById('ttc-cap').value);
+    sessionStorage.setItem('ttc_tinh',     document.getElementById('ttc-tinh').value);
+    sessionStorage.setItem('ttc_thu_tuc',  document.getElementById('ttc-thu-tuc').value);
+    sessionStorage.setItem('ttc_co_quan',  document.getElementById('ttc-co-quan').value);
+    sessionStorage.setItem('ttc_don_vi',   donVi);
+    sessionStorage.setItem('ttc_doi_tuong',document.getElementById('ttc-doi-tuong').value);
+    // Navigate to workspace
+    window.location.href = "{% url 'customer:dang-ky-ket-hon' %}";
+  }
+
+  function showDevModal() {
+    document.getElementById('dev-modal-overlay').classList.add('show');
+  }
+  function hideDevModal() {
+    document.getElementById('dev-modal-overlay').classList.remove('show');
+  }
+
+  function switchTab(tab) {
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
+    document.getElementById('tab-' + tab).classList.add('active');
+    document.getElementById('pane-' + tab).classList.add('active');
+  }
+
+  function selectProc(el, name, counter) {
+    document.querySelectorAll('.proc-item').forEach(i => i.classList.remove('selected'));
+    el.classList.add('selected');
+    document.getElementById('selected-proc').textContent = name;
+    document.getElementById('selected-counter').textContent = counter;
+    document.getElementById('selected-proc').style.color = '#1a5c2a';
+    document.getElementById('selected-proc').style.fontStyle = 'normal';
+    document.getElementById('selected-counter').style.color = '#1a5c2a';
+    document.getElementById('selected-counter').style.fontStyle = 'normal';
+  }
+
+  function doSearch(query) {
+    const container = document.getElementById('search-results');
+    if (!query.trim()) {
+      container.innerHTML = '<div style="padding:28px;text-align:center;color:#aaa;"><i class="fas fa-magnifying-glass" style="font-size:2rem;margin-bottom:10px;display:block;"></i>Nhập từ khóa để bắt đầu tìm kiếm</div>';
+      return;
+    }
+    const q = query.toLowerCase();
+    const filtered = allProcs.filter(p => p.name.toLowerCase().includes(q));
+    if (!filtered.length) {
+      container.innerHTML = '<div style="padding:28px;text-align:center;color:#aaa;">Không tìm thấy thủ tục phù hợp.</div>';
+      return;
+    }
+    container.innerHTML = filtered.map(p => `
+      <div class="proc-item" onclick="selectProc(this, '${p.name.replace(/^\d+\.\s+/,'')}', '${p.counter}')">
+        <div class="proc-bullet"></div>
+        <div class="proc-name">${p.name}</div>
+        <div class="proc-actions">
+          <button class="btn-sm btn-fill-sm"><i class="fas fa-pen"></i> Điền thông tin</button>
+          <button class="btn-sm btn-print-sm"><i class="fas fa-print"></i> In mẫu đơn</button>
+        </div>
+      </div>`).join('');
+  }
+</script>
+</body>
+</html>

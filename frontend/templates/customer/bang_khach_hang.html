@@ -1,0 +1,335 @@
+{%load static%}
+
+<head>
+  <meta charset="utf-8">
+  <title>Bảng khách hàng</title>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport">
+  <meta content="" name="keywords">
+  <meta content="" name="description">
+
+
+  <!-- Google Fonts -->
+  <link
+    href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,500,600,700,700i|Montserrat:300,400,500,600,700"
+    rel="stylesheet">
+
+  <!-- Bootstrap CSS File -->
+  <link href="{% static 'QRcodes/vendor/bootstrap/css/bootstrap.min.css' %}" rel="stylesheet">
+  <link href="{% static 'QRcodes/lib/bootstrap/css/bootstrap.min.css' %}" rel="stylesheet">
+
+  <!-- Libraries CSS Files -->
+  <link href="{% static 'QRcodes/lib/font-awesome/css/font-awesome.min.css' %}" rel="stylesheet">
+  <link href="{% static 'QRcodes/lib/animate/animate.min.css' %}" rel="stylesheet">
+  <link href="{% static 'QRcodes/lib/animate/animate.min.css' %}" rel="stylesheet">
+  <link href="{% static 'QRcodes/lib/owlcarousel/assets/owl.carousel.min.css' %}" rel="stylesheet">
+  <link href="{% static 'QRcodes/lib/lightbox/css/lightbox.min.css' %}" rel="stylesheet">
+
+  <!-- Main Stylesheet File -->
+  <link href="{% static 'QRcodes/css/style.css'%}" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+  <link href="assets/img/favicon.png" rel="icon">
+  <link href="assets/img/apple-touch-icon.png" rel="apple-touch-icon">
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&family=Poppins:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&family=Source+Sans+Pro:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400;1,600;1,700&display=swap"
+    rel="stylesheet">
+
+  <!-- Vendor CSS Files -->
+
+  <link href="{% static 'QRcodes/vendor/bootstrap-icons/bootstrap-icons.css' %}" rel="stylesheet">
+  <link href="{% static 'QRcodes/vendor/aos/aos.css' %}" rel="stylesheet">
+  <link href="{% static 'QRcodes/vendor/glightbox/css/glightbox.min.css' %}" rel="stylesheet">
+  <link href="{% static 'QRcodes/vendor/swiper/swiper-bundle.min.css' %}" rel="stylesheet">
+
+  <link href="{% static 'QRcodes/css/variables.css' %}" rel="stylesheet">
+
+  <!-- Template Main CSS File -->
+  <link href="{% static 'QRcodes/css/main.css' %}" rel="stylesheet">
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="keywords"
+    content="INTUITIVE, Your design is your passion, Key Features, Pricing Plan, Empire State Building">
+  <meta name="description" content="">
+  <title>Page 1</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+  <!-- SweetAlert2 -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/limonte-sweetalert2/7.2.0/sweetalert2.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/limonte-sweetalert2/7.2.0/sweetalert2.all.min.js"></script>
+
+  <link rel="stylesheet" href="{% static 'QRcodes/css/nicepage.css' %}" media="screen">
+
+  <script class="u-script" type="text/javascript" src="{% static 'QRcodes/js/jquery.js' %}" defer=""></script>
+  <script class="u-script" type="text/javascript" src="{% static 'QRcodes/js/nicepage.js' %}" defer=""></script>
+  <meta name="generator" content="Nicepage 5.11.4, nicepage.com">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/limonte-sweetalert2/7.2.0/sweetalert2.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/limonte-sweetalert2/7.2.0/sweetalert2.all.min.js"></script>
+  <link id="u-theme-google-font" rel="stylesheet"
+    href="https://fonts.googleapis.com/css?family=Roboto:100,100i,300,300i,400,400i,500,500i,700,700i,900,900i|Open+Sans:300,300i,400,400i,500,500i,600,600i,700,700i,800,800i">
+
+  <script class="u-script" type="text/javascript" src="{% static 'QRcodes/js/jquery.js' %}" defer=""></script>
+  <script class="u-script" type="text/javascript" src="{% static 'QRcodes/js/nicepage.js' %}" defer=""></script>
+
+  <!-- SweetAlert2 -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/limonte-sweetalert2/7.2.0/sweetalert2.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/limonte-sweetalert2/7.2.0/sweetalert2.all.min.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/limonte-sweetalert2/7.2.0/sweetalert2.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/limonte-sweetalert2/7.2.0/sweetalert2.all.min.js"></script>
+  <link id="u-theme-google-font" rel="stylesheet"
+    href="https://fonts.googleapis.com/css?family=Roboto:100,100i,300,300i,400,400i,500,500i,700,700i,900,900i|Open+Sans:300,300i,400,400i,500,500i,600,600i,700,700i,800,800i">
+  <meta charset="utf-8">
+  <meta name="keywords"
+    content="INTUITIVE, Your design is your passion, Key Features, Pricing Plan, Empire State Building">
+  <meta name="description" content="">
+  <link rel="stylesheet" href=" {% static 'QRcodes/css/nicepage_2.css' %}" media="screen">
+  <link rel="stylesheet" href="{% static 'QRcodes/css/Page-2.css' %}" media="screen">
+  <script class="u-script" type="text/javascript" src=" {% static 'QRcodes/js/jquery_2.js' %}" defer=""></script>
+  <script class=" u-script" type="text/javascript" src="{% static 'QRcodes/js/nicepage_2.js' %}" defer=""></script>
+  <meta name=" generator" content="Nicepage 5.11.4, nicepage.com">
+  <link id="u-theme-google-font" rel="stylesheet"
+    href="https://fonts.googleapis.com/css?family=Roboto:100,100i,300,300i,400,400i,500,500i,700,700i,900,900i|Open+Sans:300,300i,400,400i,500,500i,600,600i,700,700i,800,800i">
+  <link id="u-page-google-font" rel="stylesheet"
+    href="https://fonts.googleapis.com/css?family=Roboto+Slab:100,200,300,400,500,600,700,800,900">
+
+  <link href="{% static 'QRcodes/css/main.css' %}" rel="stylesheet">
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&family=Poppins:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&family=Source+Sans+Pro:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400;1,600;1,700&display=swap"
+    rel="stylesheet">
+
+  <script type="application/ld+json">{
+  "@context": "http://schema.org",
+  "@type": "Organization",
+  "name": "",
+  "logo": "images/ararlogo.png"
+}</script>
+  <meta name="theme-color" content="#478ac9">
+  <meta property="og:title" content="Page 1">
+  <meta property="og:type" content="website">
+  <meta data-intl-tel-input-cdn-path="intlTelInput/">
+
+</head>
+
+<header style="background:  #cd181e; height: 120px;" id="header">
+  <div class="container">
+    <div class="row">
+      <div class="col-2 logo float-left">
+        <a href="{% url 'customer:trang-chu' %}" class="scrollto"><img style='margin: 20px 0;'
+            src="{% static 'QRcodes/img/file_moi/ararlogo-preview.png' %}" alt="" class="img-fluid"></a>
+      </div>
+      <div style="width: 80px; ;" class="col-8 text-center mx-auto">
+        <a href="{% url 'customer:trang-chu' %}" class="">
+            <img style='margin: -10px 0px 0 -400px; max-height: 100px;' src="{% static 'Qrcodes/img/file_moi/logo.png' %}" alt="" class="img-fluid">
+        </a>
+        <span style="color: #FFCB05; font-family: 'Be Vietnam Pro'; position: absolute; top: 0; ">
+            TRUNG TÂM PHỤC VỤ HÀNH CHÍNH CÔNG
+            <br> PHƯỜNG XUÂN HÒA
+        </span>
+      </div>  
+      <div class="col-2 logo float-right">
+        <a href="{% url 'customer:trang-chu' %}" class="scrollto"><img style="max-height: 90px; margin: 0px 0 0 100px;"
+            src="{% static 'QRcodes/img/file_moi/lo.png' %}" alt="" class="img-fluid float-right"></a>
+      </div>
+    </div>
+  </div>
+</header>
+
+<body onload="JavaScript:AutoRefresh(20000);">
+  <style>
+    .fixTableHead { 
+      overflow-y: auto; 
+      height: 110px; 
+    } 
+    .fixTableHead thead th { 
+      position: sticky; 
+      top: 0; 
+    } 
+    table { 
+      border-collapse: collapse;         
+      width: 100%; 
+    } 
+    th, td { 
+      padding: 8px 15px; 
+      border: 2px solid #529432; 
+    } 
+    th { 
+      background: #ABDD93; 
+      font-size: 48px; /* Increase font size for table headers */
+      text-align: center;
+    }
+    td {
+      font-size: 46px; /* Increase font size for table cells */
+      width: 500px;
+      background-color: #42B5A6;
+    }
+    img {
+      max-width: 100%;
+      height: auto;
+    }
+    div.scroll {
+      background-color: white;
+      width: 600px;
+      height: 150px;
+      overflow: auto;
+      text-align: justify;
+      padding: 20px;
+    }
+    body {
+      background-size: 100% 100%;
+      max-width: 100%;
+    }
+    span {
+      font-size: 32px; /* Increase font size for span element */
+      color: #FFCB05;
+      font-family: 'Be Vietnam Pro';
+      position: absolute;
+      top: 0;
+    }
+    #services {
+      padding: 30px 0 30px 0;
+      margin-top: -80px;
+    }
+    @media (min-width: 1200px) {
+      .container {
+        max-width: 2160px;
+      }
+    }
+</style>
+
+
+  <main class="mw-100" id="main">
+    <section style="margin-top: 100px;" class="u-align-center u-clearfix u-image u-valign-middle u-section-1" id="carousel_127e"
+      data-image-width="5000" data-image-height="3333">
+
+      <div class="u-clearfix u-gutter-0 u-layout-wrap u-layout-wrap-1">
+        <div class="container ">
+          <div class="u-container-layout u-container-layout-1">
+            <div class="row">
+              <div class="col-xl-12 col-md-12 mw-100 ">
+                <section id="services" class="services">
+                  </span>
+                  <div class="row text-center ">
+                    <div class="col-xl-12 col-lg-12 col-md-12 text-center">
+                      <div class="table-wrapper-scroll-y my-custom-scrollbar">
+                        <table class=" table table-bordered table-striped mb-0  ">
+
+                          <thead>
+
+                            <tr class="table-primary">
+                              <!-- <th scope="col">DỊCH VỤ</th> -->
+                              <th scope="col">SỐ THỨ TỰ</th>
+                              <th scope="col">SỐ TIẾP THEO</th>
+                            </tr>
+                            
+                          </thead>
+                          <tbody>
+                            {% for dich_vu, danh_sach_khach_hang in grouped_khach_hang_list %}
+                            
+                            <tr style="background-color: #3f73bc;" class="">
+                              <!-- <td style="background-color: #3f73bc;" class="text-light font-weight-bold  ">  {{dich_vu}}</td>  -->
+                              <td style="background-color: #3f73bc;" class="text-light font-weight-bold  ">{{danh_sach_khach_hang.0.ticket_number}} - {{danh_sach_khach_hang.0.name}}   </td>
+                              <td style="background-color: #3f73bc;" class="text-light font-weight-bold  ">{{danh_sach_khach_hang.1.ticket_number}} - {{danh_sach_khach_hang.1.name}} </td>
+                            </tr>
+                            {% endfor %}
+                          
+                    
+
+
+                          </tbody>
+
+                        </table>
+                      </div>
+
+                   
+
+                    </div>
+                    
+                  </div>
+
+                </section>
+              </div>
+
+
+            </div>
+          </div>
+        </div>
+
+
+      </div>
+
+    </section>
+
+
+</body>
+
+
+
+</html>
+<script type="text/JavaScript">
+
+     function AutoRefresh( t ) {
+        setTimeout("location.reload(true);", t);
+     }
+ 
+</script>
+
+<script src="{% static 'QRcodes/lib/jquery/jquery.min.js' %}"></script>
+<script src="{% static 'QRcodes/lib/jquery/jquery-migrate.min.js' %} "></script>
+<script src="{% static 'QRcodes/lib/bootstrap/js/bootstrap.bundle.min.js' %} "></script>
+<script src="{% static 'QRcodes/lib/easing/easing.min.js' %} "></script>
+<script src="{% static 'QRcodes/lib/mobile-nav/mobile-nav.js' %}"></script>
+<script src="{% static 'QRcodes/lib/wow/wow.min.js' %}"></script>
+<script src="{% static 'QRcodes/lib/waypoints/waypoints.min.js' %} "></script>
+<script src="{% static 'QRcodes/lib/counterup/counterup.min.js' %} "></script>
+<script src="{% static 'QRcodes/lib/owlcarousel/owl.carousel.min.js' %}"></script>
+<script src="{% static 'QRcodes/lib/isotope/isotope.pkgd.min.js' %}"></script>
+<script src="{% static 'QRcodes/lib/lightbox/js/lightbox.min.js' %}"></script>
+<script src="{% static 'QRcodes/contactform/contactform.js' %}"></script>
+
+
+
+<!-- Template Main Javascript File -->
+<script src="{% static 'QRcodes/js/main.js' %}"></script>
+
+
+
+<script>
+
+
+  const jumpButton = document.getElementById('jumpButton');
+  const targetInput = document.querySelector('.target-input');
+
+  jumpButton.addEventListener('click', function () {
+    targetInput.focus();
+  });
+  const inputField = document.getElementById("input-field");
+  const submitButton = document.getElementById("submit-button");
+  const form = document.getElementById("my-form");
+
+  inputField.addEventListener("keypress", function (event) {
+    if (event.key === "Enter") {
+      submitButton.click();
+    }
+  });
+
+  submitButton.addEventListener("click", function () {
+    form.submit();
+  });
+
+
+<!-- Vendor JS Files -->
+<script src="{% static 'QRcodes/vendor/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+<script src="{% static 'QRcodes/vendor/aos/aos.js' %}"></script>
+<script src="{% static 'QRcodes/vendor/glightbox/js/glightbox.min.js' %}"></script>
+<script src="{% static 'QRcodes/vendor/isotope-layout/isotope.pkgd.min.js' %}"></script>
+<script src="{% static 'QRcodes/vendor/swiper/swiper-bundle.min.js' %}"></script>
+<script src="{% static 'QRcodes/vendor/php-email-form/validate.js' %}"></script>
+
+<!-- Template Main JS File -->
+<script src="{% static 'QRcodes/js/main.js' %}"></script>

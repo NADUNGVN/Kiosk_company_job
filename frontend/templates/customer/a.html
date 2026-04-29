@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Notification Example</title>
+<script>
+window.onload = function() {
+    if (!("Notification" in window)) {
+        alert("Trình duyệt của bạn không hỗ trợ Notification API!");
+    } else if (Notification.permission !== 'granted') {
+        Notification.requestPermission().then(function(permission) {
+            if (permission === 'granted') {
+                // Không cần hiển thị thông báo ở đây
+            }
+        });
+    }
+
+    function showNotification() {
+        var notification = new Notification("Tiêu đề thông báo", {
+            icon: "path/to/icon.png",
+            body: "Nội dung thông báo ở đây"
+        });
+
+        // Xử lý sự kiện khi thông báo được nhấp
+        notification.onclick = function() {
+            alert("Thông báo đã được nhấp!");
+        };
+    }
+};
+</script>
+</head>
+<body>
+<button onclick="showNotification()">Hiển thị thông báo</button>
+<!-- Nội dung trang web -->
+</body>
+</html>

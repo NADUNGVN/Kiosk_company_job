@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Feedback Data</title>
+<!-- Bootstrap CSS -->
+<link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+<!-- jQuery UI CSS -->
+<link href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.css" rel="stylesheet">
+</head>
+<style>
+    .container {
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        padding: 20px;
+        background-color: #f9f9f9;
+    }
+    
+    .btn {
+        border-radius: 50px;
+        padding: 10px 20px;
+    }
+    
+    .btn-primary {
+        background-color: #007bff;
+        border: none;
+    }
+    
+    .btn-success {
+        background-color: #28a745;
+        border: none;
+    }
+    
+    .table {
+        border-radius: 8px;
+        overflow: hidden;
+    }
+    
+    .table thead th {
+        background-color: #007bff;
+        color: #fff;
+    }
+    
+    .table tfoot td {
+        font-weight: bold;
+    }
+    
+    .table-striped tbody tr:nth-of-type(odd) {
+        background-color: #f2f2f2;
+    }
+    
+    .table-striped tbody tr:hover {
+        background-color: #e9ecef;
+    }
+    .btn-primary:hover, .btn-success:hover {
+        opacity: 0.9;
+        cursor: pointer;
+    }
+    
+    .btn-primary:focus, .btn-success:focus {
+        outline: none;
+        box-shadow: 0 0 0 2px rgba(38, 143, 255, 0.5); /* Adjust the color as needed */
+    }
+    h2 {
+        font-size: 24px;
+        color: #333;
+        border-bottom: 2px solid #007bff;
+        padding-bottom: 10px;
+        margin-bottom: 20px;
+    }
+    
+    p {
+        font-size: 16px;
+        color: #666;
+    }
+    
+    .row {
+        margin-bottom: 20px;
+    }
+            
+</style>
+<body>
+    <div class="container mt-5">
+        <h2>Thống kê đánh giá</h2>
+        <p>Filter by Date Range:</p>
+        <div class="row mb-4">
+            <div class="col">
+               Từ: <input type="date" id="startDate" class="form-control">
+            </div>
+            <div class="col">
+                Tới: <input type="date" id="endDate" class="form-control">
+            </div>
+            <div class="col">
+                <button class="btn btn-primary" onclick="filterData()">Filter</button>
+            </div>
+        </div>
+    
+        <p>Tổng thống kê <span id="totalFeedbacks"></span></p>
+    
+        <table id="feedbackTable" class="table table-striped mt-3">
+            <thead>
+                <tr>
+                    <th>Loại</th>
+                    <th>Tổng</th>
+                    <th>Tỷ lệ</th>
+                </tr>
+            </thead>
+            <tbody id="tableBody">
+            </tbody>
+            <tfoot>
+                <tr>
+                    <td><strong>Tổng</strong></td>
+                    <td id="totalCount"></td>
+                    <td></td>
+                </tr>
+            </tfoot>
+        </table>
+        <button class="btn btn-success" id="btnExport" onclick="exportReportToExcel(this)">EXPORT REPORT</button>
+    </div>
+    
+
+<!-- Bootstrap JS -->
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<!-- jQuery and jQuery UI -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
+<!-- js-xlsx -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.16.9/xlsx.min.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/linways/table-to-excel@v1.0.4/dist/tableToExcel.js"></script>
+
+<script>
+    $(document).ready(function() {
+        // Kéo thả hàng trong bảng
+        $("#tableBody").sortable();
+        $("#tableBody").disableSelection();
+    });
+
+    function filterData() {
+        const startDate = document.getElementById("startDate").value;
+        const endDate = document.getElementById("endDate").value;
+
+        fetch('{% url "customer:feedback_chart_data" %}')
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (!Array.isArray(data.data)) {
+                    throw new Error('Data is not an array');
+                }
+                const filteredData = data.data.filter(item => {
+                    const itemDate = new Date(item.date);
+                    return itemDate >= new Date(startDate) && itemDate <= new Date(endDate);
+                });
+
+                const tableBody = document.getElementById("tableBody");
+                tableBody.innerHTML = "";
+
+                let totalFeedbacks = 0;
+                filteredData.forEach(item => {
+                    totalFeedbacks += item.count;
+                });
+
+                const totalCountElement = document.getElementById("totalFeedbacks");
+                totalCountElement.textContent = totalFeedbacks;
+
+                const feedbackCounts = countFeedbacks(filteredData);
+
+                Object.keys(feedbackCounts).forEach(feedback => {
+                    const row = document.createElement("tr");
+
+                    const nameCell = document.createElement("td");
+                    nameCell.textContent = feedback;
+
+                    const totalCountCell = document.createElement("td");
+                    totalCountCell.textContent = feedbackCounts[feedback];
+
+                    const percentageCell = document.createElement("td");
+                    const percentage = ((feedbackCounts[feedback] / totalFeedbacks) * 100).toFixed(2);
+                    percentageCell.textContent = percentage + "%";
+
+                    row.appendChild(nameCell);
+                    row.appendChild(totalCountCell);
+                    row.appendChild(percentageCell);
+                    tableBody.appendChild(row);
+                });
+
+                const totalFeedbacksElement = document.getElementById("totalCount");
+                totalFeedbacksElement.textContent = totalFeedbacks;
+            })
+            .catch(error => {
+                console.error('There was a problem with the fetch operation:', error);
+            });
+    }
+
+    function countFeedbacks(filteredData) {
+        let feedbackCounts = {};
+        filteredData.forEach(item => {
+            Object.keys(item.feedbacks).forEach(feedback => {
+                if (feedback in feedbackCounts) {
+                    feedbackCounts[feedback] += item.feedbacks[feedback];
+                } else {
+                    feedbackCounts[feedback] = item.feedbacks[feedback];
+                }
+            });
+        });
+        return feedbackCounts;
+    }
+
+    
+function exportReportToExcel() {
+  let table = document.getElementsByTagName("table"); // you can use document.getElementById('tableId') as well by providing id to the table tag
+  TableToExcel.convert(table[0], { // html code may contain multiple tables so here we are refering to 1st table tag
+    name: `export.xlsx`, // fileName you could use any name
+    sheet: {
+      name: 'Sheet 1' // sheetName
+    }
+  });
+}
+    
+</script>
+
+</body>
+</html>

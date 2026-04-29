@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Voice Chatbot</title>
+</head>
+<body>
+    <h1>Voice Chatbot</h1>
+    <a href="{% url 'customer:chon-dich-vu' %}">Quay lại trang dịch vụ</a>
+
+    <!-- Button to start the chatbot conversation -->
+    <button id="start-chatbot" onclick="startChatbot()">Start Chatbot</button>
+
+    <div id="conversation"></div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        function startChatbot() {
+            // Hide the start button
+            $('#start-chatbot').hide();
+            // Start listening
+            startListening();
+        }
+
+        function startListening() {
+            $.ajax({
+                url: "{% url 'listen' %}",
+                method: "POST",
+                beforeSend: function(xhr, settings) {
+                    xhr.setRequestHeader("X-CSRFToken", "{{ csrf_token }}");
+                },
+                success: function(data) {
+                    $('#conversation').append('<div class="bot-message">' + data.response + '</div>');
+                    $('#conversation').append('<div class="user-message"><input type="text" id="user_input"><button onclick="submitInput()">Submit</button></div>');
+                },
+                error: function(xhr, errmsg, err) {
+                    console.log(xhr.status + ": " + xhr.responseText);
+                }
+            });
+        }
+
+        function submitInput() {
+            var userInput = $('#user_input').val();
+            $('#conversation').append('<div class="user-message">Bạn nói: ' + userInput + '</div>');
+            $.ajax({
+                url: "{% url 'listen' %}",
+                method: "POST",
+                data: {'text': userInput},
+                beforeSend: function(xhr, settings) {
+                    xhr.setRequestHeader("X-CSRFToken", "{{ csrf_token }}");
+                },
+                success: function(data) {
+                    $('#conversation').append('<div class="bot-message">' + data.response + '</div>');
+                    $('#conversation').append('<div class="user-message"><input type="text" id="user_input"><button onclick="submitInput()">Tôi muốn hỏi tiếp</button></div>');
+                },
+                error: function(xhr, errmsg, err) {
+                    console.log(xhr.status + ": " + xhr.responseText);
+                }
+            });
+        }
+    </script>
+</body>
+</html>

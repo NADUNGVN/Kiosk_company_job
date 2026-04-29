@@ -1,0 +1,316 @@
+{% extends 'QRcodes/_Master_1.html' %}
+{%load static%}
+
+
+{% block content_1 %}
+
+<body style="background-color:#EEEEEE;">
+
+    <style>
+        .a {
+            width: 400px;
+            font-weight: 10px;
+
+        }
+
+        #success {
+            background: green;
+        }
+
+        h3 {
+            margin-top: -40px;
+        }
+
+        #success {
+            background: green;
+        }
+
+        button {
+            background-color: cadetblue;
+            color: whitesmoke;
+            border: 0;
+            -webkit-box-shadow: none;
+            box-shadow: none;
+            font-size: 8px;
+            font-weight: 500;
+            border-radius: 7px;
+            padding: 15px 35px;
+            cursor: pointer;
+            white-space: nowrap;
+            margin: 10px;
+        }
+
+        table {
+            margin: 0 80px 0 80px;
+        }
+    </style>
+
+    <div class="container">
+        <div class="row">
+            <div class="col-md-6 col-lg-12 wow bounceInUp" data-wow-duration="1.4s">
+                <div style="margin: 150px 0 0 0;" class="container">
+
+                    <div class="text-center">
+                        <h3 class="text-center">
+                            QUÉT MÃ QR TỪ CĂN CƯỚC HOẶC VNEID
+                        </h3>
+                        <table class="table table-bordered thead-dark">
+                            <thead class="thead-dark ">
+                                <tr>
+                                    <th scope="col">Thông tin</th>
+                                    <th class="text-center" scope="col">Người yêu cầu</th>
+                                    <th class="text-center" scope="col">Người mẹ </th>
+                                    <th class="text-center" scope="col">Người cha</th>
+                                </tr>
+                            </thead>
+
+                            <tbody>
+                                <tr>
+
+                                    <th scope="row">Quét QR </th>
+                                    <td style="text-align: center;">
+                                        <div class="text-center">
+                                            <button id="jumpButton">Quét</button>
+                                        </div>
+                                        <form name="" id="my-form" method="post"
+                                            action="{% url 'qrcode:khai-sinh' %}">
+                                            {% csrf_token %}
+                                            <input style="width:50px; border:none ; " class="target-input text-center"
+                                                id="input-field" type="text" name="thong_tin" placeholder="">
+
+                                            <button style="display: none;" id="submit-button" class="text-center"
+                                                name="scan_data_1" type="submit">Quét</button>
+                                        </form>
+                                    </td>
+                                    <td style="text-align: center;">
+                                        <div class="text-center">
+                                            <button id="jumpButton-2">Quét</button>
+                                        </div>
+                                        <form name="scan_data_2" id="my-form-2" method="post"
+                                            action="{% url 'qrcode:khai-sinh' %}">
+                                            {% csrf_token %}
+                                            <input style="width:50px; border:none ; " class="target-input-2 text-center"
+                                                id="input-field-2" type="text" name="thong_tin_2" placeholder="">
+                                            <button style="display: none;" id="submit-button-2" class="text-center"
+                                                name="scan_data_2" type="submit">Quét</button>
+                                        </form>
+                                    </td>
+
+                                    <td style="text-align: center;">
+                                        <div class="text-center">
+                                            <button id="jumpButton-3">Quét</button>
+                                        </div>
+                
+                                        <form name="scan_data_3" id="my-form-3" method="post" action="{% url 'qrcode:khai-sinh' %}">
+                                            {% csrf_token %}
+                                            <input style="width:50px; border:none ; " class="target-input-3 text-center"
+                                                id="input-field-3" type="text" name="thong_tin_3" placeholder="">
+                                            <button style="display: none;" id="submit-button-3" class="text-center" name="scan_data_3"
+                                                type="submit">Quét</button>
+                                        </form>
+                                    </td>
+
+
+                                </tr>
+
+                            </tbody>
+
+                        </table>
+
+
+                      
+        <table class="table table-bordered ">
+            <thead>
+                <tr>
+
+                    <th scope="col">Thông tin</th>
+                    <th class="" scope="col">Người yêu cầu</th>
+                    <th scope="col">Người mẹ</th>
+                    <th scope="col">Người cha</th>
+
+                </tr>
+
+
+            </thead>
+            {% with khach_hang=request.session.scan_data_1 %}
+            {% with khach_hang_2=request.session.scan_data_2 %}
+            {% with khach_hang_3=request.session.scan_data_3 %}
+            <tbody>
+
+                <tr>
+
+                    <th scope="row">Họ và tên</th>
+                    <td>{{khach_hang.ho_va_ten}} </td>
+                    <td>{{khach_hang_2.ho_va_ten_2}}</td>
+                    <td>{{khach_hang_3.ho_va_ten_3}}</td>
+
+                </tr>
+                <tr>
+                    <th class="a" scope="row">Ngày, tháng, năm sinh</th>
+                    <td>{{khach_hang.ngay_sinh}}</td>
+                    <td>{{khach_hang_2.ngay_sinh_2}}</td>
+                    <td>{{khach_hang_3.ngay_sinh_3}}</td>
+                </tr>
+                <tr>
+                    <th class="a" scope="row">Giới tính</th>
+                    <td>{{khach_hang.gioi_tinh}}</td>
+                    <td>{{khach_hang_2.gioi_tinh_2}}</td>
+                    <td>{{khach_hang_3.gioi_tinh_3}}</td>
+                </tr>
+                <tr>
+                    <th class="a" scope="row">Quốc tịch</th>
+                    <td>Việt Nam</td>
+                    <td>Việt Nam</td>
+                    <td>Việt Nam</td>
+                </tr>
+                <tr>
+                    <th class="a" scope="row">Địa chỉ thường chú</th>
+                    <td>{{khach_hang.dia_chi}}</td>
+                    <td>{{khach_hang_2.dia_chi_2}}</td>
+                    <td>{{khach_hang_3.dia_chi_3}}</td>
+                </tr>
+                <tr>
+                    <th class="a" scope="row">Số căn cước công dân </th>
+                    <td>{{khach_hang.so_cccd}}</td>
+                    <td>{{khach_hang_2.so_cccd_2}}</td>
+                    <td>{{khach_hang_3.so_cccd_3}}</td>
+
+                </tr>
+                <tr>
+                    <th class="a" scope="row">Ngày cấp</th>
+                    <td>{{khach_hang.ngay_cap}}</td>
+                    <td> {{khach_hang_2.ngay_cap_2}}</td>
+                    <td> {{khach_hang_3.ngay_cap_3}}</td>
+
+                </tr>
+
+
+            </tbody>
+            {% endwith %}
+            {% endwith %}
+            {% endwith %}
+        </table>
+
+
+        <div class="container">
+            <div class="row">
+                <div class="col-md-12 text-center">
+                    <a href="{% url 'qrcode:khai-sinh-1' %}">
+                        <button>
+                            Xác nhận thông tin
+                        </button>
+                    </a>
+
+
+                </div>
+
+            </div>
+        </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+
+        // đổi màu input
+        document.addEventListener("DOMContentLoaded", function () {
+            const colorInput = document.getElementById("input-field");
+            const changeColorButton = document.getElementById("jumpButton");
+
+            changeColorButton.addEventListener("click", function () {
+                colorInput.style.backgroundColor = "#33FF33";
+            });
+        });
+        // doi mau 2
+        document.addEventListener("DOMContentLoaded", function () {
+            const colorInput = document.getElementById("input-field-2");
+            const changeColorButton = document.getElementById("jumpButton-2");
+
+            changeColorButton.addEventListener("click", function () {
+                colorInput.style.backgroundColor = "#33FF33";
+            });
+        });
+
+        // doi mau 3 
+        document.addEventListener("DOMContentLoaded", function () {
+            const colorInput = document.getElementById("input-field-3");
+            const changeColorButton = document.getElementById("jumpButton-3");
+
+            changeColorButton.addEventListener("click", function () {
+                colorInput.style.backgroundColor = "#33FF33";
+            });
+        });
+        // Nhảy vào ô input
+        const jumpButton = document.getElementById('jumpButton');
+        const targetInput = document.querySelector('.target-input');
+
+        jumpButton.addEventListener('click', function () {
+            targetInput.focus();
+        });
+
+
+        //
+        // Nháy ô input 2
+        const jumpButton2 = document.getElementById('jumpButton-2');
+        const targetInput2 = document.querySelector('.target-input-2');
+
+        jumpButton2.addEventListener('click', function () {
+            targetInput2.focus();
+        })
+        // Nháy ô input 3
+        const jumpButton3 = document.getElementById('jumpButton-3');
+        const targetInput3 = document.querySelector('.target-input-3');
+
+        jumpButton3.addEventListener('click', function () {
+            targetInput3.focus();
+        })
+        // đặt tên ô, nhấn nút button request
+        const inputField = document.getElementById("input-field");
+        const submitButton = document.getElementById("submit-button");
+        const form = document.getElementById("my-form");
+
+        inputField.addEventListener("keypress", function (event) {
+            if (event.key === "Enter") {
+                submitButton.click();
+            }
+        });
+
+        submitButton.addEventListener("click", function () {
+            form.submit();
+        });
+
+        // form 2
+        const inputField2 = document.getElementById("input-field-2");
+        const submitButton2 = document.getElementById("submit-button-2");
+        const form_2 = document.getElementById("my-form-2");
+
+        inputField.addEventListener("keypress", function (event) {
+            if (event.key === "Enter") {
+                submitButton2.click();
+            }
+        });
+
+        submitButton2.addEventListener("click", function () {
+            form_2.submit();
+        });
+
+    </script>
+
+
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+        integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+        crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
+        integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
+        crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+        integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+        crossorigin="anonymous"></script>
+</body>
+
+{% endblock %}

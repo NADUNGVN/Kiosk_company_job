@@ -1,0 +1,224 @@
+{% extends 'QRcodes/_Master.html' %}
+
+{% block title_tab %}Don xin viec{% endblock %}
+
+{% block content %}
+
+
+<style>
+  @media print {
+    html, body {
+      height: 297mm;
+      width: 210mm;
+      margin: 0;
+      padding: 0;
+    }
+  }
+</style>
+
+
+<form id="my-form" class="form" style="max-width: none; width: 1005px;">  
+  <button id="download-pdf">Tải về PDF</button>
+  <div class="main-container">
+    <div class="main">
+      <div class="container">
+        <div class="row">
+          <div class="col-md-12">
+            <p class="text-center">
+              CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM
+            </p>
+            <p class="text-center">
+              Độc lập - Tự do - Hạnh phúc
+            </p>
+          
+
+          </div>
+          <div class="col-md-12">
+            <div class="form-title">
+              TỜ KHAI
+            </div>
+            <div class="form-sub-title">
+              (Dùng cho công dân Việt Nam đề nghị cấp hộ chiếu phổ thông ở trong nước)
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="container">
+        <div class="form-group required col-md-12 ">
+          <label for="ho_ten" class="col-md-2 control-label">1. Họ và tên</label>
+          <div class="col-md-6"><span id="pt1:ho_ten" class="af_inputText">
+              <input value="{{data.ho_va_ten}}" id="pt1:ho_ten::content" name="pt1:ho_ten" class="form-control input-sm"
+                placeholder="Nhập đầy đủ họ tên tiếng Việt có dấu" type="text">
+
+          </div>
+          <label for="gioi_tinh" class="col-md-2 control-label">2. Giới tính</label>
+          <input class=" col-md-2 form-control input-sm" type="text">
+        </div>
+        <div class="form-group required col-md-12">
+          <label for="ngay_sinh" class="col-md-2 control-label">3. Sinh ngày</label>
+          <div class="col-md-4">
+            <input id="pt1:ho_ten::content" name="pt1:ho_ten" class="af_inputText_content form-control input-sm"
+              placeholder="Nhập đầy đủ họ tên tiếng Việt có dấu" type="text">
+          </div>
+          <label for="noi_sinh" class="col-md-2 control-label">Nơi sinh <br><i>(theo giấy khai sinh)</i></label>
+        </div>
+        <div class="form-group  col-md-12">
+          <label for="so_cmt" class="col-md-2 control-label">4. Số ĐDCN/CMND</label>
+          <div class="col-md-4">
+            <input id="pt1:ho_ten::content" name="pt1:ho_ten" class="af_inputText_content form-control input-sm"
+              placeholder="Nhập đầy đủ họ tên tiếng Việt có dấu" type="text">
+          </div>
+          <label for="noi_sinh" class="col-md-2 control-label">Ngày cấp <br><i></i></label>
+        </div>
+        <div class="form-group  col-md-12">
+          <label for="so_cmt" class="col-md-2 control-label">5. Dân tộc</label>
+          <div class="col-md-2">
+            <input id="pt1:ho_ten::content" name="pt1:ho_ten" class="form-control input-sm"
+              placeholder="Nhập đầy đủ họ tên tiếng Việt có dấu" type="text">
+          </div>
+          <div class="col-md-4">
+            <label for="firstname">6. Tôn giáo</label>
+            <input class="input-sm" type="text" name="firstname" id="firstname">
+          </div>
+          <div class="col-md-4">
+            <label for="firstname">7. Số điện thoại</label>
+            <input class="input-sm" type="text" name="firstname" id="firstname">
+          </div>
+        </div>
+
+
+        <div class="form-group col-md-12 ">
+          <label style="width: 22%;" for="inputName" class=" col-md-4  col-form-label">8. Địa chỉ đăng
+            ký thường trú</label>
+          <div class="col-md-8">
+            <textarea type="text" class="form-control" id="inputName" placeholder="Enter name"> </textarea>
+          </div>
+        </div>
+
+        <div class="form-group col-md-12 ">
+          <label style="width: 22%;" for="inputName" class=" col-md-4  col-form-label">9. Địa chỉ đăng ký tạm
+            trú</label>
+          <div class="col-md-8">
+            <textarea type="text" class="form-control" id="inputName" placeholder="Enter name"> </textarea>
+          </div>
+        </div>
+
+
+        <div class="form-group col-md-12">
+          <label style="width: 22%" for="nghe_nghiep" class="col-md-2 control-label">10. Nghề nghiệp</label>
+          <div class="col-md-2">
+            <span id="pt1:nghe_nghiep" class="af_inputText"><input id="pt1:nghe_nghiep::content" name="pt1:nghe_nghiep"
+                class="af_inputText_content form-control input-sm" placeholder="Nhập nghề nghiệp" type="text"
+                autocomplete="off"></span>
+          </div>
+          <label style="width: 18%" for="dia_chi_co_quan" class="col-md-4 control-label">11. Tên và địa chỉ cơ
+            quan</label>
+          <div class="col-md-4">
+            <textarea style="width:114%; height:120%" type="text" class="form-control" id="inputName"
+              placeholder="Enter name"> </textarea> <br>
+          </div>
+          <div class="form-group">
+            <label for="ho_ten_cha" class="col-md-3 control-label">12. Cha: họ và tên <br></label>
+            <div class="col-md-5"><span id="pt1:ho_ten_cha" class="af_inputText">
+              <input id="pt1:ho_ten_cha::content"
+                  name="pt1:ho_ten_cha" class="af_inputText_content form-control input-sm" placeholder="Nhập họ tên Cha"
+                  type="text"></span></div>
+              <label for="ngay_sinh_cha" class=" col-md-2 control-label">Ngày sinh</label> 
+              <input class="mb-3 col-md-2 form-control input-sm" type="text">
+           
+          </div> <br>
+          <div class="form-group">
+            <label style="padding-left: 38px " for="ho_ten_cha" class="col-md-3 control-label">Mẹ: họ và tên <br></label>
+            <div class="col-md-5"><span id="pt1:ho_ten_cha" class="af_inputText">
+              <input id="pt1:ho_ten_cha::content"
+                  name="pt1:ho_ten_cha" class="af_inputText_content form-control input-sm" placeholder="Nhập họ tên Cha"
+                  type="text"></span></div>
+              <label for="ngay_sinh_cha" class="col-md-2 control-label">Ngày sinh</label> 
+              <input class=" mb-3 col-md-2 form-control input-sm" type="text">
+           
+          </div> <br>
+          <div class="form-group mb-3">
+            <label style="padding-left: 38px; " for="ho_ten_cha" class="  col-md-3 control-label">Vợ /chồng: họ và tên <br></label>
+            <div class="col-md-5"><span id="pt1:ho_ten_cha" class="af_inputText">
+              <input id="pt1:ho_ten_cha::content"
+                  name="pt1:ho_ten_cha" class="af_inputText_content form-control input-sm" placeholder="Nhập họ tên Cha"
+                  type="text"></span></div>
+              <label for="ngay_sinh_cha" class="col-md-2 control-label">Ngày sinh</label> 
+              <input class=" mb-3 col-md-2 form-control input-sm" type="text">
+           
+          </div> <br>
+         
+         
+          <div class="form-group mb-3 ">
+            <label for="so_hc_cu" class="col-md-2 control-label">13. Hộ chiếu phổ thông lần gần nhất<i> (nếu có)
+              </i></label>
+            <div class="col-md-4"><span id="pt1:so_hc_cu" class="af_inputText">
+                <input id="pt1:so_hc_cu::content" name="pt1:so_hc_cu" class="af_inputText_content form-control input-sm"
+                  placeholder="Nhập số hộ chiếu cũ" type="text" maxlength="15"></span>
+            </div>
+            <label for="ngay_cap_hc_cu" class="col-md-2 control-label">Ngày cấp</label> <br>
+            <div class="col-md-4">
+              <span id="pt1:ngay_cap_hc_cu" class="af_inputText">
+                <input id="pt1:ngay_cap_hc_cu::content" name="pt1:ngay_cap_hc_cu"
+                  class="af_inputText_content form-control input-sm" placeholder="__/__/____" type="text"
+                  maxlength="10">
+              </span>
+            </div>  
+
+          </div> <br>
+
+          <div class="form-group col-md-12 ">
+            <label style=" width:16%; padding-left: initial; text-align: left;" for="inputName" class=" col-md-4 ">14. Nội dung đề nghị</label>
+            <div class="col-md-8">
+              <textarea type="text" class="form-control" id="inputName" placeholder="Enter name"> </textarea>
+            </div>
+          </div>
+
+
+        
+
+
+
+
+
+
+          <div class="form-group">
+            <div class="col-md-2"></div>
+            <div class="col-md-10">
+              <div class="for-radio">
+                <div id="pt1:gan_chip" class="af_selectOneRadio">
+                  <div role="radiogroup" aria-labelledby="pt1:gan_chip_afrlblBy" id="pt1:gan_chip::content"
+                    name="pt1:gan_chip" class="af_selectOneRadio_content"><span
+                      class="af_selectOneRadio_content-input"><input type="radio" name="pt1:gan_chip"
+                        id="pt1:gan_chip:_0" value="0" class="af_selectOneRadio_native-input"
+                        onclick="this.focus()"></span><label for="pt1:gan_chip:_0"
+                      class="af_selectOneRadio_item-text">Cấp hộ chiếu có gắn chíp điện
+                      tử</label><span class="af_selectOneRadio_content-input"><input type="radio" name="pt1:gan_chip"
+                        id="pt1:gan_chip:_1" value="1" class="af_selectOneRadio_native-input" checked=""
+                        onclick="this.focus()"></span><label for="pt1:gan_chip:_1"
+                      class="af_selectOneRadio_item-text">Cấp
+                      hộ chiếu không gắn chíp điện tử</label></div>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+        
+
+
+          <a href="C:\Users\Phương Mai\OneDrive\Desktop\Nghia\DATH\a.pdf" download="your-file-name.pdf">Tải xuống</a>
+
+
+
+  </div>
+
+
+
+
+
+  </form>
+
+
+
+
+  {% endblock %}

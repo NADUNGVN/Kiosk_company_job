@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Keyword Check</title>
+</head>
+<body>
+    <h1>Kiểm tra từ khóa cho quầy: {{ counter.name }}</h1>
+    <p>{{ response_text }}</p>
+    
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" name="check_text">Kiểm tra văn bản</button>
+    </form>
+
+    <h2>Thêm từ khóa mới</h2>
+    <form method="post">
+        {% csrf_token %}
+        {{ keyword_form.as_p }}
+        <input type="text" name="new_keyword" placeholder="Từ khóa mới">
+        <label for="is_bad_language">Là ngôn ngữ không phù hợp?</label>
+        <input type="checkbox" name="is_bad_language">
+        <button type="submit" name="add_keyword">Thêm từ khóa</button>
+    </form>
+
+    <h2>Cập nhật từ khóa</h2>
+    <form method="post">
+        {% csrf_token %}
+        <input type="text" name="updated_keyword" placeholder="Từ khóa mới">
+        <label for="updated_is_bad_language">Là ngôn ngữ không phù hợp?</label>
+        <input type="checkbox" name="updated_is_bad_language">
+        <input type="hidden" name="keyword_id" value="{{ keyword.id }}">
+        <button type="submit" name="update_keyword">Cập nhật từ khóa</button>
+    </form>
+
+    <h2>Xóa từ khóa</h2>
+    <form method="post">
+        {% csrf_token %}
+        <input type="text" name="delete_keyword" placeholder="Từ khóa cần xóa">
+        <button type="submit" name="delete_keyword">Xóa từ khóa</button>
+    </form>
+
+    <h2>Danh sách từ khóa</h2>
+    <p>{{ keywords|join:", " }}</p>
+
+    <h2>Danh sách từ nhạy cảm</h2>
+    <p>{{ bad_keywords|join:", " }}</p>
+</body>
+</html>

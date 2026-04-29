@@ -1,0 +1,645 @@
+{% load static %}
+<html>
+
+<head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <meta http-equiv="Content-Style-Type" content="text/css" />
+        <meta name="generator" content="Aspose.Words for .NET 23.5.0" />
+        <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+        <title></title>
+        <style type="text/css">
+                body {
+                        font-family: 'Times New Roman';
+                        font-size: 14pt;
+                        margin: 0, 0.2, 0, 0.6in;
+                }
+
+                p {
+                        margin: 0pt
+                }
+
+                li,
+                table {
+                        margin-top: 0pt;
+                        margin-bottom: 0pt
+                }
+
+                .BalloonText {
+                        font-family: Tahoma;
+                        font-size: 8pt
+                }
+
+                .Footer {
+                        font-size: 14pt
+                }
+
+                span.BalloonTextChar {
+                        font-family: Tahoma;
+                        font-size: 8pt
+                }
+
+                span.FooterChar {
+                        font-size: 14pt
+                }
+
+                .TableGrid {}
+
+                .time {
+                        width: 25px;
+                }
+
+                @media print {
+
+                        #city,
+                        #province,
+                        #district,
+                        #ward,
+                        #street-input,
+                        #submit-button,
+                        #noi_mat {
+                                display: none;
+
+                        }
+                }
+        </style>
+</head>
+
+<body>
+        <div>
+                {% with khach_hang=request.session.scan_data_1 %}
+                {% with khach_hang_2=request.session.scan_data_2 %}
+
+                <p style="text-align:center; line-height:14.4pt"><span style="font-weight:bold">
+                                CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM</span>
+                </p>
+                <p style="text-align:center; line-height:14.4pt"><span style="font-size:13.5pt; font-weight:bold">
+                                Độc lập - Tự do - Hạnh phúc</span>
+                </p>
+                <p style="line-height:14.4pt"><span style="height:0pt; display:block; position:absolute; z-index:0"><img
+                                        src="images/Aspose.Words.8556ef14-d1cd-4284-a13c-8e6556e35f1e.001.png"
+                                        width="216" height="1" alt=""
+                                        style="margin-top:4.03pt; margin-left:146.62pt; -aw-left-pos:147pt; -aw-rel-hpos:column; -aw-rel-vpos:paragraph; -aw-top-pos:4.4pt; -aw-wrap-type:none; position:absolute" /></span><span
+                                style="font-size:10pt; font-weight:bold; -aw-import:ignore">&#xa0;</span></p>
+                <p style="line-height:14.4pt"><span
+                                style="font-size:1pt; font-weight:bold; -aw-import:ignore">&#xa0;</span></p>
+                <p style="text-align:center; line-height:14.4pt"><span style="font-weight:bold">TỜ KHAI ĐĂNG KÝ KHAI
+                                TỬ</span>
+                </p>
+                <p style="line-height:14.4pt"><span style="font-size:9pt; -aw-import:ignore">&#xa0;</span></p>
+                <p style="text-align:center; line-height:140%"><span>Kính gửi: </span><span
+                                style="line-height:140%; font-size:9.33pt; vertical-align:super">(1)</span><span
+                                style="width:262.31pt; font-family:'Times New Roman'; font-size:10pt; display:inline-block; -aw-font-family:'Times New Roman'; -aw-tabstop-align:left; -aw-tabstop-leader:dots; -aw-tabstop-pos:336pt">...........................................</span>
+                </p>
+                <p style="margin-top:6pt; margin-bottom:6pt; text-align:justify; line-height:110%; font-size:13pt">
+                        <span style="font-weight:bold">Họ, chữ đệm, tên người yêu cầu: </span>
+                        <span
+                                style="width:285.03pt; font-family:'Times New Roman'; font-size:13pt; display:inline-block; -aw-font-family:'Times New Roman'; -aw-tabstop-align:left; -aw-tabstop-leader:dots; -aw-tabstop-pos:467.8pt">
+                                {{khach_hang.ho_va_ten}} </span>
+                </p>
+                <p style="margin-top:6pt; margin-bottom:6pt; text-align:justify; line-height:110%; font-size:13pt">
+                        <span>Nơi cư trú: </span><span
+                                style="line-height:110%; font-size:8.67pt; vertical-align:super">(2)</span><span
+                                style="width:392.15pt; font-family:'Times New Roman'; font-size:13pt; display:inline-block; -aw-font-family:'Times New Roman'; -aw-tabstop-align:left; -aw-tabstop-leader:dots; -aw-tabstop-pos:467.8pt">
+                                {{khach_hang.dia_chi}}</span>
+                </p>
+
+                <p
+                        style="margin-top:6pt; margin-bottom:6pt; text-align:justify; line-height:110%; font-size:13pt; margin-right:6pt;">
+                        <span>Giấy tờ tùy thân: </span><span
+                                style="line-height:110%; font-size:8.67pt; vertical-align:super">
+                                (3)</span>
+                        <span>
+                                Căn cước công dân số {{khach_hang.so_cccd}} do Công an {{khach_hang.thanh_pho}} cấp ngày
+                                {{khach_hang.ngay_cap}}
+                        </span>
+                </p>
+
+                <p style="margin-top:6pt; margin-bottom:6pt; text-align:justify; line-height:110%; font-size:13pt">
+                        <span>Quan hệ với người đã chết: </span>
+                        <span
+                                style="width:322.82pt; font-family:'Times New Roman'; font-size:10pt; display:inline-block; -aw-font-family:'Times New Roman'; -aw-tabstop-align:left; -aw-tabstop-leader:dots; -aw-tabstop-pos:467.8pt"><input
+                                        type="text"></span>
+                </p>
+                <p style="margin-top:6pt; margin-bottom:6pt; text-align:justify; line-height:110%; font-size:13pt"><span
+                                style="font-weight:bold">Đề nghị cơ quan</span><span
+                                style="line-height:110%; font-size:10pt">
+                        </span><span style="font-weight:bold">đăng ký khai tử cho người có tên dưới đây:</span><span>
+                        </span></p>
+                <p style="margin-top:6pt; margin-bottom:6pt; text-align:justify; line-height:110%; font-size:13pt"><span
+                                style="font-weight:bold">Họ, chữ đệm, tên: </span><span
+                                style="width:365.4pt; font-family:'Times New Roman'; display:inline-block; -aw-font-family:'Times New Roman'; -aw-tabstop-align:left; -aw-tabstop-leader:dots; -aw-tabstop-pos:467.8pt">{{khach_hang_2.ho_va_ten_2}}</span>
+                </p>
+                <p style="margin-top:6pt; margin-bottom:6pt; text-align:justify; line-height:110%; font-size:13pt">
+                        <span>Ngày, tháng, năm sinh: </span><span
+                                style="width:343.6pt; font-family:'Times New Roman'; display:inline-block; -aw-font-family:'Times New Roman'; -aw-tabstop-align:left; -aw-tabstop-leader:dots; -aw-tabstop-pos:467.8pt">{{khach_hang_2.ngay_sinh_2}}</span>
+                </p>
+                <p style="text-align:justify; line-height:110%; font-size:13pt">
+                        <span>Giới tính: {{khach_hang_2.gioi_tinh_2}} &nbsp; </span>
+                        <span> Dân tộc: <span id="pt1:dan_toc" class="af_selectOneChoice">
+                                        <select id="pt1:dan_toc::content" name="pt1:dan_toc"
+                                                class="af_selectOneChoice_content form-control" title="Chọn dân tộc"
+                                                fdprocessedid="lm6mjh">
+                                                <option value="">Chọn dân tộc</option>
+                                                <option value="0">Kinh (Việt)</option>
+                                                <option value="1">Tày</option>
+                                                <option value="2">Thái</option>
+                                                <option value="3">Hoa (Hán)</option>
+                                                <option value="4">Khmer</option>
+                                                <option value="5">Mường</option>
+                                                <option value="6">Nùng</option>
+                                                <option value="7">HMông (Mèo)</option>
+                                                <option value="8">Dao</option>
+                                                <option value="9">Gia-rai</option>
+                                                <option value="10">Ngái</option>
+                                                <option value="11">Ê-đê</option>
+                                                <option value="12">Ba-na</option>
+                                                <option value="13">Xê-đăng</option>
+                                                <option value="14">Sán Chay
+                                                        (Cao lan - Sán chỉ)</option>
+                                                <option value="15">Cơ-ho</option>
+                                                <option value="16">Chăm (chàm)</option>
+                                                <option value="17">Sán Dìu</option>
+                                                <option value="18">Hrê</option>
+                                                <option value="19">M'Nông</option>
+                                                <option value="20">Ra Glay</option>
+                                                <option value="21">Xtiêng</option>
+                                                <option value="22">Bru-Vân Kiều</option>
+                                                <option value="23">Thổ</option>
+                                                <option value="24">Giáy</option>
+                                                <option value="25">Cơ tu</option>
+                                                <option value="26">Gié-Triêng</option>
+                                                <option value="27">Mạ</option>
+                                                <option value="28">Khơ Mú</option>
+                                                <option value="29">Co</option>
+                                                <option value="30">Ta Ôi</option>
+                                                <option value="31">Chơ Ro</option>
+                                                <option value="32">Kháng</option>
+                                                <option value="33">Xinh Mun</option>
+                                                <option value="34">Hà Nhì</option>
+                                                <option value="35">Chu-ru</option>
+                                                <option value="36">Lào</option>
+                                                <option value="37">La Chí</option>
+                                                <option value="38">La Ha</option>
+                                                <option value="39">Phù Lá</option>
+                                                <option value="40">La Hủ</option>
+                                                <option value="41">Lự</option>
+                                                <option value="42">Lô Lô</option>
+                                                <option value="43">Chứt</option>
+                                                <option value="44">Mảng</option>
+                                                <option value="45">Pà Thẻn</option>
+                                                <option value="46">Cờ lao</option>
+                                                <option value="47">Cống</option>
+                                                <option value="48">Bố Y</option>
+                                                <option value="49">Si La</option>
+                                                <option value="50">Pu Péo</option>
+                                                <option value="51">Brâu</option>
+                                                <option value="52">Ơ Đu</option>
+                                                <option value="53">Rơ Măm</option>
+                                                <option value="54">Dân Tộc Khác</option>
+                                        </select>
+                                </span>
+                        </span>
+                        <span>Quốc tịch: Việt Nam </span>
+
+                </p>
+                <p style="margin-top:6pt; margin-bottom:6pt; text-align:justify; line-height:110%; font-size:13pt">
+                        <span>Nơi cư trú cuối cùng: </span><span
+                                style="line-height:110%; font-size:8.67pt; vertical-align:super">(2)</span><span>
+                        </span>
+                        <span
+                                style="width:400.75pt; font-family:'Times New Roman'; font-size:12pt; display:inline-block; -aw-font-family:'Times New Roman'; -aw-tabstop-align:left; -aw-tabstop-leader:dots; -aw-tabstop-pos:467.8pt">
+                                {{khach_hang_2.dia_chi_2}}
+                        </span>
+                </p>
+
+                <p style="margin-top:6pt; margin-bottom:6pt; text-align:justify; line-height:110%; font-size:13pt">
+                        <span>Giấy tờ tùy thân: </span>
+                        <span style="line-height:110%; font-size:8.67pt; vertical-align:super">(3)</span>
+                        <span>
+                        </span>
+                        <span> Căn cước công dân số {{khach_hang_2.so_cccd_2}} do Công an {{khach_hang_2.thanh_pho_2}}
+                                cấp ngày
+                                {{khach_hang_2.ngay_cap_2}}
+                        </span>
+                </p>
+
+                <p style="margin-top:6pt; margin-bottom:6pt; text-align:justify; line-height:110%; font-size:13pt">
+                        <span>Đã chết vào lúc: </span><span
+                                style="font-family:'Times New Roman'; font-size:10pt; display:inline-block; -aw-font-family:'Times New Roman'; -aw-tabstop-align:left; -aw-tabstop-leader:dots; -aw-tabstop-pos:161pt"><input
+                                        class="time" type="text"></span><span>giờ
+                        </span><span
+                                style="font-family:'Times New Roman'; font-size:10pt; display:inline-block; -aw-font-family:'Times New Roman'; -aw-tabstop-align:left; -aw-tabstop-leader:dots; -aw-tabstop-pos:217pt"><input
+                                        class="time" type="text" name="" id=""></span><span>phút,
+                                ngày </span><span
+                                style="font-family:'Times New Roman'; font-size:10pt; display:inline-block; -aw-font-family:'Times New Roman'; -aw-tabstop-align:left; -aw-tabstop-leader:dots; -aw-tabstop-pos:322pt"><input
+                                        class="time" type="text"></span><span>
+                                tháng </span><span
+                                style=" font-family:'Times New Roman'; font-size:10pt; display:inline-block; -aw-font-family:'Times New Roman'; -aw-tabstop-align:left; -aw-tabstop-leader:dots; -aw-tabstop-pos:392pt"><input
+                                        class="time" type="text"></span><span>
+                                năm </span><span
+                                style="width:46.92pt; font-family:'Times New Roman'; font-size:10pt; display:inline-block; -aw-font-family:'Times New Roman'; -aw-tabstop-align:left; -aw-tabstop-leader:dots; -aw-tabstop-pos:467.8pt"><input
+                                        class="time" type="text"></span>
+                </p>
+                <p style="margin-top:6pt; margin-bottom:6pt; text-align:justify; line-height:110%; font-size:13pt">
+                        <span id="noi_mat">Nơi chết: </span>
+                        <select id="city">
+                                <option value="">Chọn tỉnh/thành phố</option>
+                                <!-- Các option cho tỉnh/thành phố -->
+                        </select>
+                        <select id="district">
+                                <option value="">Chọn quận/huyện</option>
+                                <!-- Các option cho quận/huyện -->
+                        </select>
+                        <select id="ward">
+                                <option value="">Chọn phường/xã</option>
+                                <!-- Các option cho phường/xã -->
+                        </select>
+                        <input type="text" id="street-input" placeholder="Nhập tên đường">
+
+                        <button type="button" id="submit-button">Xác nhận</button>
+
+                <div id="address">
+
+                </div>
+                </p>
+               
+                <p style="margin-top:6pt; margin-bottom:6pt; text-align:justify; line-height:110%; font-size:13pt">
+                        <span>Nguyên nhân chết: </span><span
+                                style="width:366.36pt; font-family:'Times New Roman'; font-size:10pt; display:inline-block; -aw-font-family:'Times New Roman'; -aw-tabstop-align:left; -aw-tabstop-leader:dots; -aw-tabstop-pos:467.8pt"><input type="text"></span>
+                </p>
+                <p style="margin-top:6pt; margin-bottom:6pt; text-align:justify; line-height:110%; font-size:13pt">
+                        <span>Số Giấy báo tử/ Giấy tờ thay thế Giấy báo tử: </span><span
+                                style="line-height:110%; font-size:8.67pt; vertical-align:super">(4)</span><span
+                                style=" font-family:'Times New Roman'; font-size:10pt; display:inline-block; -aw-font-family:'Times New Roman'; -aw-tabstop-align:left; -aw-tabstop-leader:dots; -aw-tabstop-pos:467.8pt"><input type="text"></span><span
+                                style="line-height:110%; font-size:10pt"> </span>
+                </p>
+                <p style="margin-top:6pt; margin-bottom:6pt; text-align:justify; line-height:110%; font-size:13pt">
+                        <span>do</span><span
+                                style="width:286pt; font-family:'Times New Roman'; font-size:10pt; display:inline-block; -aw-font-family:'Times New Roman'; -aw-tabstop-align:left; -aw-tabstop-leader:dots; -aw-tabstop-pos:266pt"><input style="width:300px" type="text"></span><span>
+                                cấp ngày </span><span
+                                style="width:23.94pt; font-family:'Times New Roman'; font-size:10pt; display:inline-block; -aw-font-family:'Times New Roman'; -aw-tabstop-align:left; -aw-tabstop-leader:dots; -aw-tabstop-pos:343pt"><input class="time" type="text" name="" id=""></span><span
+                                style="line-height:110%; font-size:10pt"> </span><span>tháng </span><span
+                                style="width:21.37pt; font-family:'Times New Roman'; font-size:10pt; display:inline-block; -aw-font-family:'Times New Roman'; -aw-tabstop-align:left; -aw-tabstop-leader:dots; -aw-tabstop-pos:399pt"><input class="time" type="text" name="" id=""></span><span>
+                                năm </span><span
+                                style="width:39.92pt; font-family:'Times New Roman'; font-size:10pt; display:inline-block; -aw-font-family:'Times New Roman'; -aw-tabstop-align:left; -aw-tabstop-leader:dots; -aw-tabstop-pos:467.8pt"><input  type="text" name="" id=""></span>
+                </p>
+                <p style="margin-top:4pt; margin-bottom:4pt; text-align:justify; line-height:110%; font-size:13pt">
+                        <span>Tôi cam
+                                đoan những nội dung khai trên đây là đúng sự thật và chịu trách nhiệm trước pháp luật về
+                                cam đoan của
+                                mình.</span>
+                </p>
+                <p style="margin-left:108pt; text-indent:36pt; text-align:justify; line-height:14.4pt"><span
+                                style="font-size:13pt; font-style:italic">Làm tại: </span><span
+                                style="width:102.33pt; text-indent:0pt; font-family:'Times New Roman'; font-size:10pt; font-style:italic; display:inline-block; -aw-font-family:'Times New Roman'; -aw-tabstop-align:left; -aw-tabstop-leader:dots; -aw-tabstop-pos:294pt">{{khach_hang.thanh_pho}}</span><span
+                                style="font-size:10pt; font-style:italic">, </span><span
+                                style="font-size:13pt; font-style:italic">ngày
+                        </span><span
+                                style="width:22.48pt; text-indent:0pt; font-family:'Times New Roman'; font-size:10pt; font-style:italic; display:inline-block; -aw-font-family:'Times New Roman'; -aw-tabstop-align:left; -aw-tabstop-leader:dots; -aw-tabstop-pos:350pt">{{ngay}}</span><span
+                                style="font-size:10pt; font-style:italic"> </span><span
+                                style="font-size:13pt; font-style:italic">tháng
+                        </span><span
+                                style="width:20.64pt; text-indent:0pt; font-family:'Times New Roman'; font-size:9pt; display:inline-block; -aw-font-family:'Times New Roman'; -aw-tabstop-align:left; -aw-tabstop-leader:dots; -aw-tabstop-pos:406pt">{{thang}}</span><span style="font-size:10pt; font-style:italic">
+                        </span><span style="font-size:13pt; font-style:italic">năm
+                        </span><span
+                                style="width:34.86pt; text-indent:0pt; font-family:'Times New Roman'; font-size:9pt; display:inline-block; -aw-font-family:'Times New Roman'; -aw-tabstop-align:left; -aw-tabstop-leader:dots; -aw-tabstop-pos:469pt">{{nam}}</span>
+                </p>
+                <p style="margin-left:216pt; text-align:justify; line-height:14.4pt"><span
+                                style="font-size:13pt; font-weight:bold; -aw-import:ignore">&#xa0;</span></p>
+                <table cellspacing="0" cellpadding="0" style="border-collapse:collapse">
+                        <tr>
+                                <td style="width:218.6pt; padding-right:5.4pt; padding-left:5.4pt; vertical-align:top">
+                                        <p style="text-align:center; line-height:130%; font-size:13pt"><span
+                                                        style="font-weight:bold; -aw-import:ignore">&#xa0;</span></p>
+                                </td>
+                                <td colspan="2"
+                                        style="width:224.2pt; padding-right:5.4pt; padding-left:5.4pt; vertical-align:top">
+                                        <p style="text-align:center; line-height:130%; font-size:13pt"><span
+                                                        style="font-weight:bold">Người
+                                                        yêu cầu</span></p>
+                                        <p style="text-align:center; line-height:130%; font-size:12pt"><span>(Ký, ghi rõ
+                                                        họ, chữ đệm,
+                                                        tên)</span></p>
+                                        <p style="text-align:center; line-height:130%; font-size:11pt"><span
+                                                        style="font-style:italic; -aw-import:ignore"></span></p>
+                                </td>
+                        </tr>
+                        <tr>
+                                <td colspan="2"
+                                        style="width:221.4pt; padding-right:5.4pt; padding-left:5.4pt; vertical-align:top">
+                                        <div style="border-bottom-style:solid; border-bottom-width:0.75pt; clear:both">
+                                                <p style="font-size:12pt"><span
+                                                                style="font-weight:bold; font-style:italic; -aw-import:ignore">&#xa0;</span>
+                                                </p>
+                                                <p style="font-size:12pt"><span
+                                                                style="font-weight:bold; font-style:italic; -aw-import:ignore">&#xa0;</span>
+                                                </p>
+                                                <p style="font-size:12pt"><span
+                                                                style="font-weight:bold; font-style:italic; -aw-import:ignore">&#xa0;</span>
+                                                </p>
+                                                <p style="padding-bottom:1pt; font-size:12pt"><span
+                                                                style="font-weight:bold; font-style:italic; -aw-import:ignore">&#xa0;</span>
+                                                </p>
+                                        </div>
+                                        <p style="text-align:justify; font-size:11pt">
+                                                <span
+                                                        style="font-family:'Times New Roman'">Đề nghị
+                                                        cấp bản sao</span>
+                                                        <span
+                                                        style="font-family:'Times New Roman'; font-size:7.33pt; vertical-align:super">(6)</span><span
+                                                        style="font-family:'Times New Roman'">: Có </span>
+                                                <input type="checkbox" id="Check1" value="Value1"
+                                                        onclick="selectOnlyThis(this.id)" />
+                                                <span style="font-family:'Times New Roman'">, Không </span>
+                                                <input type="checkbox" id="Check2" value="Value2"
+                                                        onclick="selectOnlyThis(this.id)" />
+                                        </p>
+
+                                        <p style="font-size:11pt; display:inline-block ">
+                                                <span  style="font-family:'Times New Roman'; font-size:11pt">Số
+                                                        lượng:</span>
+                                <form style="display:inline-block" method="POST" action="">
+                                        {% csrf_token %}
+                                        <select name="chon" style="width:40px;"
+                                                class="af_selectOneChoice_content form-control"
+                                                title="Chọn dân tộc" fdprocessedid="lm6mjh">
+
+                                                <option style="margin-top:6pt; margin-bottom:6pt; font-size:14pt"
+                                                        value="">Chọn </option>
+
+                                                <option value="1">1</option>
+                                                <option value="2">2</option>
+                                                <option value="3">3 </option>
+                                                <option value="4">4</option>
+                                                <option value="5">5</option>
+                                                <option value="6">6</option>
+                                                <option value="7">7</option>
+                                                <option value="8">8</option>
+                                                <option value="9">9</option>
+                                                <option value="10">10</option>
+                                        </select> bản
+
+                                        <button class="noprint" onclick="window.print()" type="submit"
+                                                value="insert" id="">In </button>
+                                </form></p>
+                                </td>
+                                <td style="width:221.4pt; padding-right:5.4pt; padding-left:5.4pt; vertical-align:top">
+                                        <p style="font-size:12pt"><span
+                                                        style="font-weight:bold; font-style:italic; -aw-import:ignore">&#xa0;</span>
+                                        </p>
+                                        <p style="font-size:12pt"><span
+                                                        style="font-weight:bold; font-style:italic; -aw-import:ignore">&#xa0;</span>
+                                        </p>
+                                        <p style="font-size:12pt"><span
+                                                        style="font-weight:bold; font-style:italic; -aw-import:ignore">&#xa0;</span>
+                                        </p>
+                                        <p style="text-align:center; font-size:11pt"><span
+                                                        style="font-style:italic">{{khach_hang.ho_va_ten}}</span>
+                                        </p>
+                                </td>
+                        </tr>
+                        <tr style="height:0pt">
+                                <td style="width:229.4pt"></td>
+                                <td style="width:2.8pt"></td>
+                                <td style="width:232.2pt"></td>
+                        </tr>
+                </table>
+                <p style="font-size:12pt"><span
+                                style="font-weight:bold; font-style:italic; -aw-import:ignore">&#xa0;</span></p>
+                <p style="text-align:justify; line-height:115%; font-size:13pt"><span
+                                style="font-weight:bold; font-style:italic; text-decoration:underline">Chú
+                                thích:</span><span style="text-decoration:underline"> </span></p>
+                <p style="margin-top:6pt; line-height:120%"><span
+                                style="width:36pt; line-height:120%; font-size:8.67pt; vertical-align:super; display:inline-block">&#xa0;</span><span
+                                style="line-height:120%; font-size:8.67pt; vertical-align:super">(1)</span><span
+                                style="line-height:120%; font-size:9.33pt; vertical-align:super"> </span><span
+                                style="line-height:120%; font-size:13pt">Ghi rõ tên cơ quan đăng ký khai tử.</span></p>
+                <p style="text-align:justify; line-height:115%; font-size:13pt"><span
+                                style="width:36pt; line-height:115%; font-size:8.67pt; vertical-align:super; display:inline-block">&#xa0;</span><span
+                                style="line-height:115%; font-size:8.67pt; vertical-align:super">(2)</span><span> Ghi
+                                theo nơi đăng ký
+                                thường trú; nếu không có nơi đăng ký thường trú thì ghi theo nơi đăng ký tạm trú; trường
+                                hợp không có
+                                nơi đăng ký thường trú và nơi đăng ký tạm trú thì ghi theo nơi đang sinh
+                                sống.</span><span
+                                style="-aw-import:spaces">&#xa0;&#xa0;&#xa0;&#xa0;&#xa0;&#xa0;&#xa0;&#xa0; </span></p>
+                <p style="text-align:justify; line-height:115%; font-size:13pt"><span
+                                style="width:36pt; display:inline-block">&#xa0;</span><span
+                                style="line-height:115%; font-size:8.67pt; vertical-align:super">(3) </span><span>Ghi
+                                thông tin về giấy
+                                tờ tùy thân như: hộ chiếu, chứng minh nhân dân hoặc giấy tờ hợp lệ thay thế (ví dụ:
+                                Chứng minh nhân dân
+                                số 001089123 do Công an thành phố Hà Nội cấp ngày 20/10/2004).</span></p>
+                <p style="text-indent:36pt; text-align:justify; line-height:115%; font-size:13pt"><span
+                                style="line-height:115%; font-size:8.67pt; vertical-align:super">(4) </span><span>Nếu
+                                ghi theo Giấy báo
+                                tử, thì gạch cụm từ “Giấy tờ thay thế Giấy báo tử”; nếu ghi theo số Giấy tờ thay thế
+                                Giấy báo tử thì ghi
+                                rõ tên, số giấy tờ và gạch cụm từ “Giấy báo tử”; trường hợp không có thì mục này để
+                                trống</span></p>
+                <p style="text-indent:36pt; line-height:115%; font-size:13pt"><span
+                                style="line-height:115%; font-size:8.67pt; vertical-align:super">(5)</span><span> Đề
+                                nghị đánh dấu X vào
+                                ô nếu có yêu cầu cấp bản sao và ghi rõ số lượng.</span></p>
+                <p style="text-align:justify; line-height:115%; font-size:11pt"><span
+                                style="-aw-import:ignore">&#xa0;</span>
+                </p>
+                <p style="text-indent:31.5pt; text-align:justify; line-height:115%; font-size:11pt"><span
+                                style="-aw-import:ignore">&#xa0;</span></p>
+                <p style="font-size:12pt"><span style="-aw-import:ignore">&#xa0;</span></p>
+                <p style="font-size:12pt"><span
+                                style="-aw-import:spaces">&#xa0;&#xa0;&#xa0;&#xa0;&#xa0;&#xa0;&#xa0;&#xa0;&#xa0;&#xa0;&#xa0;&#xa0;&#xa0;&#xa0;&#xa0;&#xa0;&#xa0;
+                        </span></p>
+                <p><span style="-aw-import:ignore">&#xa0;</span></p>
+                <p><span style="-aw-import:ignore">&#xa0;</span></p>
+                <p><span style="-aw-import:ignore">&#xa0;</span></p>
+
+                {% endwith %}
+                {% endwith %}
+
+        </div>
+</body>
+<script>
+        function selectOnlyThis(id) {
+                for (var i = 1; i <= 2; i++) {
+                        document.getElementById("Check" + i).checked = false;
+                }
+                document.getElementById(id).checked = true;
+        }
+</script>
+<!-- <script type="text/javascript">
+
+
+        $(document).ready(function () {
+            // Provinces
+            var province_arr = new Array{{ provinces|safe }};
+            $('#id_province').append($('<option>', {
+                    value: '0',
+                    text: 'Chọn Tỉnh/TP',
+                }, '</option>'));
+            $.each(province_arr, function (i, item) {
+                $('#id_province').append($('<option>', {
+                    value: item,
+                    text: item,
+                }, '</option>'));
+            });
+        });
+
+        // District
+        var districts = new Array{{ str_districts|safe }};
+        var d_a = new Array();
+        d_a[0] = 'Chọn Quận/Huyện';
+        {% for province in provinces %}
+            d_a['{{ province }}'] = districts[{{ forloop.counter0 }}];
+        {% endfor %}
+
+        // Ward
+        var wards = new Array{{ str_wards|safe }};
+        var w_a = new Array();
+        {{ data_str_wards|safe }}
+        {% for district in list_districts %}
+            w_a['{{ district }}'] = wards[{{ forloop.counter0 }}];
+        {% endfor %}
+
+        $('#id_province').change(function () {
+            var c = $(this).val();
+            var district_arr = d_a[c].split("|");
+            $('#id_district').empty();
+            $('#id_ward').empty();
+            if (c == '0') {
+                $('#id_district').append($('<option>', {
+                    value: '0',
+                    text: 'Chọn Quận/Huyện',
+                }, '</option>'));
+            } else {
+                $('#id_district').append($('<option>', {
+                    value: '0',
+                    text: 'Chọn Quận/Huyện',
+                }, '</option>'));
+                $.each(district_arr, function (i, item_district) {
+                    $('#id_district').append($('<option>', {
+                        value: item_district,
+                        text: item_district,
+                    }, '</option>'));
+                });
+            }
+            $('#id_ward').append($('<option>', {
+                value: '0',
+                text: 'Chọn Phường/Xã',
+            }, '</option>'));
+        });
+
+        $('#id_district').change(function(){
+            var s = $(this).val();
+            if(s == '0'){
+                $('#id_ward').empty();
+                $('#id_ward').append($('<option>', {
+                    value: '0',
+                    text: 'Chọn Phường/Xã',
+                }, '</option>'));
+            }
+            var ward_arr = w_a[s].split("|");
+            $('#id_ward').empty();
+            $('#id_ward').append($('<option>', {
+                    value: '0',
+                    text: 'Chọn Phường/Xã',
+                }, '</option>'));
+            $.each(ward_arr, function (j, item_ward) {
+                $('#id_ward').append($('<option>', {
+                    value: item_ward,
+                    text: item_ward,
+                }, '</option>'));
+            });
+        });
+    </script> -->
+
+<script>
+        var provinceSelect = document.getElementById("city");
+        var districtSelect = document.getElementById("district");
+        var wardSelect = document.getElementById("ward");
+        var streetInput = document.getElementById("street-input");
+        var submitButton = document.getElementById("submit-button");
+        var addressOutput = document.getElementById("address");
+
+        submitButton.addEventListener("click", function () {
+                var province = provinceSelect.value;
+                var district = districtSelect.value;
+                var ward = wardSelect.value;
+                var street = streetInput.value;
+
+                if (province && district && ward && street) {
+                        var address = street + ", " + district + ", " + ward + ", " + province;
+                        addressOutput.innerText = "Nơi chết: " + address;
+                        console.log(address)
+                        // Gửi address về server hoặc thực hiện các thao tác khác với địa chỉ đã được kết hợp
+
+                        // Ví dụ: Hiển thị địa chỉ kết hợp cho người dùng
+                        alert("Địa chỉ : " + address);
+                } else {
+                        alert("Vui lòng chọn tỉnh/thành phố, quận/huyện, phường/xã và nhập tên đường.");
+                }
+        });
+</script>
+
+
+
+<h2 id="result"></h2>
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" referrerpolicy="no-referrer"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.21.1/axios.min.js"></script>
+<script>
+        const host = "https://provinces.open-api.vn/api/";
+        var callAPI = (api) => {
+                return axios.get(api)
+                        .then((response) => {
+                                renderData(response.data, "city");
+                        });
+        }
+        callAPI('https://provinces.open-api.vn/api/?depth=1');
+        var callApiDistrict = (api) => {
+                return axios.get(api)
+                        .then((response) => {
+                                renderData(response.data.districts, "district");
+                        });
+        }
+        var callApiWard = (api) => {
+                return axios.get(api)
+                        .then((response) => {
+                                renderData(response.data.wards, "ward");
+                        });
+        }
+
+        var renderData = (array, select) => {
+                let row = ' <option disable value="">Chọn</option>';
+                array.forEach(element => {
+                        row += `<option data-id="${element.code}" value="${element.name}">${element.name}</option>`
+                });
+                document.querySelector("#" + select).innerHTML = row
+        }
+
+        $("#city").change(() => {
+                callApiDistrict(host + "p/" + $("#city").find(':selected').data('id') + "?depth=2");
+                printResult();
+        });
+        $("#district").change(() => {
+                callApiWard(host + "d/" + $("#district").find(':selected').data('id') + "?depth=2");
+                printResult();
+        });
+        $("#ward").change(() => {
+                printResult();
+        })
+
+        var printResult = () => {
+                if ($("#district").find(':selected').data('id') != "" && $("#city").find(':selected').data('id') != "" &&
+                        $("#ward").find(':selected').data('id') != "") {
+                        let result = $("#city option:selected").text() +
+                                " | " + $("#district option:selected").text() + " | " +
+                                $("#ward option:selected").text();
+                        $("#result").text(result)
+                }
+
+        }
+</script>
+
+</html>

@@ -1,0 +1,292 @@
+{% load static %}
+
+<head>
+    <meta charset="utf-8">
+    <title>Lấy số</title>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <meta content="" name="keywords">
+    <meta content="" name="description">
+
+    <!-- Google Fonts -->
+    <link
+        href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,500,600,700,700i|Montserrat:300,400,500,600,700"
+        rel="stylesheet">
+
+    <!-- Bootstrap CSS File -->
+    <link href="{% static 'QRcodes/vendor/bootstrap/css/bootstrap.min.css' %}" rel="stylesheet">
+    <link href="{% static 'QRcodes/lib/bootstrap/css/bootstrap.min.css' %}" rel="stylesheet">
+
+    <!-- Libraries CSS Files -->
+    <link href="{% static 'QRcodes/lib/font-awesome/css/font-awesome.min.css' %}" rel="stylesheet">
+    <link href="{% static 'QRcodes/lib/animate/animate.min.css' %}" rel="stylesheet">
+    <link href="{% static 'QRcodes/lib/owlcarousel/assets/owl.carousel.min.css' %}" rel="stylesheet">
+    <link href="{% static 'QRcodes/lib/lightbox/css/lightbox.min.css' %}" rel="stylesheet">
+
+    <!-- Main Stylesheet File -->
+    <link href="{% static 'QRcodes/css/style.css'%}" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link href="{% static 'Qrcodes/img/file_moi/ararlogo-preview.png' %}" rel="icon">
+    <link href="assets/img/apple-touch-icon.png" rel="apple-touch-icon">
+
+    <!-- Vendor CSS Files -->
+    <link href="{% static 'QRcodes/vendor/bootstrap-icons/bootstrap-icons.css' %}" rel="stylesheet">
+    <link href="{% static 'QRcodes/vendor/aos/aos.css' %}" rel="stylesheet">
+    <link href="{% static 'QRcodes/vendor/glightbox/css/glightbox.min.css' %}" rel="stylesheet">
+    <link href="{% static 'QRcodes/vendor/swiper/swiper-bundle.min.css' %}" rel="stylesheet">
+    <link href="{% static 'QRcodes/css/variables.css' %}" rel="stylesheet">
+
+    <!-- Template Main CSS File -->
+    <link href="{% static 'QRcodes/css/main.css' %}" rel="stylesheet">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="utf-8">
+    <meta name="keywords"
+        content="INTUITIVE, Your design is your passion, Key Features, Pricing Plan, Empire State Building">
+    <meta name="description" content="">
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <!-- SweetAlert2 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/limonte-sweetalert2/7.2.0/sweetalert2.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/limonte-sweetalert2/7.2.0/sweetalert2.all.min.js"></script>
+
+    <link rel="stylesheet" href="{% static 'QRcodes/css/nicepage.css' %}" media="screen">
+    <script class="u-script" type="text/javascript" src="{% static 'QRcodes/js/jquery.js' %}" defer=""></script>
+    <script class="u-script" type="text/javascript" src="{% static 'QRcodes/js/nicepage.js' %}" defer=""></script>
+</head>
+
+<header style="background: #bb302a; height: 180px;" id="header">
+    <div class="container">
+        <div class="row">
+            <div class="col-2 logo float-left">
+                <a href="{% url 'customer:trang-chu' %}" class="scrollto"><img
+                        src="{% static 'Qrcodes/img/file_moi/ararlogo-preview.png' %}" alt="" class="img-fluid"></a>
+            </div>
+            <div style="width:80px;" class="col-8 text-center">
+                <a href="{% url 'customer:trang-chu' %}" class="scrollto">
+                    <img style="border: none; height: 150px; margin: auto;"
+                        src="{% static 'Qrcodes/img/file_moi/bienhieu.jpg' %}" alt="" class="img-fluid">
+                </a>
+            </div>
+            <div class="col-2 logo float-right">
+                <a href="{% url 'customer:trang-chu' %}" class="scrollto"><img style="max-height: 100px; margin: 40px;"
+                        src="{% static 'Qrcodes/img/file_moi/lo-go-q3.png' %}" alt="" class="img-fluid"></a>
+            </div>
+        </div>
+    </div>
+</header>
+
+<body>
+    <style>
+        .a {
+            width: 400px;
+            font-weight: 10px;
+        }
+
+        h3 {
+            margin-top: -40px;
+        }
+
+        button {
+            background-color: cadetblue;
+            color: whitesmoke;
+            border: 0;
+            box-shadow: none;
+            font-size: 40px;
+            font-weight: 500;
+            border-radius: 7px;
+            padding: 15px 35px;
+            cursor: pointer;
+            white-space: nowrap;
+            margin: 10px;
+        }
+
+        table {
+            margin: 0 80px;
+        }
+
+        th {
+            font-size: 40px;
+            text-align: center;
+        }
+
+        td {
+            font-size: 30px;
+            width: 500px;
+        }
+
+        body {
+            background-size: 100% 100%;
+            max-width: 100%;
+        }
+
+        span {
+            font-size: 24px;
+        }
+
+        #services {
+            padding: 30px 0;
+        }
+
+        @media (min-width: 1200px) {
+            .container {
+                max-width: 2160px;
+            }
+        }
+    </style>
+    {% if ho_va_ten %}
+    <div style="margin-top:180px;" class="container ">
+        <div class="row">
+            <div class="col-12 text-center">
+                <table id="" class="table table-bordered table  mx-auto">
+                    <thead>
+                        <tr class="table-primary">
+                            <th scope="col">THÔNG TIN1</th>
+                            <th scope="col">SỐ THỨ TỰ</th>
+                            <th scope="col">DỊCH VỤ SỬ DỤNG</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        <tr>
+                            <th scope="row">{{ho_va_ten}}</th>
+                            <td scope="row">{{so_thu_tu}}</td>
+                            <td scope="row">{{dich_vu}}</td>
+                        </tr>
+                    </tbody>
+
+                </table>
+
+            </div>
+        </div>
+    </div>
+
+    {% else %}
+
+    <div style="margin-top:150px;" class="container ">
+        <div class="row">
+            <div class="col-12 text-center mt-3 mb-4">
+                <h3>QUÉT MÃ QR VÀ LẤY SỐ THỨ TỰ TẠI ĐÂY</h3>
+            </div>
+
+            {{thong_bao|safe}}
+
+            <div class="col-12 text-center">
+                <button id="jumpButton">QUÉT MÃ QR TẠI ĐÂY</button>
+                <form name="" id="my-form" method="post" action="">
+                    {% csrf_token %}
+                    <input style="width:50px; border:none;" class="target-input text-center" id="input-field"
+                        type="text" name="thong_tin" placeholder="">
+                    <button style="display: none;" id="submit-button" class="text-center" name="scan_data_1"
+                        type="submit">Quét</button>
+                </form>
+            </div>
+
+            <div class="col-12 text-center">
+                <table id="" class="table table-bordered table  mx-auto">
+                    <thead>
+                        <tr class="table-primary">
+                            <th scope="col">THÔNG TIN</th>
+                            <th scope="col">SỐ THỨ TỰ</th>
+                            <th scope="col">DỊCH VỤ SỬ DỤNG</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        <tr>
+                            <th scope="row">{{ho_va_ten}}</th>
+                            <td scope="row">{{so_thu_tu}}</td>
+                            <td scope="row">{{dich_vu}}</td>
+                        </tr>
+                    </tbody>
+
+                </table>
+            </div>
+        </div>
+    </div>
+
+    {% endif %}
+    <div class="col-md-12 text-center">
+        <div class="qr-img">
+            <button id="chuyenTrangButton">QUAY LẠI TRANG DỊCH VỤ</button>
+            <div id="countdown"></div>
+            <img src="/media/{{img_name}}" width="250px">
+        </div>
+    </div>
+
+    <script>
+        let isScanned = false;
+
+        window.onload = function () {
+            var inputElement = document.getElementById('input-field');
+            inputElement.focus();
+        };
+
+        const MAX_LENGTH = 180;
+
+        // Nhảy vào ô input
+        const jumpButton = document.getElementById('jumpButton');
+        const targetInput = document.querySelector('.target-input');
+
+        jumpButton.addEventListener('click', function () {
+            if (!isScanned) {
+                targetInput.focus();
+            } else {
+                alert("Bạn đã quét mã QR, không thể quét lại.");
+            }
+        });
+
+        const inputField = document.getElementById("input-field");
+        const submitButton = document.getElementById("submit-button");
+        const form = document.getElementById("my-form");
+
+        inputField.addEventListener("input", function () {
+            if (inputField.value.length >= MAX_LENGTH) {
+                alert("Đã vượt quá giới hạn 180 ký tự.");
+                inputField.value = inputField.value.substring(0, MAX_LENGTH);
+                inputField.disabled = true;
+            }
+        });
+
+        submitButton.addEventListener("click", function () {
+            var csrfToken = document.querySelector('input[name="csrfmiddlewaretoken"]').value;
+            var formData = new FormData(form);
+            formData.append('csrfmiddlewaretoken', csrfToken);
+
+            fetch('', {
+                method: 'POST',
+                body: formData
+            }).then(response => {
+                console.log('Success:', response);
+            }).catch(error => {
+                console.error('Error:', error);
+            });
+        });
+    </script>
+
+    <script>
+        let remainingTime = {{ thoi_gian }};
+        updateCountdown();
+
+        const countdownInterval = setInterval(function () {
+            remainingTime -= 1;
+            updateCountdown();
+
+            if (remainingTime <= 0) {
+                clearInterval(countdownInterval);
+                window.location.href = "{% url 'customer:chon-dich-vu' %}";
+            }
+        }, 1000);
+
+        function updateCountdown() {
+            const countdownElement = document.getElementById("countdown");
+            countdownElement.innerHTML = `${remainingTime} giây`;
+        }
+
+        document.getElementById("chuyenTrangButton").addEventListener("click", function () {
+            window.location.href = "{% url 'customer:chon-dich-vu' %}";
+        });
+    </script>
+
+</body>
+
+</html>

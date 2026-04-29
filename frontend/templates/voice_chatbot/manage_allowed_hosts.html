@@ -1,0 +1,18 @@
+<!-- manage_allowed_hosts.html -->
+<h2>Manage Allowed Hosts</h2>
+
+<form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Add IP</button>
+</form>
+
+<h3>Allowed Hosts</h3>
+<ul>
+    {% for host in allowed_hosts %}
+        <li>
+            {{ host.ip_address }}
+            <a href="{% url 'voice_chatbot:delete_allowed_host' host.pk %}">Delete</a>
+        </li>
+    {% endfor %}
+</ul>

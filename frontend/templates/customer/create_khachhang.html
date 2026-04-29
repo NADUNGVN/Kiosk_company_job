@@ -1,0 +1,29 @@
+<form method="post">
+    {% csrf_token %}
+    <label for="name">Tên khách hàng:</label>
+    <input type="text" id="name" name="name" required><br>
+
+    <label for="dia_chi">Địa chỉ:</label>
+    <textarea id="dia_chi" name="dia_chi"></textarea><br>
+
+    <label for="so_cccd">Số CCCD:</label>
+    <input type="text" id="so_cccd" name="so_cccd"><br>
+
+    <label for="ngay_sinh">Ngày sinh:</label>
+    <input type="text" id="ngay_sinh" name="ngay_sinh"><br>
+
+    <label for="gioi_tinh">Giới tính:</label>
+    <input type="text" id="gioi_tinh" name="gioi_tinh"><br>
+
+    <label for="ngay_cap">Ngày cấp CCCD:</label>
+    <input type="text" id="ngay_cap" name="ngay_cap"><br>
+
+    <label for="service">Dịch vụ:</label>
+    <select id="service" name="service">
+        {% for service in services %}
+            <option value="{{ service.id }}">{{ service.name }}</option>
+        {% endfor %}
+    </select><br>
+
+    <button type="submit">Lấy số thứ tự</button>
+</form>

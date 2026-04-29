@@ -1,0 +1,139 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta content="width=device-width, initial-scale=1.0" name="viewport">
+
+  <title></title>
+  <meta content="" name="description">
+  <meta content="" name="keywords">
+
+  <!-- Favicons -->
+  <link href="assets/img/favicon.png" rel="icon">
+  <link href="assets/img/apple-touch-icon.png" rel="apple-touch-icon">
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&family=Poppins:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&family=Source+Sans+Pro:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400;1,600;1,700&display=swap" rel="stylesheet">
+
+  <!-- Vendor CSS Files -->
+  <link href="{% static 'QRcodes/vendor/bootstrap/css/bootstrap.min.css' %}" rel="stylesheet">
+  <link href="{% static 'QRcodes/vendor/bootstrap-icons/bootstrap-icons.css' %}" rel="stylesheet">
+  <link href="{% static 'QRcodes/vendor/aos/aos.css' %}" rel="stylesheet">
+  <link href="{% static 'QRcodes/vendor/glightbox/css/glightbox.min.css' %}" rel="stylesheet">
+  <link href="{% static 'QRcodes/vendor/swiper/swiper-bundle.min.css' %}" rel="stylesheet">
+
+
+  <!-- Variables CSS Files. Uncomment your preferred color scheme -->
+  <link href="{% static 'QRcodes/css/variables.css' %}" rel="stylesheet">
+  <!-- <link href="assets/css/variables-blue.css" rel="stylesheet"> -->
+  <!-- <link href="assets/css/variables-green.css" rel="stylesheet"> -->
+  <!-- <link href="assets/css/variables-orange.css" rel="stylesheet"> -->
+  <!-- <link href="assets/css/variables-purple.css" rel="stylesheet"> -->
+  <!-- <link href="assets/css/variables-red.css" rel="stylesheet"> -->
+  <!-- <link href="assets/css/variables-pink.css" rel="stylesheet"> -->
+
+  <!-- Template Main CSS File -->
+
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="utf-8">
+  <meta name="keywords"
+    content="INTUITIVE, Your design is your passion, Key Features, Pricing Plan, Empire State Building">
+  <meta name="description" content="">
+  <title>Page 1</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+  <!-- SweetAlert2 -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/limonte-sweetalert2/7.2.0/sweetalert2.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/limonte-sweetalert2/7.2.0/sweetalert2.all.min.js"></script>
+
+  <link rel="stylesheet" href="{% static 'QRcodes/css/nicepage.css' %}" media="screen">
+  <link rel="stylesheet" href="{% static 'QRcodes/css/Page-1.css' %}" media="screen">
+  <script class="u-script" type="text/javascript" src="{% static 'QRcodes/js/jquery.js' %}" defer=""></script>
+  <script class="u-script" type="text/javascript" src="{% static 'QRcodes/js/nicepage.js' %}" defer=""></script>
+  <meta name="generator" content="Nicepage 5.11.4, nicepage.com">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/limonte-sweetalert2/7.2.0/sweetalert2.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/limonte-sweetalert2/7.2.0/sweetalert2.all.min.js"></script>
+  <link id="u-theme-google-font" rel="stylesheet"
+    href="https://fonts.googleapis.com/css?family=Roboto:100,100i,300,300i,400,400i,500,500i,700,700i,900,900i|Open+Sans:300,300i,400,400i,500,500i,600,600i,700,700i,800,800i">
+</head>
+
+<header style="background-color: #FFFFFF; margin-top:-40px " id="header" class="header fixed-top" data-scrollto-offset="0">
+    <div class="container-fluid d-flex align-items-center justify-content-between">
+
+      <a href="{% url 'qrcode:trang-chu' %}" class="logo d-flex align-items-center scrollto me-auto me-lg-0">
+        <!-- Uncomment the line below if you also wish to use an image logo -->
+        <!-- <img src="assets/img/logo.png" alt=""> -->
+        <img style="width: 200pt;" src="{% static 'Qrcodes/img/logo_B.png' %}" alt="">
+      </a>
+
+      <nav id="navbar" class="navbar">
+
+    
+        <ul>
+
+          <li ><a style="color: aqua;" href="{% url 'qrcode:trang-chu' %}"><span>Trang chủ</span> </a>
+
+          </li>
+
+         
+          <li><a style="color:aqua;" class="nav-link scrollto" href="{% url 'qrcode:quet-3-nguoi' %}">Dịch vụ khác</a></li>
+  
+       
+         
+          <li><a style="color:aqua;" class="nav-link scrollto" href="{% url 'qrcode:quet-3-nguoi' %}">Liên hệ</a></li>
+        </ul>
+        <i class="bi bi-list mobile-nav-toggle d-none"></i>
+      </nav><!-- .navbar -->
+
+    </div>
+
+   
+
+    
+  </header>
+
+
+{% block content %}
+
+{% endblock %} 
+<script>
+
+
+  const jumpButton = document.getElementById('jumpButton');
+  const targetInput = document.querySelector('.target-input');
+  
+  jumpButton.addEventListener('click', function() {
+      targetInput.focus();
+  });
+  const inputField = document.getElementById("input-field");
+  const submitButton = document.getElementById("submit-button");
+  const form = document.getElementById("my-form");
+
+  inputField.addEventListener("keypress", function(event) {
+      if (event.key === "Enter") {
+          submitButton.click();
+      }
+  });
+
+  submitButton.addEventListener("click", function() {
+      form.submit();
+  });
+</script>
+
+
+
+
+<!-- Vendor JS Files -->
+<script src="{% static 'QRcodes/vendor/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+<script src="{% static 'QRcodes/vendor/aos/aos.js' %}"></script>
+<script src="{% static 'QRcodes/vendor/glightbox/js/glightbox.min.js' %}"></script>
+<script src="{% static 'QRcodes/vendor/isotope-layout/isotope.pkgd.min.js' %}"></script>
+<script src="{% static 'QRcodes/vendor/swiper/swiper-bundle.min.js' %}"></script>
+<script src="{% static 'QRcodes/vendor/php-email-form/validate.js' %}"></script>
+
+<!-- Template Main JS File -->
+<script src="{% static 'QRcodes/js/main.js' %}"></script>

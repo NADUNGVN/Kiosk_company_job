@@ -1,0 +1,90 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <title id="pageTitle">Bảng nhân viên (0)</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="keywords" content="INTUITIVE, Your design is your passion, Key Features, Pricing Plan, Empire State Building">
+    <meta name="description" content="">
+
+    <!-- Favicon and Apple Touch Icon -->
+    <link href="{% static 'Qrcodes/img/file_moi/ararlogo-preview.png' %}" rel="icon">
+    <link href="{% static 'Qrcodes/img/file_moi/apple-touch-icon.png' %}" rel="apple-touch-icon">
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;500;600;700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- CSS Files -->
+    <link href="{% static 'QRcodes/vendor/bootstrap/css/bootstrap.min.css' %}" rel="stylesheet">
+    <link href="{% static 'QRcodes/lib/font-awesome/css/font-awesome.min.css' %}" rel="stylesheet">
+    <link href="{% static 'QRcodes/lib/owlcarousel/assets/owl.carousel.min.css' %}" rel="stylesheet">
+    <link href="{% static 'QRcodes/lib/lightbox/css/lightbox.min.css' %}" rel="stylesheet">
+    <link href="{% static 'QRcodes/css/style.css' %}" rel="stylesheet">
+    <link href="{% static 'QRcodes/css/variables.css' %}" rel="stylesheet">
+    <link href="{% static 'QRcodes/css/main.css' %}" rel="stylesheet">
+
+    <!-- SweetAlert2 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/limonte-sweetalert2/7.2.0/sweetalert2.min.css">
+
+    <!-- Optional JavaScript -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/limonte-sweetalert2/7.2.0/sweetalert2.all.min.js"></script>
+    <script type="application/ld+json">
+        {
+            "@context": "http://schema.org",
+            "@type": "Organization",
+            "name": "",
+            "logo": "images/ararlogo.png"
+        }
+    </script>
+</head>
+
+<body>
+    <header style="background:  #cd181e; height: 120px;" id="header">
+        <div class="container">
+          <div class="row">
+            <div class="col-2 logo float-left">
+              <a href="{% url 'customer:trang-chu' %}" class="scrollto"><img style='margin: 20px 0;'
+                  src="{% static 'QRcodes/img/file_moi/ararlogo-preview.png' %}" alt="" class="img-fluid"></a>
+            </div>
+            <div style="width: 80px; ;" class="col-8 text-center mx-auto">
+              <a href="{% url 'customer:trang-chu' %}" class="">
+                <img style='margin: -10px 0px 0 -400px; max-height: 100px;' src="{% static 'Qrcodes/img/file_moi/logo.png' %}"
+                  alt="" class="img-fluid">
+              </a>
+              <span style="color: #FFCB05; font-family: 'Be Vietnam Pro'; position: absolute; top: 0; ">
+                TRUNG TÂM PHỤC VỤ HÀNH CHÍNH CÔNG 
+                <br>PHƯỜNG XUÂN HÒA
+              </span>
+            </div>
+            <div class="col-2 logo float-right">
+              <a href="{% url 'customer:trang-chu' %}" class="scrollto"><img style="max-height: 90px; margin: 0px 0 0 100px;"
+                  src="" alt="" class="img-fluid float-right"></a>
+            </div>
+          </div>
+        </div>
+      </header>
+
+<div class="container mt-5 shadow p-4 rounded bg-white">
+    <h2 class="text-center mb-4 text-primary"> Cán bộ {{ danh_sach_quay }}</h2>
+    <div class="list-group">
+        {% for nhan_vien in danh_sach_nhan_vien %}
+        <a href="{% url 'customer:nhan-vien' nhan_vien.assigned_service_id nhan_vien.id %}" class="list-group-item list-group-item-action">
+            <span class="icon">&#128100;</span> <!-- User icon -->
+            {{ nhan_vien.name }}
+        </a>
+        {% endfor %}
+    </div>
+
+    <a href="https://drive.google.com/file/d/1lKE7iJeJTJiXfmk4UyK7K01pysujdf4l/view?usp=sharing">Cert</a>
+</div>
+
+<!-- Optional JavaScript -->
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" crossorigin="anonymous"></script>
+</body>
+</html>

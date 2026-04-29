@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Send POST Request and Play Audio</title>
+</head>
+<body>
+    <form id="my-form" method="post" action="">
+        {% csrf_token %}
+        <input style="width:50px; border:none;" class="target-input text-center" id="input-field" type="text" name="thong_tin" placeholder="">
+        <button style="display: none;" id="submit-button" class="text-center" name="scan_data_1" type="submit">Quét</button>
+    </form>
+
+    <audio id="audio-player" controls></audio>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const form = document.getElementById('my-form');
+            const submitButton = document.getElementById('submit-button');
+            const inputField = document.getElementById('input-field');
+            const audioPlayer = document.getElementById('audio-player');
+
+            inputField.addEventListener("keypress", function (event) {
+                if (event.key === "Enter") {
+                    submitButton.click();
+                }
+            });
+
+            submitButton.addEventListener("click", function () {
+                const csrfToken = document.querySelector('input[name="csrfmiddlewaretoken"]').value;
+                const formData = new FormData(form);
+                formData.append('csrfmiddlewaretoken', csrfToken);
+
+                fetch('', {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.audio_url) {
+                        // Phát âm thanh từ URL trong phản hồi
+                        audioPlayer.src = data.audio_url;
+                        audioPlayer.play();
+                    }
+                    if (data.message) {
+                        console.log(data.message);  // Xử lý thông điệp từ phản hồi
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                });
+            });
+        });
+    </script>
+</body>
+</html>
