@@ -20,7 +20,7 @@ load_dotenv()
 # Cấu hình
 BASE_DIR = Path(__file__).resolve().parent
 HEALTH_CHECK_URL = os.getenv('HEALTH_CHECK_URL', 'https://127.0.0.1:8000')
-VENV_ACTIVATE = os.path.join(os.getcwd(), "venv", "Scripts", "activate.bat")
+VENV_ACTIVATE = os.path.join(BASE_DIR, ".venv", "Scripts", "activate.bat")
 SSL_KEYFILE = os.path.join(BASE_DIR, 'certs', 'key.pem')
 SSL_CERTFILE = os.path.join(BASE_DIR, 'certs', 'cert.pem')
 PORT = 8000

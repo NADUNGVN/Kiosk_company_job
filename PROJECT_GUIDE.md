@@ -24,7 +24,6 @@ Dự án áp dụng mô hình **Modular Monolith** (Đơn khối phân mô-đun)
 *   **Ngôn ngữ chính**: Python 3.10+
 *   **Framework**: Django 5.0.6
 *   **Real-time**: Django Channels (WebSocket) & Uvicorn/Daphne.
-*   **Task Queue**: Celery & Redis (Dùng cho Voice Chatbot và xử lý ngầm).
 *   **AI/Voice**: 
     *   TensorFlow (Nhận diện khuôn mặt/xử lý ảnh).
     *   gTTS (Chuyển văn bản thành giọng nói).
@@ -90,14 +89,8 @@ Tọa lạc tại `/core/hardware/`:
 ### 7.1. Môi trường phát triển (Local)
 1. Kích hoạt venv: `.\.venv\Scripts\activate`
 2. Chạy server SSL: `python manage.py runsslserver 0.0.0.0:8000`
-3. Chạy Celery (Worker & Beat) để kích hoạt Voice Chatbot.
 
-### 7.2. Triển khai Docker
-```bash
-docker-compose up --build -d
-```
-
-### 7.3. Chạy tự động trên máy Kiosk
+### 7.2. Chạy tự động trên máy Kiosk
 Sử dụng file `kiosk_q3.py` để hệ thống tự động kiểm tra cổng, giải phóng tiến trình cũ, khởi động server và mở trình duyệt ở chế độ toàn màn hình.
 
 ---

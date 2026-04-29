@@ -1,8 +1,6 @@
 absl-py==2.1.0
 altgraph==0.17.4
-amqp==5.2.0
 anyio==4.6.0
-APScheduler==3.10.4
 asgiref==3.8.1
 astunparse==1.6.3
 async-timeout==4.0.3
@@ -10,19 +8,14 @@ attrs==24.2.0
 autobahn==24.4.2
 Automat==24.8.1
 beautifulsoup4==4.12.3
-billiard==4.2.1
 blinker==1.9.0
 CacheControl==0.14.2
 cachetools==5.5.0
-celery==5.4.0
 certifi==2024.8.30
 cffi==1.17.1
 channels==4.1.0
 charset-normalizer==3.3.2
 click==8.1.7
-click-didyoumean==0.3.1
-click-plugins==1.1.1
-click-repl==0.3.0
 colorama==0.4.6
 constantly==23.10.4
 cryptography==43.0.1
@@ -63,7 +56,6 @@ googleapis-common-protos==1.66.0
 grpcio==1.69.0
 grpcio-status==1.69.0
 gTTS==2.4.0
-gunicorn==20.1.0
 h11==0.14.0
 h5py==3.12.1
 httplib2==0.22.0
@@ -75,7 +67,6 @@ itsdangerous==2.2.0
 Jinja2==3.1.5
 joblib==1.4.2
 keras==3.8.0
-kombu==5.4.2
 libclang==18.1.1
 lxml==5.3.0
 lz4==4.3.3
@@ -100,7 +91,6 @@ packaging==24.1
 pandas==2.2.3
 pefile==2024.8.26
 Pillow==10.1.0
-prompt_toolkit==3.0.48
 proto-plus==1.25.0
 protobuf==5.29.3
 psutil==6.1.0
@@ -130,7 +120,6 @@ pywin32==306
 pywin32-ctypes==0.2.3
 PyYAML==6.0.2
 qrcode==7.4.2
-redis==5.0.7
 requests==2.31.0
 retina-face==0.0.17
 rich==13.9.4
@@ -161,7 +150,6 @@ unicorn==2.1.1
 uritemplate==4.1.1
 urllib3==2.2.3
 uvicorn==0.31.0
-vine==5.1.0
 watchfiles==0.24.0
 wcwidth==0.2.13
 websockets==13.1
