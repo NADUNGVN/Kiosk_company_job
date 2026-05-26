@@ -1,10 +1,10 @@
-# Device Runtime Setup
+# Thiết Lập Device Runtime
 
-Thu muc nay chay rieng test nhan dien nguoi dang su dung kiosk tren thiet bi that.
+Thư mục này dùng để chạy riêng phần thử nghiệm nhận diện người đang sử dụng kiosk trên thiết bị thật.
 
-Mac dinh moi thu duoc neo theo chinh thu muc `experiments/device_runtime`, nen co the copy sang may khac ma khong phu thuoc duong dan `D:\work\...`.
+Mặc định mọi đường dẫn được neo theo chính thư mục `experiments/device_runtime`, nên có thể copy sang máy khác mà không phụ thuộc đường dẫn `D:\work\...`.
 
-## Cau truc sau khi setup
+## Cấu Trúc Sau Khi Setup
 
 ```text
 experiments/device_runtime/
@@ -18,60 +18,74 @@ experiments/device_runtime/
     device_usage_tests/
 ```
 
-## Cai dat tren may moi
+## Cài Đặt Trên Máy Mới
 
-Chay tu root project:
+Chạy từ root project:
 
 ```powershell
 python experiments\device_runtime\setup_device_runtime.py
 ```
 
-Script se:
+Script sẽ:
 
-- Tao venv rieng tai `experiments/device_runtime/.venv`.
-- Cai cac thu vien can thiet: MediaPipe, OpenCV, NumPy, psutil.
-- Tai 2 model MediaPipe vao `experiments/device_runtime/models`.
+- Tạo venv riêng tại `experiments/device_runtime/.venv`.
+- Cài các thư viện cần thiết: MediaPipe, OpenCV, NumPy, psutil.
+- Tải 2 model MediaPipe vào `experiments/device_runtime/models`.
 
-Neu muon cai vao Python/venv dang kich hoat:
+Nếu muốn cài vào Python/venv đang kích hoạt:
 
 ```powershell
 python experiments\device_runtime\setup_device_runtime.py --skip-venv
 ```
 
-Neu da co model va chi muon cai thu vien:
+Nếu đã có model và chỉ muốn cài thư viện:
 
 ```powershell
 python experiments\device_runtime\setup_device_runtime.py --skip-models
 ```
 
-## Chay test
+## Chạy Test Runtime Chính
 
-Neu dung venv rieng do script tao:
+Nếu dùng venv riêng do script tạo:
 
 ```powershell
 experiments\device_runtime\.venv\Scripts\python.exe experiments\device_runtime\person_usage_device_test.py
 ```
 
-Neu camera khong phai index `0`:
+Nếu camera không phải index `0`:
 
 ```powershell
 experiments\device_runtime\.venv\Scripts\python.exe experiments\device_runtime\person_usage_device_test.py --camera 1
 ```
 
-Ket qua se ghi vao:
+Kết quả sẽ ghi vào:
 
 ```text
 experiments/device_runtime/outputs/device_usage_tests/<timestamp>/
 ```
 
-## Ghi chu model
+## Chạy Holistic Research
 
-Mac dinh runtime can:
+Script này dùng `mp.solutions.holistic` để nghiên cứu thêm logic pose + face + iris trong một pipeline riêng. Script này không thay thế runtime chính.
+
+```powershell
+experiments\device_runtime\.venv\Scripts\python.exe experiments\device_runtime\holistic_usage_research.py --duration 10
+```
+
+Kết quả sẽ ghi vào:
+
+```text
+experiments/device_runtime/outputs/holistic_usage_tests/<timestamp>/
+```
+
+## Ghi Chú Model
+
+Mặc định runtime chính cần:
 
 - `models/pose_landmarker_lite.task`
 - `models/face_landmarker.task`
 
-Neu model nam o thu muc khac:
+Nếu model nằm ở thư mục khác:
 
 ```powershell
 experiments\device_runtime\.venv\Scripts\python.exe experiments\device_runtime\person_usage_device_test.py --model-dir D:\path\to\models
