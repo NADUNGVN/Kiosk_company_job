@@ -202,7 +202,7 @@ def delete_keyword(request, pk):
     Keyword.objects.get(id=keyword_id).delete()
     return JsonResponse({'response_text': "Đã xóa từ khóa."})
 # Tạo file âm thanh cho lời chào nếu chưa tồn tại (chỉ khi có gTTS)
-greeting_text = "Xin chào! Phường Xuân HÒA có thể hỗ trợ gì cho bạn?"
+greeting_text = "Xin chào! Trung Tâm Phục Vụ Hành Chính Công có thể hỗ trợ gì cho bạn?"
 greeting_file = 'greeting.mp3'
 greeting_path = os.path.join('media/audio', greeting_file)
 if GTTS_AVAILABLE and not os.path.exists(greeting_path):
