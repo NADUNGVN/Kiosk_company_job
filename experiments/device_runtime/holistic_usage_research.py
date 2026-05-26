@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import argparse
 import csv
+import importlib
 import json
 import math
 import time
@@ -94,9 +95,9 @@ def main() -> int:
     args = parse_args()
 
     import cv2
-    import mediapipe as mp
     import psutil
 
+    mp_holistic = load_holistic_module()
     output_root = resolve_path(args.output, DEVICE_RUNTIME_DIR)
     run_dir = output_root / datetime.now().strftime("%Y%m%d_%H%M%S")
     run_dir.mkdir(parents=True, exist_ok=True)
@@ -127,7 +128,7 @@ def main() -> int:
     process = psutil.Process()
     process.cpu_percent(None)
 
-    holistic = mp.solutions.holistic.Holistic(
+    holistic = mp_holistic.Holistic(
         static_image_mode=False,
         model_complexity=1,
         smooth_landmarks=True,
@@ -178,7 +179,7 @@ def main() -> int:
             previous_frame_t = current_t
             t_sec = current_t - started
 
-            pose = observe_pose(mp, results, frame_w, frame_h)
+            pose = observe_pose(mp_holistic, results, frame_w, frame_h)
             face = observe_face(results, frame_w, frame_h)
             speed = movement_speed_ratio(previous_center, pose.center, frame_w, dt)
             previous_center = pose.center if pose.center else previous_center
@@ -276,13 +277,30 @@ def main() -> int:
     return 0
 
 
-def observe_pose(mp, results: Any, width: int, height: int) -> PoseObservation:
+def load_holistic_module() -> Any:
+    candidates = (
+        "mediapipe.python.solutions.holistic",
+        "mediapipe.solutions.holistic",
+    )
+    for module_name in candidates:
+        try:
+            return importlib.import_module(module_name)
+        except ImportError:
+            continue
+    raise ImportError(
+        "Could not import MediaPipe Holistic. "
+        "Install/upgrade mediapipe in the active venv, for example: "
+        "python -m pip install -U mediapipe"
+    )
+
+
+def observe_pose(mp_holistic: Any, results: Any, width: int, height: int) -> PoseObservation:
     landmarks = getattr(getattr(results, "pose_landmarks", None), "landmark", None)
     if not landmarks:
         return PoseObservation()
 
-    left = landmarks[mp.solutions.holistic.PoseLandmark.LEFT_SHOULDER.value]
-    right = landmarks[mp.solutions.holistic.PoseLandmark.RIGHT_SHOULDER.value]
+    left = landmarks[mp_holistic.PoseLandmark.LEFT_SHOULDER.value]
+    right = landmarks[mp_holistic.PoseLandmark.RIGHT_SHOULDER.value]
     left_point = point(left, width, height)
     right_point = point(right, width, height)
     center = ((left_point[0] + right_point[0]) // 2, (left_point[1] + right_point[1]) // 2)
