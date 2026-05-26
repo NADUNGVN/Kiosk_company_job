@@ -1,0 +1,15 @@
+detail,event,time_sec
+START -> TOO_FAR,state_changed,0.874
+TOO_FAR -> POTENTIAL_USER,state_changed,8.506
+holistic_rule,attention_candidate_started,8.506
+POTENTIAL_USER -> NEED_SUPPORT,state_changed,11.398
+attention_sustained_3.0s,need_support_detected,11.398
+NEED_SUPPORT -> PERSON_PRESENT_NOT_ATTENDING,state_changed,23.043
+PERSON_PRESENT_NOT_ATTENDING -> POTENTIAL_USER,state_changed,23.129
+POTENTIAL_USER -> NEED_SUPPORT,state_changed,26.094
+NEED_SUPPORT -> PERSON_PRESENT_NOT_ATTENDING,state_changed,28.984
+PERSON_PRESENT_NOT_ATTENDING -> POTENTIAL_USER,state_changed,29.835
+POTENTIAL_USER -> PERSON_PRESENT_NOT_ATTENDING,state_changed,30.403
+PERSON_PRESENT_NOT_ATTENDING -> POTENTIAL_USER,state_changed,38.456
+POTENTIAL_USER -> NEED_SUPPORT,state_changed,41.348
+q_or_escape,manual_stop,47.787

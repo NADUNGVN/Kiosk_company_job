@@ -1,0 +1,16 @@
+{
+  "camera": "0",
+  "duration": 60.0,
+  "output": "C:\\Users\\Dung\\arar_qtsc\\Kiosk_company_job\\experiments\\device_runtime\\outputs\\holistic_usage_tests",
+  "width": 0,
+  "height": 0,
+  "capture_fps": 30.0,
+  "usage_hold_sec": 3.0,
+  "passing_speed_ratio_per_sec": 0.45,
+  "show": true,
+  "save_raw": true,
+  "save_annotated": true,
+  "run_dir": "C:\\Users\\Dung\\arar_qtsc\\Kiosk_company_job\\experiments\\device_runtime\\outputs\\holistic_usage_tests\\20260526_161238",
+  "device_runtime_dir": "C:\\Users\\Dung\\arar_qtsc\\Kiosk_company_job\\experiments\\device_runtime",
+  "output_root": "C:\\Users\\Dung\\arar_qtsc\\Kiosk_company_job\\experiments\\device_runtime\\outputs\\holistic_usage_tests"
+}
