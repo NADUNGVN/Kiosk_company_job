@@ -222,7 +222,7 @@
           {% csrf_token %}
           <div class="app">
             <h3>CHÀO <a style="font-size: 40px;" href="">{{khach_hang.name}}</a> VUI LÒNG ĐÁNH GIÁ CHẤT LƯỢNG DỊCH VỤ
-              TẠI  TRUNG TÂM PHỤC VỤ HÀNH CHÍNH CÔNG PHƯỜNG XUÂN HÒA</h3>
+              TẠI  TRUNG TÂM PHỤC VỤ HÀNH CHÍNH CÔNG Trung Tâm Phục Vụ Hành Chính Công</h3>
 
             <p>Hãy cho chúng tôi biết trai nghiệm của bạn về dịch vụ {{khach_hang.service}} </p>
 
