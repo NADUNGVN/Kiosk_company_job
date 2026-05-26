@@ -1,9 +1,9 @@
 """
-Collect two short videos for customer-presence analysis.
+Collect a short PASSING_BY video for customer-presence analysis.
 
 This script is intentionally standalone and does not import Django code.
-It opens the camera, waits for Enter, records an empty-room segment, waits for
-Enter again, then records a person-present segment.
+It opens the camera, waits for Enter, then records a person walking back and
+forth through the frame for 10 seconds.
 """
 
 from __future__ import annotations
@@ -18,20 +18,15 @@ from pathlib import Path
 from typing import Optional
 
 
-PHASES = (
-    {
-        "phase": "no_person",
-        "label": "NO_PERSON",
-        "duration_seconds": 10,
-        "instruction": "Leave the room/frame empty, then press Enter.",
-    },
-    {
-        "phase": "person",
-        "label": "PERSON",
-        "duration_seconds": 30,
-        "instruction": "Stand near the door/outside frame, press Enter, then walk to kiosk.",
-    },
-)
+SCRIPT_DIR = Path(__file__).resolve().parent
+DEFAULT_OUTPUT_DIR = SCRIPT_DIR / "data"
+
+PHASE = {
+    "phase": "passing_by",
+    "label": "PASSING_BY",
+    "duration_seconds": 10,
+    "instruction": "Stand near the door/outside frame, press Enter, then walk back and forth.",
+}
 
 
 @dataclass
@@ -42,8 +37,7 @@ class SessionMetadata:
     height: int
     fps_requested: float
     fps_actual: float
-    no_person_seconds: int
-    person_seconds: int
+    passing_by_seconds: int
     started_at: str
     session_note: str
 
@@ -64,16 +58,19 @@ class SegmentMetadata:
 
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
-        description="Record NO_PERSON and PERSON videos for kiosk presence analysis."
+        description="Record a PASSING_BY video for kiosk presence analysis."
     )
     parser.add_argument("--camera-index", type=int, default=0)
-    parser.add_argument("--output-dir", default="experiments/customer_presence_detection/data")
+    parser.add_argument(
+        "--output-dir",
+        default=str(DEFAULT_OUTPUT_DIR),
+        help="Output directory. Defaults to the data folder next to this script.",
+    )
     parser.add_argument("--session-note", default="")
     parser.add_argument("--fps", type=float, default=20.0)
     parser.add_argument("--width", type=int, default=1280)
     parser.add_argument("--height", type=int, default=720)
-    parser.add_argument("--no-person-seconds", type=int, default=10)
-    parser.add_argument("--person-seconds", type=int, default=30)
+    parser.add_argument("--passing-by-seconds", type=int, default=10)
     return parser
 
 
@@ -84,7 +81,7 @@ def ensure_dirs(base_dir: Path) -> dict[str, Path]:
     }
     for path in paths.values():
         path.mkdir(parents=True, exist_ok=True)
-    for phase in ("no_person", "person"):
+    for phase in ("passing_by",):
         (paths["videos"] / phase).mkdir(parents=True, exist_ok=True)
     return paths
 
@@ -149,7 +146,7 @@ def overlay_status(cv2, frame, line1: str, line2: str, recording: bool) -> None:
     cv2.putText(frame, line2, (24, 78), cv2.FONT_HERSHEY_SIMPLEX, 0.58, (230, 230, 230), 1)
     cv2.putText(
         frame,
-        "Enter=start current phase | q=quit",
+        "Enter=start recording | q=quit",
         (24, 100),
         cv2.FONT_HERSHEY_SIMPLEX,
         0.52,
@@ -253,8 +250,10 @@ def run_collection(args: argparse.Namespace) -> None:
     import cv2
 
     started = datetime.now()
-    session_id = f"{started.strftime('%Y%m%d_%H%M%S')}_presence_two_phase"
-    output_dir = Path(args.output_dir)
+    session_id = f"{started.strftime('%Y%m%d_%H%M%S')}_passing_by"
+    output_dir = Path(args.output_dir).expanduser()
+    if not output_dir.is_absolute():
+        output_dir = (Path.cwd() / output_dir).resolve()
     paths = ensure_dirs(output_dir)
 
     cap, width, height, actual_fps = open_camera(
@@ -268,8 +267,7 @@ def run_collection(args: argparse.Namespace) -> None:
         height=height,
         fps_requested=args.fps,
         fps_actual=actual_fps,
-        no_person_seconds=args.no_person_seconds,
-        person_seconds=args.person_seconds,
+        passing_by_seconds=args.passing_by_seconds,
         started_at=started.isoformat(timespec="seconds"),
         session_note=args.session_note,
     )
@@ -284,80 +282,74 @@ def run_collection(args: argparse.Namespace) -> None:
         },
     )
 
-    phase_durations = {
-        "no_person": args.no_person_seconds,
-        "person": args.person_seconds,
-    }
-
     print(f"Session: {session_id}")
-    print("Camera is open. The script will record NO_PERSON then PERSON.")
+    print("Camera is open. The script will record PASSING_BY.")
+    print(f"Output directory: {output_dir}")
 
     try:
-        for phase in PHASES:
-            should_start = read_preview_until_enter(cv2, cap, phase, session_id)
-            if not should_start:
-                append_event(
-                    paths["metadata"] / "events.csv",
-                    {
-                        "timestamp": datetime.now().isoformat(timespec="seconds"),
-                        "session_id": session_id,
-                        "event": "session_aborted",
-                        "phase": phase["phase"],
-                        "label": phase["label"],
-                    },
-                )
-                return
-
-            duration_seconds = phase_durations[phase["phase"]]
+        should_start = read_preview_until_enter(cv2, cap, PHASE, session_id)
+        if not should_start:
             append_event(
                 paths["metadata"] / "events.csv",
                 {
                     "timestamp": datetime.now().isoformat(timespec="seconds"),
                     "session_id": session_id,
-                    "event": "segment_start",
-                    "phase": phase["phase"],
-                    "label": phase["label"],
-                    "duration_seconds": duration_seconds,
+                    "event": "session_aborted",
+                    "phase": PHASE["phase"],
+                    "label": PHASE["label"],
                 },
             )
+            return
 
-            segment = record_phase(
-                cv2,
-                cap,
-                paths,
-                session_id,
-                phase,
-                duration_seconds,
-                actual_fps,
-                width,
-                height,
-            )
-            if segment is None:
-                append_event(
-                    paths["metadata"] / "events.csv",
-                    {
-                        "timestamp": datetime.now().isoformat(timespec="seconds"),
-                        "session_id": session_id,
-                        "event": "session_aborted",
-                        "phase": phase["phase"],
-                        "label": phase["label"],
-                    },
-                )
-                return
+        append_event(
+            paths["metadata"] / "events.csv",
+            {
+                "timestamp": datetime.now().isoformat(timespec="seconds"),
+                "session_id": session_id,
+                "event": "segment_start",
+                "phase": PHASE["phase"],
+                "label": PHASE["label"],
+                "duration_seconds": args.passing_by_seconds,
+            },
+        )
 
-            append_jsonl(paths["metadata"] / "segments.jsonl", asdict(segment))
+        segment = record_phase(
+            cv2,
+            cap,
+            paths,
+            session_id,
+            PHASE,
+            args.passing_by_seconds,
+            actual_fps,
+            width,
+            height,
+        )
+        if segment is None:
             append_event(
                 paths["metadata"] / "events.csv",
                 {
-                    "timestamp": segment.ended_at,
+                    "timestamp": datetime.now().isoformat(timespec="seconds"),
                     "session_id": session_id,
-                    "event": "segment_end",
-                    "phase": segment.phase,
-                    "label": segment.label,
-                    "duration_seconds": segment.duration_seconds,
-                    "video_path": segment.video_path,
+                    "event": "session_aborted",
+                    "phase": PHASE["phase"],
+                    "label": PHASE["label"],
                 },
             )
+            return
+
+        append_jsonl(paths["metadata"] / "segments.jsonl", asdict(segment))
+        append_event(
+            paths["metadata"] / "events.csv",
+            {
+                "timestamp": segment.ended_at,
+                "session_id": session_id,
+                "event": "segment_end",
+                "phase": segment.phase,
+                "label": segment.label,
+                "duration_seconds": segment.duration_seconds,
+                "video_path": segment.video_path,
+            },
+        )
 
         append_event(
             paths["metadata"] / "events.csv",
@@ -367,7 +359,7 @@ def run_collection(args: argparse.Namespace) -> None:
                 "event": "session_end",
             },
         )
-        print("Done. Recorded NO_PERSON and PERSON videos.")
+        print("Done. Recorded PASSING_BY video.")
     finally:
         cap.release()
         cv2.destroyAllWindows()

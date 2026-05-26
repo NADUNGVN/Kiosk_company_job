@@ -1,0 +1,6 @@
+.venv/
+outputs/**
+!outputs/
+!outputs/**/
+!outputs/**/*.mp4
+models/*.tmp

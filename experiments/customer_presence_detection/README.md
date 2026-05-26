@@ -15,28 +15,30 @@ Phan loai tung doan video/ngan canh theo cac nhan tham chieu:
 - `empty`: khong co nguoi trong vung kiosk.
 - `ambiguous`: kho gan nhan, dung de review lai.
 
-## Chay quay 2 video dau tien
+## Chay quay video nguoi di qua di lai
 
 ```powershell
-.\.venv\Scripts\python.exe experiments\customer_presence_detection\collect_presence_dataset.py `
-  --camera-index 0 `
-  --output-dir experiments\customer_presence_detection\data
+.\.venv\Scripts\python.exe experiments\customer_presence_detection\collect_presence_dataset.py --camera-index 0
 ```
 
-Script se mo camera va quay 2 source:
+Neu dang dung PowerShell ngay trong thu muc `experiments\customer_presence_detection`, chay:
 
-- `NO_PERSON`: 10 giay phong trong.
-- `PERSON`: 30 giay co nguoi di tu cua vao gan kiosk.
+```powershell
+..\..\.venv\Scripts\python.exe .\collect_presence_dataset.py --camera-index 0
+```
+
+Script se mo camera va quay 1 source:
+
+- `PASSING_BY`: 10 giay nguoi di qua di lai, khong dung lai su dung kiosk.
 
 Phim tat khi cua so camera dang mo:
 
-- `Enter`: bat dau phase hien tai.
+- `Enter`: bat dau quay.
 - `q`: thoat.
 
 Script tao:
 
-- `data/videos/no_person/<session_id>_no_person.mp4`
-- `data/videos/person/<session_id>_person.mp4`
+- `data/videos/passing_by/<session_id>_passing_by.mp4`
 - `data/metadata/sessions.jsonl`
 - `data/metadata/segments.jsonl`
 - `data/metadata/events.csv`
@@ -45,12 +47,11 @@ Script tao:
 
 1. Dat camera dung goc thu nghiem va khong doi goc trong luc quay.
 2. Chay script, doi cua so camera hien preview.
-3. Ra khoi khung hinh, de phong trong.
-4. Bam `Enter` de quay `NO_PERSON` trong 10 giay.
-5. Sau khi script doi phase `PERSON`, dung o cua hoac ngoai khung hinh.
-6. Bam `Enter`, sau do di tu cua vao gan kiosk ben phai anh.
-7. Trong 30 giay, dung truoc kiosk, nhin vao man hinh/camera 2-3 giay, co the gio tay hoac cham man hinh.
-8. Khong can bam them; script tu dung sau 30 giay.
+3. Dung o cua hoac ngoai khung hinh.
+4. Bam `Enter`.
+5. Trong 10 giay, di qua lai trong khung hinh nhu nguoi di ngang phong.
+6. Khong dung lai truoc kiosk, khong nhin/cham man hinh kiosk.
+7. Script tu dung sau 10 giay.
 
 ## Khuyen nghi thu thap phan tich
 
