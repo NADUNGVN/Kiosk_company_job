@@ -1,0 +1,18 @@
+{
+  "camera": "0",
+  "duration": 60.0,
+  "output": "C:\\Users\\Dung\\arar_qtsc\\Kiosk_company_job\\experiments\\device_runtime\\outputs\\device_usage_tests",
+  "model_dir": "C:\\Users\\Dung\\arar_qtsc\\Kiosk_company_job\\experiments\\device_runtime\\models",
+  "pose_model": "C:\\Users\\Dung\\arar_qtsc\\Kiosk_company_job\\experiments\\device_runtime\\models\\pose_landmarker_lite.task",
+  "face_model": "C:\\Users\\Dung\\arar_qtsc\\Kiosk_company_job\\experiments\\device_runtime\\models\\face_landmarker.task",
+  "width": 0,
+  "height": 0,
+  "capture_fps": 30.0,
+  "usage_hold_sec": 3.0,
+  "show": true,
+  "save_raw": true,
+  "save_annotated": true,
+  "run_dir": "C:\\Users\\Dung\\arar_qtsc\\Kiosk_company_job\\experiments\\device_runtime\\outputs\\device_usage_tests\\20260526_142623",
+  "device_runtime_dir": "C:\\Users\\Dung\\arar_qtsc\\Kiosk_company_job\\experiments\\device_runtime",
+  "output_root": "C:\\Users\\Dung\\arar_qtsc\\Kiosk_company_job\\experiments\\device_runtime\\outputs\\device_usage_tests"
+}
