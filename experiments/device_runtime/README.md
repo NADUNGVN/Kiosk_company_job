@@ -32,6 +32,11 @@ Script sẽ:
 - Cài các thư viện cần thiết: MediaPipe, OpenCV, NumPy, psutil.
 - Tải 2 model MediaPipe vào `experiments/device_runtime/models`.
 
+Lưu ý: `requirements-device.txt` đang pin `mediapipe==0.10.14` vì script
+`holistic_usage_research.py` dùng MediaPipe Holistic legacy
+`mediapipe.python.solutions.holistic`. Không dùng `pip install -U mediapipe`
+cho venv này, vì bản mới hơn có thể không còn module Holistic legacy.
+
 Nếu muốn cài vào Python/venv đang kích hoạt:
 
 ```powershell
@@ -42,6 +47,13 @@ Nếu đã có model và chỉ muốn cài thư viện:
 
 ```powershell
 python experiments\device_runtime\setup_device_runtime.py --skip-models
+```
+
+Nếu venv đã lỡ cài MediaPipe bản mới và chạy Holistic bị lỗi, cài lại dependency
+đã pin:
+
+```powershell
+python -m pip install --force-reinstall -r experiments\device_runtime\requirements-device.txt
 ```
 
 ## Chạy Test Runtime Chính
@@ -67,6 +79,8 @@ experiments/device_runtime/outputs/device_usage_tests/<timestamp>/
 ## Chạy Holistic Research
 
 Script này dùng `mp.solutions.holistic` để nghiên cứu thêm logic pose + face + iris trong một pipeline riêng. Script này không thay thế runtime chính.
+
+Yêu cầu phiên bản: `mediapipe==0.10.14` để còn module Holistic legacy.
 
 ```powershell
 experiments\device_runtime\.venv\Scripts\python.exe experiments\device_runtime\holistic_usage_research.py --duration 10

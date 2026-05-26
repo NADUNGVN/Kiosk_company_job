@@ -282,15 +282,34 @@ def load_holistic_module() -> Any:
         "mediapipe.python.solutions.holistic",
         "mediapipe.solutions.holistic",
     )
+    import_errors: list[str] = []
     for module_name in candidates:
         try:
             return importlib.import_module(module_name)
-        except ImportError:
-            continue
+        except ImportError as exc:
+            import_errors.append(f"{module_name}: {exc}")
+
+    version = "unknown"
+    location = "unknown"
+    try:
+        mediapipe_module = importlib.import_module("mediapipe")
+        version = getattr(mediapipe_module, "__version__", "unknown")
+        location = getattr(mediapipe_module, "__file__", "unknown")
+    except ImportError as exc:
+        import_errors.append(f"mediapipe: {exc}")
+
     raise ImportError(
-        "Could not import MediaPipe Holistic. "
-        "Install/upgrade mediapipe in the active venv, for example: "
-        "python -m pip install -U mediapipe"
+        "Could not import MediaPipe Holistic legacy solution.\n"
+        f"Detected mediapipe version: {version}\n"
+        f"Detected mediapipe location: {location}\n"
+        "This research script requires a MediaPipe version that still provides "
+        "`mediapipe.python.solutions.holistic`.\n"
+        "Install the pinned device runtime dependencies in the active venv:\n"
+        "python -m pip install --force-reinstall -r experiments\\device_runtime\\requirements-device.txt\n"
+        "Or install the known-compatible MediaPipe version directly:\n"
+        "python -m pip install --force-reinstall mediapipe==0.10.14\n"
+        "Import attempts:\n"
+        + "\n".join(f"- {item}" for item in import_errors)
     )
 
 
