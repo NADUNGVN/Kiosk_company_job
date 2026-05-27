@@ -421,9 +421,10 @@ def select_voice(
     elif backend == "winrt":
         candidate_groups = [winrt_voices]
     else:
-        # Prefer SAPI for old desktop voices, but automatically fall back to
-        # WinRT so "Microsoft An" works without changing the command.
-        candidate_groups = [sapi_voices, winrt_voices]
+        # With an explicit voice filter, prefer modern WinRT/OneCore voices
+        # first so `--voice-contains "Microsoft An"` works without requiring
+        # `--backend winrt`. Without a filter, keep SAPI as the simple default.
+        candidate_groups = [winrt_voices, sapi_voices] if contains else [sapi_voices, winrt_voices]
 
     if not contains:
         for group in candidate_groups:

@@ -32,6 +32,13 @@ Script sẽ liệt kê hai nhóm:
 python windows_tts_realtime_probe.py --backend winrt --voice-contains "Microsoft An"
 ```
 
+Nếu `--list-voices` đã thấy `Microsoft An` trong nhóm WinRT, lệnh rút gọn này
+cũng sẽ tự chọn WinRT:
+
+```powershell
+python windows_tts_realtime_probe.py --voice-contains "Microsoft An"
+```
+
 Nếu muốn chỉnh tốc độ:
 
 ```powershell
@@ -43,28 +50,6 @@ Nếu dùng voice SAPI như David/Zira:
 ```powershell
 python windows_tts_realtime_probe.py --backend sapi --voice-contains "Zira"
 ```
-
-## Khi Registry Có Microsoft An Nhưng WinRT Không Thấy
-
-Một số máy kiosk có `MSTTS_V110_viVN_An` trong registry OneCore, nhưng Python
-WinRT vẫn trả về rỗng. Khi đó `--backend winrt` không dùng được và `pyttsx3`
-cũng không thấy `Microsoft An` vì voice chưa được expose sang SAPI.
-
-Có thể thử expose voice OneCore sang SAPI bằng PowerShell Admin:
-
-```powershell
-powershell -ExecutionPolicy Bypass -File .\expose_onecore_voice_to_sapi.ps1
-```
-
-Sau đó đóng/mở lại terminal và kiểm tra:
-
-```powershell
-python windows_tts_realtime_probe.py --list-voices
-python windows_tts_realtime_probe.py --backend sapi --voice-contains "Microsoft An"
-```
-
-Script sẽ backup registry token trước khi copy vào thư mục
-`kiosk_tts_probe/registry_backups/`.
 
 ## Kết Quả Cần Quan Sát
 
