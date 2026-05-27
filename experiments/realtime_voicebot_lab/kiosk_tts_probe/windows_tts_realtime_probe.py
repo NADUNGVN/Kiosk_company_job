@@ -444,7 +444,9 @@ def select_voice(
     )
     raise RuntimeError(
         f"No {backend} voice contains {contains!r}. Available voices: {available}. "
-        "If the voice appears only under WinRT/OneCore, run with --backend winrt."
+        "If the voice appears only under WinRT/OneCore, run with --backend winrt. "
+        "If WinRT lists none but registry has MSTTS_V110_viVN_An, run "
+        "expose_onecore_voice_to_sapi.ps1 as Administrator and then use --backend sapi."
     )
 
 
