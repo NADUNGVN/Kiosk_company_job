@@ -7,6 +7,7 @@ import re
 import tempfile
 import threading
 import time
+import winreg
 import winsound
 from dataclasses import dataclass
 from pathlib import Path
@@ -261,18 +262,39 @@ def import_winsdk_speech() -> Any:
 
 def print_all_voices() -> None:
     print("SAPI voices visible to pyttsx3:")
-    sapi_voices = list_sapi_voices(silent=True)
+    sapi_voices = list_sapi_voices(silent=False)
     print_voice_list(sapi_voices)
     print("")
     print("WinRT / OneCore voices visible to Windows modern TTS:")
-    winrt_voices = list_winrt_voices(silent=True)
+    winrt_voices = list_winrt_voices(silent=False)
     print_voice_list(winrt_voices)
     print("")
-    if winrt_voices and not any("Microsoft An".casefold() in v.name.casefold() for v in sapi_voices):
+
+    print("OneCore voices found directly in Windows registry:")
+    registry_voices = list_onecore_registry_voices()
+    print_voice_list(registry_voices)
+    print("")
+
+    registry_has_an = any("MSTTS_V110_viVN_An".casefold() in v.id.casefold() for v in registry_voices)
+    winrt_has_an = any("Microsoft An".casefold() in v.name.casefold() for v in winrt_voices)
+    sapi_has_an = any("Microsoft An".casefold() in v.name.casefold() for v in sapi_voices)
+
+    if winrt_has_an and not sapi_has_an:
         print(
             "Note: Microsoft An is commonly a WinRT/OneCore voice. "
             "Use --backend winrt --voice-contains \"Microsoft An\"."
         )
+    elif registry_has_an and not winrt_has_an:
+        print(
+            "Warning: MSTTS_V110_viVN_An exists in the registry, but WinRT "
+            "SpeechSynthesizer.all_voices did not expose it to Python. "
+            "This is an OS/runtime exposure issue, not a missing registry key."
+        )
+        print("Try these on the kiosk:")
+        print("  1) Restart Windows after installing Vietnamese speech/TTS.")
+        print("  2) Run: python -m pip install --force-reinstall winsdk")
+        print("  3) Open Windows Settings > Time & language > Speech and confirm Vietnamese voice is usable.")
+        print("  4) If WinRT still returns none, use a SAPI voice for this probe or expose/copy OneCore voice to SAPI manually.")
 
 
 def list_sapi_voices(silent: bool = False) -> list[VoiceInfo]:
@@ -322,6 +344,56 @@ def list_winrt_voices(silent: bool = False) -> list[VoiceInfo]:
             )
         )
     return result
+
+
+def list_onecore_registry_voices() -> list[VoiceInfo]:
+    base_path = r"SOFTWARE\Microsoft\Speech_OneCore\Voices\Tokens"
+    result: list[VoiceInfo] = []
+    try:
+        with winreg.OpenKey(winreg.HKEY_LOCAL_MACHINE, base_path) as base_key:
+            index = 0
+            while True:
+                try:
+                    token_name = winreg.EnumKey(base_key, index)
+                except OSError:
+                    break
+                index += 1
+
+                token_path = base_path + "\\" + token_name
+                try:
+                    with winreg.OpenKey(winreg.HKEY_LOCAL_MACHINE, token_path) as token_key:
+                        display_name = read_reg_value(token_key, "")
+                        language = read_reg_value(token_key, "Language")
+                        if not language:
+                            language = language_from_token(token_name)
+                        result.append(
+                            VoiceInfo(
+                                backend="registry",
+                                id=token_name,
+                                name=display_name or token_name,
+                                language=language,
+                            )
+                        )
+                except OSError:
+                    continue
+    except OSError:
+        return []
+    return result
+
+
+def read_reg_value(key: Any, value_name: str) -> str:
+    try:
+        value, _ = winreg.QueryValueEx(key, value_name)
+    except OSError:
+        return ""
+    return str(value)
+
+
+def language_from_token(token_name: str) -> str:
+    match = re.search(r"_([a-z]{2})([A-Z]{2})_", token_name)
+    if not match:
+        return ""
+    return f"{match.group(1)}-{match.group(2)}"
 
 
 def print_voice_list(voices: list[VoiceInfo]) -> None:
