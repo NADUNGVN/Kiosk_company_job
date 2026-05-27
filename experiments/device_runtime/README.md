@@ -76,6 +76,12 @@ Kết quả sẽ ghi vào:
 experiments/device_runtime/outputs/device_usage_tests/<timestamp>/
 ```
 
+Review kết quả thử nghiệm MediaPipe Tasks hiện tại được ghi tại:
+
+```text
+experiments/device_runtime/EXPERIMENT_01_REVIEW.md
+```
+
 ## Chạy Holistic Research
 
 Script này dùng `mp.solutions.holistic` để nghiên cứu thêm logic pose + face + iris trong một pipeline riêng. Script này không thay thế runtime chính.
@@ -90,6 +96,30 @@ Kết quả sẽ ghi vào:
 
 ```text
 experiments/device_runtime/outputs/holistic_usage_tests/<timestamp>/
+```
+
+Review kết quả thử nghiệm Holistic hiện tại được ghi tại:
+
+```text
+experiments/device_runtime/EXPERIMENT_02_HOLISTIC_REVIEW.md
+```
+
+## Bối Cảnh Nghiên Cứu Và Issues Chung
+
+Tài liệu tổng hợp bối cảnh chuyển từ cảm biến hồng ngoại/RS485 sang computer
+vision, đồng thời mô tả mối liên hệ với chatbot hiện tại:
+
+```text
+experiments/device_runtime/RESEARCH_CONTEXT_AND_ISSUES.md
+```
+
+## Kiến Trúc Voicebot Phân Tán
+
+Tài liệu mô tả hướng triển khai hai máy: kiosk i5 chạy camera/vision/ghi âm/TTS
+Windows, máy Ryzen 9HX + RTX 5060 chạy faster-whisper và RAG qua Ethernet:
+
+```text
+experiments/device_runtime/DISTRIBUTED_VOICEBOT_PIPELINE.md
 ```
 
 ## Ghi Chú Model

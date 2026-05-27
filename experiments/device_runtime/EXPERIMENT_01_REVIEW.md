@@ -5,6 +5,12 @@
 Thử nghiệm này kiểm tra runtime nhận diện người đang sử dụng kiosk bằng webcam
 trên thiết bị thật.
 
+Về mặt nghiên cứu, thử nghiệm này nằm trong quá trình chuyển từ cơ chế kích hoạt
+dựa trên cảm biến hồng ngoại/RS485 sang cơ chế nhận thức ngữ cảnh bằng computer
+vision. Cảm biến hồng ngoại trước đây chỉ xác định có người ở phía trước thiết
+bị, trong khi mục tiêu mới là xác định người đó có thật sự đang cần tương tác
+với kiosk hay không.
+
 - Mã runtime: `person_usage_device_test.py`
 - Thư mục kết quả: `outputs/device_usage_tests/20260526_142623`
 - Camera: `0`
@@ -31,6 +37,12 @@ Logic hiện tại là **rule-based**, không train model:
   về camera, có face, head facing, và thấy mắt.
 - `greeting_triggered`: xảy ra khi `attention` giữ liên tục đủ `usage_hold_sec`.
 - `usage_hold_sec` trong thử nghiệm này: `3.0` giây.
+
+Trong hệ thống hiện tại, chatbot thoại thuộc app `backend.voice_chatbot` vẫn là
+chatbot theo keyword: nhận `speech_text`, so khớp `Keyword` theo quầy/dịch vụ,
+tạo phản hồi bằng gTTS và ghi `ConversationLog`. Vì vậy, computer vision ở thử
+nghiệm này chưa thay thế chatbot, mà đóng vai trò lớp kích hoạt trước hội thoại:
+chỉ nên mở voicebot khi có đủ bằng chứng người dùng đang chú ý và cần hỗ trợ.
 
 ## File Kết Quả
 
@@ -92,6 +104,55 @@ Tuy nhiên rule chưa đủ chắc cho các tình huống đi ngang hoặc rời
 5. Chưa có kiểm tra tốc độ di chuyển. Người đi ngang thường có tâm vai/tâm người
    thay đổi nhanh; yếu tố này nên dùng để phân biệt `PASSING_BY` với người thật
    sự đứng dùng kiosk.
+
+## Issues Của Thử Nghiệm 01
+
+### Issue 01: Tín Hiệu Presence Chưa Đủ Cho Bài Toán Hội Thoại
+
+Thử nghiệm đã vượt qua giới hạn cơ bản của cảm biến hồng ngoại bằng cách dùng
+pose và face, nhưng rule vẫn có lớp `person_present` khá rộng. Nếu tín hiệu này
+được dùng trực tiếp để mở chatbot, hệ thống vẫn có nguy cơ phản hồi với người
+chỉ xuất hiện trong khung hình nhưng chưa có ý định sử dụng máy.
+
+Ảnh hưởng: chatbot có thể phát lời chào hoặc bắt đầu lắng nghe sai thời điểm,
+làm nhiễu trải nghiệm người dùng.
+
+### Issue 02: Chưa Có Vòng Đời Phiên Giao Tiếp
+
+Sự kiện `voicebot_mock_opened` được bật tại `10.82s`, nhưng sau đó không có cơ
+chế đóng phiên khi người dùng rời attention hoặc rời active zone. Đây là vấn đề
+quan trọng vì chatbot thực tế cần biết khi nào bắt đầu, duy trì và kết thúc hội
+thoại.
+
+Ảnh hưởng: nếu tích hợp trực tiếp với chatbot hiện tại, phiên thoại có thể bị
+giữ mở quá lâu hoặc tiếp tục lắng nghe khi người dùng đã rời đi.
+
+### Issue 03: Rule Attention Bị Nhạy Với Mất Face/Head Tạm Thời
+
+Sau mốc `18s`, event cho thấy `attention_started` và `attention_lost` xuất hiện
+nhiều lần. Điều này phản ánh việc rule phụ thuộc trực tiếp vào pose/face từng
+frame, chưa có smoothing theo thời gian.
+
+Ảnh hưởng: chatbot có thể bị kích hoạt/ngắt logic nội bộ không ổn định nếu trạng
+thái attention được dùng trực tiếp làm tín hiệu điều khiển.
+
+### Issue 04: Thiếu Phân Loại Hành Vi Âm Tính
+
+Thử nghiệm 01 chứng minh được trường hợp người tiến gần và nhìn vào kiosk, nhưng
+chưa đủ để kết luận hệ thống tránh được các ca âm tính như đi ngang nhanh, đứng
+gần nhưng dùng điện thoại, hoặc đứng trong phòng nhưng không cần hỗ trợ.
+
+Ảnh hưởng: chưa đánh giá được false-positive trong điều kiện vận hành thực tế.
+
+### Issue 05: Interface Với Chatbot Mới Dừng Ở Mock
+
+Runtime mới ghi event `voicebot_mock_opened`, chưa gọi trực tiếp luồng chatbot.
+Trong khi đó chatbot hiện tại cần input thoại (`speech_text`) và phản hồi bằng
+TTS. Do đó cần thiết kế interface trung gian rõ ràng giữa vision state và vòng
+đời hội thoại.
+
+Ảnh hưởng: chưa thể đảm bảo rằng trigger từ vision sẽ phối hợp đúng với các
+trạng thái nghe, nói, kết thúc và ghi log của chatbot.
 
 ## Đề Xuất Hướng Phát Triển
 
