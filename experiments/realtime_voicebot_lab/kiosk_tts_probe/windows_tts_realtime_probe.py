@@ -1,14 +1,16 @@
 from __future__ import annotations
 
 import argparse
+import asyncio
 import queue
 import re
-import sys
+import tempfile
 import threading
 import time
+import winsound
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any
+from typing import Any, Protocol
 
 
 SCRIPT_DIR = Path(__file__).resolve().parent
@@ -22,15 +24,115 @@ class TextChunk:
     received_at: float
 
 
+@dataclass
+class VoiceInfo:
+    backend: str
+    id: str
+    name: str
+    language: str = ""
+    gender: str = ""
+    raw: Any | None = None
+
+
+class TtsBackend(Protocol):
+    name: str
+
+    def speak(self, text: str) -> None:
+        ...
+
+    def stop(self) -> None:
+        ...
+
+
+class DryRunBackend:
+    name = "dry-run"
+
+    def speak(self, text: str) -> None:
+        time.sleep(min(max(len(text) / 25.0, 0.2), 3.0))
+
+    def stop(self) -> None:
+        return
+
+
+class SapiBackend:
+    name = "sapi"
+
+    def __init__(self, voice: VoiceInfo | None, rate: int, volume: float) -> None:
+        pyttsx3 = import_pyttsx3()
+        self.engine = pyttsx3.init()
+        if voice is not None:
+            self.engine.setProperty("voice", voice.id)
+        if rate > 0:
+            self.engine.setProperty("rate", rate)
+        self.engine.setProperty("volume", clamp(volume, 0.0, 1.0))
+        self.voice = voice
+
+    def speak(self, text: str) -> None:
+        self.engine.say(text)
+        self.engine.runAndWait()
+
+    def stop(self) -> None:
+        self.engine.stop()
+
+
+class WinRtBackend:
+    name = "winrt"
+
+    def __init__(self, voice: VoiceInfo | None, rate: int, volume: float) -> None:
+        from winsdk.windows.media.speechsynthesis import SpeechSynthesizer
+
+        self.synthesizer = SpeechSynthesizer()
+        self.voice = voice
+        if voice is not None and voice.raw is not None:
+            self.synthesizer.voice = voice.raw
+
+        # WinRT uses a multiplier. Keep SAPI's default-ish 165 as 1.0.
+        if rate > 0:
+            self.synthesizer.options.speaking_rate = clamp(rate / 165.0, 0.5, 2.0)
+        self.synthesizer.options.audio_volume = clamp(volume, 0.0, 1.0)
+
+    def speak(self, text: str) -> None:
+        asyncio.run(self._speak_async(text))
+
+    async def _speak_async(self, text: str) -> None:
+        from winsdk.windows.storage.streams import Buffer
+
+        stream = await self.synthesizer.synthesize_text_to_stream_async(text)
+        buffer = Buffer(stream.size)
+        wav_buffer = await stream.read_async(buffer, stream.size, 0)
+        wav_bytes = bytes(wav_buffer)
+
+        with tempfile.NamedTemporaryFile(suffix=".wav", delete=False) as handle:
+            wav_path = Path(handle.name)
+            handle.write(wav_bytes)
+
+        try:
+            winsound.PlaySound(str(wav_path), winsound.SND_FILENAME)
+        finally:
+            try:
+                wav_path.unlink()
+            except OSError:
+                pass
+
+    def stop(self) -> None:
+        winsound.PlaySound(None, winsound.SND_PURGE)
+
+
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
-        description="Probe Windows TTS realtime-like chunk playback using pyttsx3/SAPI."
+        description="Probe Windows TTS realtime-like chunk playback with SAPI or WinRT voices."
     )
-    parser.add_argument("--list-voices", action="store_true", help="List installed Windows/SAPI voices and exit.")
+    parser.add_argument("--list-voices", action="store_true", help="List SAPI and WinRT voices and exit.")
+    parser.add_argument(
+        "--backend",
+        choices=("auto", "sapi", "winrt"),
+        default="auto",
+        help="TTS backend. Use winrt for Windows modern/OneCore voices such as Microsoft An.",
+    )
     parser.add_argument(
         "--voice-contains",
         default="",
-        help='Pick the first voice whose id/name contains this text, e.g. "Microsoft An".',
+        help='Pick the first voice whose id/name/language contains this text, e.g. "Microsoft An" or "vi-VN".',
     )
     parser.add_argument("--rate", type=int, default=165, help="TTS speaking rate. Use 0 to keep engine default.")
     parser.add_argument("--volume", type=float, default=1.0, help="TTS volume from 0.0 to 1.0.")
@@ -61,20 +163,12 @@ def parse_args() -> argparse.Namespace:
 def main() -> int:
     args = parse_args()
 
-    engine = None
-    selected_voice = None
-    if not args.dry_run or args.list_voices:
-        pyttsx3 = import_pyttsx3()
-        engine = pyttsx3.init()
+    if args.list_voices:
+        print_all_voices()
+        return 0
 
-        if args.list_voices:
-            list_voices(engine)
-            return 0
-
-        selected_voice = select_voice(engine, args.voice_contains)
-        configure_engine(engine, selected_voice, args.rate, args.volume)
-
-    print_engine_config(engine, selected_voice, args.dry_run)
+    backend = build_backend(args)
+    print_backend_config(backend)
 
     chunks = load_chunks(Path(args.stream_file), args.split_sentences)
     if not chunks:
@@ -83,7 +177,7 @@ def main() -> int:
     work_queue: queue.Queue[TextChunk | None] = queue.Queue()
     worker = threading.Thread(
         target=tts_worker,
-        args=(engine, work_queue, args.dry_run),
+        args=(backend, work_queue),
         daemon=True,
         name="windows-tts-worker",
     )
@@ -108,17 +202,38 @@ def main() -> int:
     except KeyboardInterrupt:
         print("")
         print("Interrupted by user. Stopping TTS engine...")
-        try:
-            engine.stop()
-        except Exception:
-            pass
+        backend.stop()
         work_queue.put(None)
         return 130
 
     total = time.perf_counter() - started_at
     print("")
-    print(f"Done. chunks={len(chunks)} total_sec={total:.3f}")
+    print(f"Done. backend={backend.name} chunks={len(chunks)} total_sec={total:.3f}")
     return 0
+
+
+def build_backend(args: argparse.Namespace) -> TtsBackend:
+    if args.dry_run:
+        return DryRunBackend()
+
+    sapi_voices = list_sapi_voices(silent=True)
+    winrt_voices = list_winrt_voices(silent=True)
+    selected = select_voice(args.voice_contains, args.backend, sapi_voices, winrt_voices)
+
+    if args.backend == "sapi" or (args.backend == "auto" and selected.backend == "sapi"):
+        return SapiBackend(selected, args.rate, args.volume)
+    if args.backend == "winrt" or (args.backend == "auto" and selected.backend == "winrt"):
+        return WinRtBackend(selected, args.rate, args.volume)
+
+    # No voice filter: default to SAPI if available because pyttsx3 is the
+    # simplest backend. Fall back to WinRT when only OneCore voices exist.
+    if args.backend == "auto":
+        if sapi_voices:
+            return SapiBackend(None, args.rate, args.volume)
+        if winrt_voices:
+            return WinRtBackend(None, args.rate, args.volume)
+
+    raise RuntimeError("No usable TTS backend found.")
 
 
 def import_pyttsx3() -> Any:
@@ -132,60 +247,141 @@ def import_pyttsx3() -> Any:
     return pyttsx3
 
 
-def list_voices(engine: Any) -> None:
-    voices = engine.getProperty("voices") or []
-    if not voices:
-        print("No SAPI voices found.")
-        return
+def import_winsdk_speech() -> Any:
+    try:
+        from winsdk.windows.media.speechsynthesis import SpeechSynthesizer
+    except ImportError as exc:
+        raise ImportError(
+            "Missing dependency: winsdk. Install it with:\n"
+            "python -m pip install -r requirements-kiosk.txt\n"
+            "WinRT backend is required for OneCore voices such as Microsoft An."
+        ) from exc
+    return SpeechSynthesizer
 
+
+def print_all_voices() -> None:
+    print("SAPI voices visible to pyttsx3:")
+    sapi_voices = list_sapi_voices(silent=True)
+    print_voice_list(sapi_voices)
+    print("")
+    print("WinRT / OneCore voices visible to Windows modern TTS:")
+    winrt_voices = list_winrt_voices(silent=True)
+    print_voice_list(winrt_voices)
+    print("")
+    if winrt_voices and not any("Microsoft An".casefold() in v.name.casefold() for v in sapi_voices):
+        print(
+            "Note: Microsoft An is commonly a WinRT/OneCore voice. "
+            "Use --backend winrt --voice-contains \"Microsoft An\"."
+        )
+
+
+def list_sapi_voices(silent: bool = False) -> list[VoiceInfo]:
+    try:
+        pyttsx3 = import_pyttsx3()
+        engine = pyttsx3.init()
+        voices = engine.getProperty("voices") or []
+    except Exception as exc:
+        if not silent:
+            print(f"Could not list SAPI voices: {exc}")
+        return []
+
+    result = []
+    for voice in voices:
+        result.append(
+            VoiceInfo(
+                backend="sapi",
+                id=str(getattr(voice, "id", "")),
+                name=str(getattr(voice, "name", "")),
+                language=str(getattr(voice, "languages", "")),
+                gender=str(getattr(voice, "gender", "")),
+                raw=voice,
+            )
+        )
+    return result
+
+
+def list_winrt_voices(silent: bool = False) -> list[VoiceInfo]:
+    try:
+        SpeechSynthesizer = import_winsdk_speech()
+        voices = list(SpeechSynthesizer.all_voices)
+    except Exception as exc:
+        if not silent:
+            print(f"Could not list WinRT voices: {exc}")
+        return []
+
+    result = []
+    for voice in voices:
+        result.append(
+            VoiceInfo(
+                backend="winrt",
+                id=str(getattr(voice, "id", "")),
+                name=str(getattr(voice, "display_name", "")),
+                language=str(getattr(voice, "language", "")),
+                gender=str(getattr(voice, "gender", "")),
+                raw=voice,
+            )
+        )
+    return result
+
+
+def print_voice_list(voices: list[VoiceInfo]) -> None:
+    if not voices:
+        print("  (none)")
+        return
     for index, voice in enumerate(voices, start=1):
         print(f"[{index:02d}]")
-        print(f"  id: {getattr(voice, 'id', '')}")
-        print(f"  name: {getattr(voice, 'name', '')}")
-        print(f"  languages: {getattr(voice, 'languages', '')}")
-        print(f"  gender: {getattr(voice, 'gender', '')}")
-        print(f"  age: {getattr(voice, 'age', '')}")
+        print(f"  backend: {voice.backend}")
+        print(f"  id: {voice.id}")
+        print(f"  name: {voice.name}")
+        print(f"  language: {voice.language}")
+        print(f"  gender: {voice.gender}")
 
 
-def select_voice(engine: Any, contains: str) -> Any | None:
-    voices = engine.getProperty("voices") or []
+def select_voice(
+    contains: str,
+    backend: str,
+    sapi_voices: list[VoiceInfo],
+    winrt_voices: list[VoiceInfo],
+) -> VoiceInfo:
+    candidate_groups: list[list[VoiceInfo]]
+    if backend == "sapi":
+        candidate_groups = [sapi_voices]
+    elif backend == "winrt":
+        candidate_groups = [winrt_voices]
+    else:
+        # Prefer SAPI for old desktop voices, but automatically fall back to
+        # WinRT so "Microsoft An" works without changing the command.
+        candidate_groups = [sapi_voices, winrt_voices]
+
     if not contains:
-        return None
+        for group in candidate_groups:
+            if group:
+                return group[0]
+        raise RuntimeError("No voices available.")
 
     needle = contains.casefold()
-    for voice in voices:
-        haystack = " ".join(
-            str(value)
-            for value in (
-                getattr(voice, "id", ""),
-                getattr(voice, "name", ""),
-                getattr(voice, "languages", ""),
-            )
-        ).casefold()
-        if needle in haystack:
-            return voice
+    for group in candidate_groups:
+        for voice in group:
+            haystack = " ".join([voice.id, voice.name, voice.language, voice.backend]).casefold()
+            if needle in haystack:
+                return voice
 
-    available = ", ".join(str(getattr(voice, "name", "")) for voice in voices)
-    raise RuntimeError(f"No voice contains {contains!r}. Available voices: {available}")
-
-
-def configure_engine(engine: Any, selected_voice: Any | None, rate: int, volume: float) -> None:
-    if selected_voice is not None:
-        engine.setProperty("voice", selected_voice.id)
-    if rate > 0:
-        engine.setProperty("rate", rate)
-    engine.setProperty("volume", min(max(volume, 0.0), 1.0))
+    available = "; ".join(
+        f"{voice.backend}:{voice.name} ({voice.language})"
+        for voice in sapi_voices + winrt_voices
+    )
+    raise RuntimeError(
+        f"No {backend} voice contains {contains!r}. Available voices: {available}. "
+        "If the voice appears only under WinRT/OneCore, run with --backend winrt."
+    )
 
 
-def print_engine_config(engine: Any | None, selected_voice: Any | None, dry_run: bool) -> None:
-    current_voice = selected_voice.name if selected_voice is not None else "(engine default)"
-    print("Windows TTS probe")
-    if dry_run:
-        print("mode: dry-run (no audio, no pyttsx3 engine required)")
-        return
-    print(f"voice: {current_voice}")
-    print(f"rate: {engine.getProperty('rate')}")
-    print(f"volume: {engine.getProperty('volume')}")
+def print_backend_config(backend: TtsBackend) -> None:
+    print("Windows TTS realtime probe")
+    print(f"backend: {backend.name}")
+    voice = getattr(backend, "voice", None)
+    if voice is not None:
+        print(f"voice: {voice.name} ({voice.language})")
 
 
 def load_chunks(path: Path, split_sentences: bool) -> list[str]:
@@ -204,7 +400,7 @@ def split_text_to_sentences(text: str) -> list[str]:
     return [part.strip() for part in parts if part.strip()]
 
 
-def tts_worker(engine: Any, work_queue: queue.Queue[TextChunk | None], dry_run: bool) -> None:
+def tts_worker(backend: TtsBackend, work_queue: queue.Queue[TextChunk | None]) -> None:
     while True:
         chunk = work_queue.get()
         if chunk is None:
@@ -215,15 +411,15 @@ def tts_worker(engine: Any, work_queue: queue.Queue[TextChunk | None], dry_run: 
         queue_delay = start - chunk.received_at
         print(f"[speak_start {chunk.index:02d}] queue_delay_sec={queue_delay:.3f}")
 
-        if not dry_run:
-            engine.say(chunk.text)
-            engine.runAndWait()
-        else:
-            time.sleep(min(max(len(chunk.text) / 25.0, 0.2), 3.0))
+        backend.speak(chunk.text)
 
         end = time.perf_counter()
         print(f"[speak_done  {chunk.index:02d}] speak_sec={end - start:.3f}")
         work_queue.task_done()
+
+
+def clamp(value: float, low: float, high: float) -> float:
+    return max(low, min(high, value))
 
 
 if __name__ == "__main__":

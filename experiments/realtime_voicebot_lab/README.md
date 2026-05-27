@@ -38,13 +38,13 @@ python experiments\realtime_voicebot_lab\kiosk_tts_probe\windows_tts_realtime_pr
 Chạy thử với voice tiếng Việt đã cài sẵn:
 
 ```powershell
-python experiments\realtime_voicebot_lab\kiosk_tts_probe\windows_tts_realtime_probe.py --voice-contains "Microsoft An"
+python experiments\realtime_voicebot_lab\kiosk_tts_probe\windows_tts_realtime_probe.py --backend winrt --voice-contains "Microsoft An"
 ```
 
 Nếu chạy sau khi chỉ pull riêng thư mục `kiosk_tts_probe` về kiosk:
 
 ```powershell
-python kiosk_tts_probe\windows_tts_realtime_probe.py --voice-contains "Microsoft An"
+python kiosk_tts_probe\windows_tts_realtime_probe.py --backend winrt --voice-contains "Microsoft An"
 ```
 
 ## Tài Liệu
