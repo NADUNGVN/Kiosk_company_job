@@ -1,0 +1,8 @@
+.venv/
+.hf-cache/
+.torch-cache/
+__pycache__/
+*.py[cod]
+*.log
+logs/
+outputs/

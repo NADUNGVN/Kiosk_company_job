@@ -1,0 +1,28 @@
+{
+  "host": "127.0.0.1",
+  "port": 8010,
+  "language": "vi",
+  "transcription_engine": "sherpa_onnx_zipformer",
+  "realtime_transcription_engine": "sherpa_onnx_zipformer",
+  "model": "sherpa-onnx-zipformer-vi-30M-int8-2026-02-09",
+  "realtime_model": "sherpa-onnx-zipformer-vi-30M-int8-2026-02-09",
+  "download_root": "models",
+  "device": "cpu",
+  "transcription_engine_options": {
+    "num_threads": 4,
+    "provider": "cpu",
+    "language": "vi"
+  },
+  "realtime_transcription_engine_options": {
+    "num_threads": 2,
+    "provider": "cpu",
+    "language": "vi"
+  },
+  "realtime_processing_pause": 0.25,
+  "post_speech_silence_duration": 0.55,
+  "min_length_of_recording": 0.2,
+  "realtime_transcription_use_syllable_boundaries": true,
+  "max_sessions": 4,
+  "max_active_speakers": 4,
+  "log_level": "INFO"
+}

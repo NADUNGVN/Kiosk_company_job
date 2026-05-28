@@ -1,0 +1,16 @@
+numpy
+scipy
+rich
+halo
+colorama
+PyAudio
+webrtcvad-wheels
+sherpa-onnx
+onnxruntime
+silero-vad
+torch
+fastapi
+uvicorn[standard]
+soundfile
+websocket-client
+websockets

@@ -77,28 +77,55 @@ class SapiBackend:
 
 
 class WinRtBackend:
+    """WinRT/OneCore TTS backend.
+
+    Fix: SpeechSynthesizer must live on the same thread that calls it (COM
+    apartment rule). We store only the *config* at construction time and
+    create the synthesizer lazily on whichever thread calls speak() for the
+    first time.  A long-lived asyncio event loop on that thread avoids the
+    "new loop per call" cost that caused audio corruption/looping.
+    """
+
     name = "winrt"
 
     def __init__(self, voice: VoiceInfo | None, rate: int, volume: float) -> None:
+        self.voice = voice
+        self._rate = rate
+        self._volume = volume
+        # synthesizer + loop created lazily on the worker thread
+        self._synthesizer: Any = None
+        self._loop: asyncio.AbstractEventLoop | None = None
+        self._stop_event = threading.Event()
+        self._wav_path: Path | None = None
+
+    def _ensure_synthesizer(self) -> None:
+        """Create SpeechSynthesizer on the calling thread (first call only)."""
+        if self._synthesizer is not None:
+            return
         from winsdk.windows.media.speechsynthesis import SpeechSynthesizer
 
-        self.synthesizer = SpeechSynthesizer()
-        self.voice = voice
-        if voice is not None and voice.raw is not None:
-            self.synthesizer.voice = voice.raw
-
-        # WinRT uses a multiplier. Keep SAPI's default-ish 165 as 1.0.
-        if rate > 0:
-            self.synthesizer.options.speaking_rate = clamp(rate / 165.0, 0.5, 2.0)
-        self.synthesizer.options.audio_volume = clamp(volume, 0.0, 1.0)
+        synth = SpeechSynthesizer()
+        if self.voice is not None and self.voice.raw is not None:
+            synth.voice = self.voice.raw
+        if self._rate > 0:
+            synth.options.speaking_rate = clamp(self._rate / 165.0, 0.5, 2.0)
+        synth.options.audio_volume = clamp(self._volume, 0.0, 1.0)
+        self._synthesizer = synth
+        # One persistent event loop for this thread
+        self._loop = asyncio.new_event_loop()
+        asyncio.set_event_loop(self._loop)
 
     def speak(self, text: str) -> None:
-        asyncio.run(self._speak_async(text))
+        self._ensure_synthesizer()
+        self._stop_event.clear()
+        assert self._loop is not None
+        self._loop.run_until_complete(self._speak_async(text))
 
     async def _speak_async(self, text: str) -> None:
         from winsdk.windows.storage.streams import Buffer
 
-        stream = await self.synthesizer.synthesize_text_to_stream_async(text)
+        assert self._synthesizer is not None
+        stream = await self._synthesizer.synthesize_text_to_stream_async(text)
         buffer = Buffer(stream.size)
         wav_buffer = await stream.read_async(buffer, stream.size, 0)
         wav_bytes = bytes(wav_buffer)
@@ -106,16 +133,31 @@ class WinRtBackend:
         with tempfile.NamedTemporaryFile(suffix=".wav", delete=False) as handle:
             wav_path = Path(handle.name)
             handle.write(wav_bytes)
+        self._wav_path = wav_path
 
         try:
-            winsound.PlaySound(str(wav_path), winsound.SND_FILENAME)
+            if not self._stop_event.is_set():
+                # SND_ASYNC lets stop() interrupt via SND_PURGE from another thread.
+                winsound.PlaySound(str(wav_path), winsound.SND_FILENAME | winsound.SND_ASYNC)
+                # Block until done or stopped, checking in small increments.
+                import wave as _wave
+                try:
+                    with _wave.open(str(wav_path), "rb") as wf:
+                        duration = wf.getnframes() / float(wf.getframerate())
+                except Exception:
+                    duration = 5.0
+                deadline = time.perf_counter() + duration + 1.0
+                while time.perf_counter() < deadline and not self._stop_event.is_set():
+                    time.sleep(0.05)
         finally:
             try:
                 wav_path.unlink()
             except OSError:
                 pass
+            self._wav_path = None
 
     def stop(self) -> None:
+        self._stop_event.set()
         winsound.PlaySound(None, winsound.SND_PURGE)
 
 
@@ -445,9 +487,7 @@ def select_voice(
     )
     raise RuntimeError(
         f"No {backend} voice contains {contains!r}. Available voices: {available}. "
-        "If the voice appears only under WinRT/OneCore, run with --backend winrt. "
-        "If WinRT lists none but registry has MSTTS_V110_viVN_An, run "
-        "expose_onecore_voice_to_sapi.ps1 as Administrator and then use --backend sapi."
+        "If the voice appears only under WinRT/OneCore, run with --backend winrt."
     )
 
 
