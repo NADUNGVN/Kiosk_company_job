@@ -114,3 +114,24 @@ Trong quá trình thực hiện kiểm thử E2E liên kết LAN giữa Micropho
         *   Trong suốt quá trình `KioskTTSPlayer` đang phát loa trả lời (`self.tts_player.is_speaking() == True`), client Kiosk sẽ **chủ động dừng truyền các gói tin ghi âm nhị phân Microphone sang Laptop Server**.
         *   Điều này giúp triệt tiêu hoàn toàn 100% tiếng vọng từ loa phát (acoustic/speaker driver) ngay tại nguồn trước khi nó có cơ hội gửi sang Server để nhận dạng.
         *   Khi Kiosk phát xong câu nói, Microphone tự động truyền tải âm thanh bình thường để nhận diện câu nói tiếp theo của người dùng. Giúp loại bỏ hoàn toàn vòng lặp tự thoại mà vẫn giữ nguyên khả năng ngắt lời chủ động (interruption) khi dứt câu.
+
+### Issue 05: Lỗi Di Chuyển Thư Mục Ổ Đĩa Không Tồn Tại (`cd : Cannot find drive. A drive with the name 'D' does not exist`)
+*   **Triệu chứng**: Gặp lỗi `DriveNotFoundException` trong PowerShell khi chạy lệnh `cd D:\work\project_company\kiosk` trên thiết bị đầu cuối Kiosk.
+*   **Nguyên nhân**: Kiosk thực tế thường được phân vùng tối giản và chỉ có ổ đĩa `C:`. Việc sao chép trực tiếp câu lệnh hướng dẫn của Laptop (vốn nằm trên ổ `D:`) sang Kiosk sẽ gây ra lỗi không tìm thấy phân vùng.
+*   **Cách khắc phục**:
+    1. Xác định thư mục clone thực tế của dự án trên thiết bị Kiosk (thông thường là `C:\work\project_company\kiosk` hoặc thư mục do quản trị viên thiết lập).
+    2. Điều hướng chính xác theo ổ đĩa thực tế trên Kiosk:
+       ```powershell
+       cd C:\work\project_company\kiosk
+       ```
+
+### Issue 06: Lỗi Kết Nối Bị Từ Chối (`WinError 1225 The remote computer refused the network connection`)
+*   **Triệu chứng**: Client Kiosk báo lỗi không thể kết nối hoặc duy trì liên lạc với Server khi chạy lệnh gọi:
+    `python experiments\realtime_voicebot_lab\kiosk_laptop_conn_test\client_test.py --server ws://127.0.0.1:8012/ws/transcribe ...`
+*   **Nguyên nhân**: Địa chỉ `127.0.0.1` (localhost) là địa chỉ loopback nội bộ. Khi chạy lệnh này trên Kiosk, Client sẽ cố gắng kết nối tới cổng `8012` của **chính thiết bị Kiosk**, trong khi dịch vụ backend thực tế đang chạy trên **Laptop máy chủ**. Do Kiosk không mở cổng `8012` nên kết nối bị từ chối ngay lập tức.
+*   **Cách khắc phục**:
+    1. Lấy địa chỉ IP mạng nội bộ (LAN IP) của Laptop bằng cách chạy lệnh `ipconfig` trên terminal Laptop (ví dụ: `192.168.1.234`).
+    2. Thay đổi tham số truyền `--server` trên client Kiosk trỏ đúng về IP của Laptop:
+       ```powershell
+       python experiments\realtime_voicebot_lab\kiosk_laptop_conn_test\client_test.py --server ws://192.168.1.234:8012/ws/transcribe --mode stt --source mic
+       ```

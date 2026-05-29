@@ -53,19 +53,12 @@ không ổn định.
 
 ---
 
-## Giai Đoạn 5: Laptop TTS Integration (Tích hợp phát loa Laptop)
+## Giai Đoạn 5: Distributed TTS & Acoustic Echo Loop Resolution (Tổng Hợp Tại Laptop - Phát Tại Kiosk)
 
-> [!IMPORTANT]
-> **TRẠNG THÁI HIỆN TẠI (CURRENT PHASE)**: Dự án đang ở giai đoạn này.
+*   **Trạng thái**: **Hoàn Thành**
 
-### Mục tiêu:
-- Tải và cài đặt thành công model `qwen2.5:7b` không chứa chế độ suy nghĩ ngầm để tốc độ trả token đạt tốc độ siêu tốc.
-- Triển khai Windows SAPI SpVoice trực tiếp trên Laptop thông qua môi trường ảo (đã cài đặt `pywin32` thành công).
-- Tích hợp pipeline gom câu (Sentence Buffering) từ repo `RealtimeVoiceChat`. Server gom các token LLM thành câu hoàn chỉnh dựa trên các dấu ngắt câu (`.`, `,`, `?`, `!`, `\n`) và đẩy lập tức vào hàng đợi phát âm thanh SAPI.
-- Tích hợp cơ chế ngắt lời chủ động (Interruption): Khi có câu hỏi STT Final mới, loa Laptop lập tức ngắt tiếng cũ (`SpVoice.Speak("", 2)`) để trả lời câu mới, tăng tính phản xạ tự nhiên.
-
-### Các vấn đề đã xác minh & cần đo:
-- `[x]` Triệt tiêu hoàn toàn rác chữ tiếng Trung bằng cách chuẩn hóa Prompt hệ thống (System Prompt) bằng tiếng Việt thuần khiết.
-- `[x]` Hàng đợi TTS chạy ẩn hoạt động ổn định, đọc mượt mà tuần tự từng câu.
-- `[x]` Cơ chế ngắt lời lập tức khi có câu hỏi mới phản xạ chính xác.
-- `[ ]` Thử nghiệm thực tế luồng tương tác thoại hai chiều và đo đạc trải nghiệm người dùng.
+### Mục tiêu đạt được:
+*   **Di chuyển đầu ra âm thanh về Kiosk**: Laptop Server sử dụng WinRT `SpeechSynthesizer` và giọng **Microsoft An** để tổng hợp văn bản thành bytes dữ liệu âm thanh WAV thô trực tiếp trong RAM một cách siêu tốc và gửi sang Kiosk qua WebSocket dạng Base64 (`tts_audio`). Kiosk giải mã và phát loa trực tiếp từ bộ nhớ (`winsound.PlaySound` với cờ `SND_MEMORY`). Kiosk hoàn toàn không cần cài đặt engine TTS hay gói giọng đọc phức tạp.
+*   **Khử tiếng vọng loa chủ động (Acoustic Echo Loop Resolution)**: Khắc phục triệt để việc Microphone của Kiosk thu lại tiếng nói của loa phát. Trong quá trình Kiosk đang phát loa (`self.tts_player.is_speaking() == True`), client Kiosk sẽ tạm dừng truyền luồng âm thanh Microphone sang Server Laptop. Điều này giúp triệt tiêu hoàn toàn 100% vòng lặp tự thoại tại nguồn.
+*   **Sửa lỗi chết luồng TTS khi bị cướp lời**: Đổi điều kiện vòng lặp chính của luồng ẩn sang cờ dài hạn `while self._is_active` giúp luồng TTS tồn tại vĩnh viễn và hoạt động trơn tru sau khi bị người dùng ngắt lời (STT FINAL kích hoạt sự kiện `tts_interrupt`).
+*   **Lọc sạch rác chữ tiếng Trung**: Thắt chặt Prompt hệ thống và kết hợp bộ lọc Regex CJK programmatically trên Server giúp lọc sạch 100% rác ký tự chữ Hán hoặc dấu câu tiếng Trung full-width trước khi hiển thị hoặc phát ra loa.
