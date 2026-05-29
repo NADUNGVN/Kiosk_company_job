@@ -67,3 +67,24 @@ sequenceDiagram
 #### Ưu & Nhược điểm:
 *   **Ưu điểm**: Phản hồi siêu tốc (gần như 0ms trễ cảm giác).
 *   **Nhược điểm**: Cực kỳ tốn tài nguyên GPU; logic xử lý ngắt lời rất phức tạp, dễ xảy ra hiện tượng bot nói chồng lên người dùng hoặc trả lời sai ngữ cảnh do nhận diện sai realtime.
+
+---
+
+## III. CÁC ISSUES PHÁT SINH TRONG THỬ NGHIỆM THỰC TẾ & KHẮC PHỤC
+
+Trong quá trình thực hiện kiểm thử E2E liên kết LAN giữa Microphone Kiosk $\rightarrow$ Laptop STT $\rightarrow$ Local LLM, hệ thống đã phát hiện một số vấn đề kỹ thuật quan trọng dưới đây và đã được khắc phục/ghi nhận:
+
+### Issue 01: Tốc Độ Sinh Chữ Của LLM Bị Chậm & Ảnh Hưởng Bởi Luồng Suy Nghĩ (Thinking)
+*   **Triệu chứng**: Thời gian sinh câu trả lời của Qwen/Ollama trên Laptop kéo dài, tạo cảm giác phản hồi chậm chạp cho người dùng Kiosk.
+*   **Nguyên nhân**:
+    1.  **Chế độ Suy nghĩ (Thinking Tokens)**: Một số mô hình suy nghĩ như `DeepSeek-R1` hoặc các bản Qwen tối ưu suy nghĩ sẽ sinh ra hàng trăm token suy nghĩ nằm trong cặp thẻ `<think>...</think>` trước khi bắt đầu câu trả lời chính thức. Việc truyền thô cả luồng suy nghĩ này sang Kiosk làm tăng đáng kể độ trễ phản hồi cảm giác (Time to First Token hữu ích) và gây rối giao diện.
+    2.  **Tranh chấp tài nguyên VRAM (CPU vs GPU)**: Do Laptop vừa phải gánh luồng xử lý nhận dạng giọng nói nặng **Zipformer STT** trên GPU, nếu bộ nhớ đồ họa (VRAM) bị chiếm dụng quá nhiều, Ollama sẽ tự động chuyển một phần hoặc toàn bộ các layer của LLM sang CPU để tính toán. Điều này làm tốc độ suy luận giảm đột ngột từ ~30-40 tokens/s xuống còn ~1-2 tokens/s.
+*   **Giải pháp đã tích hợp & Khuyến nghị**:
+    *   *Đã tích hợp bộ lọc `<think>`*: Cập nhật thành công bộ lọc trong `server.py` (`trigger_llm_flow`). Khi phát hiện token `<think>`, hệ thống sẽ ẩn luồng suy nghĩ này khỏi client Kiosk và chỉ in nhạt màu trên terminal Laptop để debug dạng `[Suy nghĩ... Xong]`. Kiosk sẽ nhận phản hồi sạch và phản hồi tức thì khi câu trả lời chính thức bắt đầu.
+    *   *Khuyến nghị VRAM*: Khởi chạy Ollama với tham số giới hạn bộ nhớ hoặc sử dụng mô hình lượng tử hóa nhẹ hơn (ví dụ: `qwen2.5:1.5b-instruct` hoặc `qwen2.5:3b-instruct` chuẩn không có thinking) để đảm bảo mô hình nằm hoàn toàn trong VRAM GPU RTX 5060, giữ tốc độ sinh từ tối đa.
+
+### Issue 02: Hiện Tượng Lặp Âm Cuối Do VAD (ASR Tail Repetition)
+*   **Triệu chứng**: Zipformer thỉnh thoảng nhận diện lặp từ ở cuối câu khi người dùng dứt lời nói (ví dụ: `ĐÂU.ÂU`, `GÌ.GÌ`).
+*   **Nguyên nhân**: Do sự nhạy cảm của bộ ngắt câu VAD (Voice Activity Detection) khi xử lý tiếng ồn môi trường hoặc tiếng vọng (echo) của âm tiết cuối cùng.
+*   **Giải pháp đã tích hợp**:
+    *   *Đã tích hợp bộ lọc Regex*: Sử dụng biểu thức chính quy (`re.sub`) trong `trigger_llm_flow` để tự động dò tìm và cắt bỏ các âm tiết lặp dạng `TÊN.ÊN` hoặc `ĐÂU.ÂU` ở cuối câu trước khi đưa vào LLM, đảm bảo nội dung câu hỏi đưa vào AI sạch 100%.

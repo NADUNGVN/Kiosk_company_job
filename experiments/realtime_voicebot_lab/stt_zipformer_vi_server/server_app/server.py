@@ -657,11 +657,91 @@ class QueueSubmitResult:
     coalesced: bool = False
 
 
+import threading
+import queue
+try:
+    import win32com.client
+    import pythoncom
+except ImportError:
+    pass
+
+class LaptopTTSPlayer:
+    def __init__(self):
+        self._queue = queue.Queue()
+        self._thread = None
+        self._stop_event = threading.Event()
+        self._speaker = None
+        self._is_active = False
+
+    def start(self):
+        self._is_active = True
+        self._thread = threading.Thread(target=self._worker, daemon=True)
+        self._thread.start()
+
+    def stop(self):
+        self._is_active = False
+        self.interrupt()
+        self._stop_event.set()
+        if self._thread:
+            self._thread.join(timeout=1.0)
+
+    def speak_sentence(self, sentence):
+        if self._is_active:
+            self._queue.put(sentence)
+
+    def interrupt(self):
+        # Hủy toàn bộ câu chưa đọc trong hàng đợi
+        while not self._queue.empty():
+            try:
+                self._queue.get_nowait()
+            except queue.Empty:
+                break
+        
+        # Ngắt lập tức âm thanh đang phát của SAPI SpVoice
+        if self._speaker:
+            try:
+                # SVSFPurgeBeforeSpeak = 2
+                self._speaker.Speak("", 2)
+            except Exception:
+                pass
+
+    def _worker(self):
+        # Khởi tạo COM cho tiểu trình chạy ẩn này
+        pythoncom.CoInitialize()
+        try:
+            self._speaker = win32com.client.Dispatch("SAPI.SpVoice")
+        except Exception as e:
+            LOGGER.error(f"Failed to initialize SAPI SpVoice on Laptop: {e}")
+            pythoncom.CoUninitialize()
+            return
+
+        while not self._stop_event.is_set():
+            try:
+                sentence = self._queue.get(timeout=0.2)
+            except queue.Empty:
+                continue
+
+            if sentence:
+                try:
+                    # Phát âm thanh đồng bộ trong worker thread để các câu được đọc nối tiếp tự nhiên
+                    # SVSFDefault = 0
+                    self._speaker.Speak(sentence, 0)
+                except Exception as e:
+                    LOGGER.error(f"Error speaking SAPI sentence: {e}")
+                finally:
+                    self._queue.task_done()
+                    
+        pythoncom.CoUninitialize()
+
+
 class ConnectionManager:
     def __init__(self):
         self._connections = {}
         self._lock = asyncio.Lock()
         self._loop = None
+        self._is_llm_streaming = False
+        self._tts_player = LaptopTTSPlayer()
+        self._tts_player.start()
 
     def bind_loop(self, loop):
         self._loop = loop
@@ -710,6 +790,138 @@ class ConnectionManager:
                     if self._connections.get(session_id) is websocket:
                         self._connections.pop(session_id, None)
 
+    async def trigger_llm_flow(self, session_id, prompt):
+        import json
+        import sys
+        import re
+        
+        self._is_llm_streaming = True
+        try:
+            # Tiền xử lý làm sạch nhẹ các âm lặp cuối câu do mic echo/VAD (ví dụ: ĐÂU.ÂU, GÌ.GÌ, NAY.AY)
+            cleaned_prompt = prompt.strip()
+            match = re.search(r"(\w+)\.(\w+)\??$", cleaned_prompt, re.IGNORECASE)
+            if match:
+                w1, w2 = match.group(1), match.group(2)
+                if w1.lower().endswith(w2.lower()) or w2.lower().startswith(w1.lower()) or w1.lower() == w2.lower():
+                    cleaned_prompt = re.sub(r"\.\w+\??$", "", cleaned_prompt)
+
+            # 1. Tự động phát hiện model Ollama đang chạy
+            model_name = "qwen2.5:7b"  # Mặc định ưu tiên
+            try:
+                import urllib.request
+                req = urllib.request.Request("http://127.0.0.1:11434/api/tags", method="GET")
+                with urllib.request.urlopen(req, timeout=1.0) as response:
+                    tags_data = json.loads(response.read().decode("utf-8"))
+                    models = tags_data.get("models", [])
+                    if models:
+                        # Ưu tiên lấy model có chứa chữ "qwen" hoặc "deepseek"
+                        matching_models = [m["name"] for m in models if any(x in m["name"].lower() for x in ("qwen", "deepseek"))]
+                        if matching_models:
+                            model_name = matching_models[0]
+                        else:
+                            model_name = models[0]["name"]
+            except Exception:
+                pass  # Nếu không kết nối được Ollama, giữ mặc định
+
+            # In tiêu đề bắt đầu câu trả lời của LLM
+            sys.stdout.write(f"\n\033[96m\033[1m[LLM {model_name.upper()}]\033[0m ")
+            sys.stdout.flush()
+
+            # 2. Gọi API chat streaming của Ollama bằng threadpool executor
+            # Prompt hệ thống được làm sạch tuyệt đối, không nhắc đến <think> để tránh kích hoạt lỗi tiếng Trung của Qwen
+            payload = {
+                "model": model_name,
+                "messages": [
+                    {
+                        "role": "system",
+                        "content": "Bạn là trợ lý ảo phụ trách quầy dịch vụ công tại Kiosk tự động. Hãy trả lời câu hỏi của người dân bằng tiếng Việt một cách trực tiếp, ngắn gọn, dễ hiểu và lịch sự."
+                    },
+                    {"role": "user", "content": cleaned_prompt}
+                ],
+                "stream": True,
+                "think": False
+            }
+            
+            def run_stream():
+                import urllib.request
+                req = urllib.request.Request(
+                    "http://127.0.0.1:11434/api/chat",
+                    data=json.dumps(payload).encode("utf-8"),
+                    headers={"Content-Type": "application/json"},
+                    method="POST"
+                )
+                accumulated_text = []
+                in_think = False
+                current_sentence = []
+                
+                with urllib.request.urlopen(req, timeout=15.0) as response:
+                    for line in response:
+                        if line:
+                            data = json.loads(line.decode("utf-8"))
+                            token = data.get("message", {}).get("content", "")
+                            if token:
+                                # Kiểm tra và xử lý thẻ <think> hoặc </think> để ẩn suy nghĩ đối với Kiosk
+                                if "<think>" in token:
+                                    in_think = True
+                                    sys.stdout.write("\033[90m[Suy nghĩ... ")
+                                    sys.stdout.flush()
+                                    continue
+                                
+                                if "</think>" in token:
+                                    in_think = False
+                                    sys.stdout.write("Xong]\033[0m\n")
+                                    sys.stdout.write(f"\033[96m\033[1m[LLM {model_name.upper()}]\033[0m ")
+                                    sys.stdout.flush()
+                                    continue
+                                
+                                if in_think:
+                                    # In mờ trên terminal Laptop để phục vụ debug, không tích lũy gửi về Kiosk
+                                    clean_think = token.replace("\n", " ")
+                                    sys.stdout.write(clean_think)
+                                    sys.stdout.flush()
+                                else:
+                                    # In và tích lũy phản hồi chính thức để trả về Kiosk
+                                    sys.stdout.write(token)
+                                    sys.stdout.flush()
+                                    accumulated_text.append(token)
+                                    
+                                    # Gom câu bất đồng bộ để phát ra loa Windows TTS
+                                    current_sentence.append(token)
+                                    # Gom câu dựa trên các dấu ngắt câu tự nhiên (. , ? ! \n ; :)
+                                    if any(char in token for char in (".", "?", "!", "\n", ";", ",")):
+                                        sentence_text = "".join(current_sentence).strip()
+                                        if sentence_text:
+                                            self._tts_player.speak_sentence(sentence_text)
+                                        current_sentence = []
+                
+                # Phát nốt câu cuối cùng còn lại (nếu có)
+                if current_sentence:
+                    sentence_text = "".join(current_sentence).strip()
+                    if sentence_text:
+                        self._tts_player.speak_sentence(sentence_text)
+                        
+                print("")  # Xuống dòng khi hoàn tất
+                return "".join(accumulated_text)
+
+            loop = asyncio.get_running_loop()
+            full_response = await loop.run_in_executor(None, run_stream)
+            
+            # 3. Gửi câu trả lời hoàn chỉnh ngược về Kiosk qua WebSocket
+            if full_response:
+                event = {
+                    "type": "llm_response",
+                    "sessionId": session_id,
+                    "text": full_response
+                }
+                # Sử dụng threadsafe vì việc gọi được kích hoạt từ background thread của ASR
+                asyncio.run_coroutine_threadsafe(self.send(session_id, event), self._loop)
+                
+        except Exception as e:
+            print(f"\n\033[91m[LLM ERROR]\033[0m Lỗi kết nối Ollama: {e}")
+            print("  \033[93mGợi ý:\033[0m Hãy đảm bảo Ollama đang chạy (`ollama serve`) và model đã được tải lên.")
+        finally:
+            self._is_llm_streaming = False
+
     def publish_session(self, session_id, message):
         if isinstance(message, dict):
             msg_type = message.get("type")
@@ -717,12 +929,21 @@ class ConnectionManager:
             if text:
                 import sys
                 if msg_type == "realtime":
+                    # Tránh in đè gây loạn giao diện console khi LLM đang stream
+                    if getattr(self, "_is_llm_streaming", False):
+                        return
                     sys.stdout.write(f"\r\033[93m[STT REALTIME]\033[0m {text}")
                     sys.stdout.flush()
                 elif msg_type == "final":
+                    # Kích hoạt ngắt lời chủ động lập tức khi có câu hỏi mới
+                    self._tts_player.interrupt()
+                    
                     sys.stdout.write("\r" + " " * 80 + "\r")  # Clear the line
                     print(f"\033[92m\033[1m[STT FINAL]\033[0m {text}")
                     sys.stdout.flush()
+                    # Tự động kích hoạt luồng LLM chat bất đồng bộ non-blocking
+                    if self._loop is not None:
+                        asyncio.run_coroutine_threadsafe(self.trigger_llm_flow(session_id, text), self._loop)
 
         if self._loop is None:
             return

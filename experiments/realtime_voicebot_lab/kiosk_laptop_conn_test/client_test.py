@@ -129,6 +129,12 @@ class ConnectionTestClient:
                         print(f"{Fore.GREEN}{Style.BRIGHT}[STT FINAL] {Fore.WHITE}{text}")
                         sys.stdout.flush()
 
+                elif msg_type == "llm_response":
+                    text = data.get("text", "").strip()
+                    if text:
+                        print(f"{Fore.CYAN}{Style.BRIGHT}[LLM RESPONSE] {Fore.WHITE}{text}")
+                        sys.stdout.flush()
+
                 # Handle errors/warnings
                 elif msg_type in ("error", "warning"):
                     color = Fore.RED if msg_type == "error" else Fore.YELLOW
