@@ -63,6 +63,7 @@ class KioskTTSPlayer:
         self._stop_event = threading.Event()
         self._is_active = False
         self._is_speaking = False
+        self._wav_path = None
 
     def start(self):
         self._is_active = True
@@ -98,6 +99,14 @@ class KioskTTSPlayer:
         except Exception:
             pass
 
+        # Dọn dẹp file tạm nếu đang phát
+        if self._wav_path and Path(self._wav_path).exists():
+            try:
+                Path(self._wav_path).unlink()
+            except OSError:
+                pass
+            self._wav_path = None
+
     def _worker(self):
         while self._is_active:
             try:
@@ -109,25 +118,37 @@ class KioskTTSPlayer:
                 self._stop_event.clear()
                 self._is_speaking = True
                 try:
-                    # Phát âm thanh từ bộ nhớ không chặn (SND_MEMORY | SND_ASYNC)
-                    winsound.PlaySound(wav_bytes, winsound.SND_MEMORY | winsound.SND_ASYNC)
+                    # Viết bytes WAV vào tệp tạm thời trên đĩa để phát bất đồng bộ an toàn
+                    with tempfile.NamedTemporaryFile(suffix=".wav", delete=False) as handle:
+                        wav_path = Path(handle.name)
+                        handle.write(wav_bytes)
+                    self._wav_path = wav_path
                     
-                    # Tính toán thời lượng phát của file WAV từ header để biết khi nào xong
-                    duration = 5.0
-                    try:
-                        import io
-                        with wave.open(io.BytesIO(wav_bytes), "rb") as wf:
-                            duration = wf.getnframes() / float(wf.getframerate())
-                    except Exception:
-                        pass
-                    
-                    deadline = time.perf_counter() + duration + 0.5
-                    while time.perf_counter() < deadline and not self._stop_event.is_set():
-                        time.sleep(0.05)
+                    if not self._stop_event.is_set():
+                        # Phát âm thanh bất đồng bộ bằng tên tệp cực kỳ an toàn
+                        winsound.PlaySound(str(wav_path), winsound.SND_FILENAME | winsound.SND_ASYNC)
+                        
+                        # Tính toán thời lượng phát của file WAV từ header để biết khi nào xong
+                        duration = 5.0
+                        try:
+                            with _wave.open(str(wav_path), "rb") as wf:
+                                duration = wf.getnframes() / float(wf.getframerate())
+                        except Exception:
+                            pass
+                        
+                        deadline = time.perf_counter() + duration + 0.5
+                        while time.perf_counter() < deadline and not self._stop_event.is_set():
+                            time.sleep(0.05)
                 except Exception as e:
                     print(f"{Fore.RED}[TTS ERROR]{Style.RESET_ALL} Lỗi phát loa tại Kiosk: {e}")
                 finally:
                     self._is_speaking = False
+                    try:
+                        if self._wav_path and Path(self._wav_path).exists():
+                            Path(self._wav_path).unlink()
+                    except OSError:
+                        pass
+                    self._wav_path = None
                     self._queue.task_done()
 
 class ConnectionTestClient:
