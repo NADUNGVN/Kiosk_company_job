@@ -711,6 +711,19 @@ class ConnectionManager:
                         self._connections.pop(session_id, None)
 
     def publish_session(self, session_id, message):
+        if isinstance(message, dict):
+            msg_type = message.get("type")
+            text = message.get("text", "").strip()
+            if text:
+                import sys
+                if msg_type == "realtime":
+                    sys.stdout.write(f"\r\033[93m[STT REALTIME]\033[0m {text}")
+                    sys.stdout.flush()
+                elif msg_type == "final":
+                    sys.stdout.write("\r" + " " * 80 + "\r")  # Clear the line
+                    print(f"\033[92m\033[1m[STT FINAL]\033[0m {text}")
+                    sys.stdout.flush()
+
         if self._loop is None:
             return
         asyncio.run_coroutine_threadsafe(self.send(session_id, message), self._loop)

@@ -4,6 +4,7 @@ import json
 import struct
 import time
 import wave
+from pathlib import Path
 from colorama import init, Fore, Style
 import websockets
 

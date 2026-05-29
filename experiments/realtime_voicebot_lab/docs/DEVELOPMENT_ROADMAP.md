@@ -39,19 +39,22 @@ không ổn định.
 
 ## Giai Đoạn 4: Prototype Realtime Streaming
 
-Mục tiêu:
+> [!IMPORTANT]
+> **TRẠNG THÁI HIỆN TẠI (CURRENT PHASE)**: Dự án đang ở giai đoạn này.
 
-- Kiosk stream audio chunk sang máy Ryzen.
-- Máy Ryzen xử lý STT bán realtime.
-- RAG/LLM trả text từng phần hoặc từng câu.
-- Kiosk đọc bằng Windows TTS local.
-- Thử phát hiện người dùng ngắt chủ đích trong khi TTS đang đọc.
+### Mục tiêu:
+- Kiosk stream audio chunk sang máy Ryzen/Laptop. (Đã thiết lập thành công kết nối WebSocket LAN cổng `8012` và stream audio nhị phân thô từ mic Kiosk sang).
+- Máy Ryzen/Laptop xử lý STT bán realtime. (Đã đánh giá hoàn thiện mô hình STT Zipformer tiếng Việt chạy local).
+- Hiển thị kết quả: Laptop không mở mic, chỉ nhận dữ liệu từ WebSocket, chạy STT và in trực tiếp kết quả nhận dạng lên terminal Laptop dưới dạng Final text hoàn chỉnh, cập nhật nối tiếp mượt mà (y hệt demo của repo `RealtimeSTT`).
+- RAG/LLM trả text từng phần hoặc từng câu. (Bước tiếp theo).
+- Kiosk đọc bằng Windows TTS local. (Bước tiếp theo).
+- Thử phát hiện người dùng ngắt chủ đích trong khi TTS đang đọc (Interruption).
 
-Các vấn đề cần đo:
-
-- Latency audio chunk.
-- Latency STT.
-- Latency RAG/LLM.
-- Latency từ `reply_text` đến TTS start.
-- Tỷ lệ ngắt nhầm do nhiễu/echo.
-- Tỷ lệ không ngắt khi người dùng thật sự nói.
+### Các vấn đề cần đo & đã xác minh:
+- **Độ trễ truyền gói nhị phân (LAN Latency)**: Đã xác minh RTT mạng LAN ổn định ở mức cực thấp (~0.5ms - 2ms).
+- **Tính trọn vẹn dữ liệu (Data Integrity)**: Audio chunk 96,000 bytes truyền qua LAN nguyên vẹn, server lưu file WAV không bị gián đoạn hay vấp.
+- **Latency STT**: Thời gian nhận dạng câu hoàn chỉnh (Final) từ khi dứt lời.
+- **Latency RAG/LLM**.
+- **Latency từ `reply_text` đến TTS start**.
+- **Tỷ lệ ngắt nhầm do nhiễu/echo**.
+- **Tỷ lệ không ngắt khi người dùng thật sự nói**.
