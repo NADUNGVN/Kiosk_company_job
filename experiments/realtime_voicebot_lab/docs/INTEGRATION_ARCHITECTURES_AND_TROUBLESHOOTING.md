@@ -88,3 +88,29 @@ Trong quá trình thực hiện kiểm thử E2E liên kết LAN giữa Micropho
 *   **Nguyên nhân**: Do sự nhạy cảm của bộ ngắt câu VAD (Voice Activity Detection) khi xử lý tiếng ồn môi trường hoặc tiếng vọng (echo) của âm tiết cuối cùng.
 *   **Giải pháp đã tích hợp**:
     *   *Đã tích hợp bộ lọc Regex*: Sử dụng biểu thức chính quy (`re.sub`) trong `trigger_llm_flow` để tự động dò tìm và cắt bỏ các âm tiết lặp dạng `TÊN.ÊN` hoặc `ĐÂU.ÂU` ở cuối câu trước khi đưa vào LLM, đảm bảo nội dung câu hỏi đưa vào AI sạch 100%.
+
+### Issue 03: Lỗi Mất Tiếng Do Luồng TTS Bị Hủy & Lỗi Trôi Tiếng Trung (Qwen)
+*   **Triệu chứng**: Loa phát TTS bị câm hoàn toàn sau câu nói đầu tiên, đồng thời LLM Qwen2.5:7B thỉnh thoảng chèn thêm ký tự tiếng Trung ở đuôi phản hồi (ví dụ: `Bạn cần giúp gì`).
+*   **Nguyên nhân**:
+    1.  **Hủy tiểu trình TTS vĩnh viễn**: Trong `LaptopTTSPlayer._worker`, vòng lặp chính của luồng ẩn được kiểm soát bằng `while not self._stop_event.is_set():`. Khi có sự kiện ngắt lời (STT FINAL), hệ thống gọi `interrupt()` để dừng loa ngay lập tức bằng cách kích hoạt `self._stop_event.set()`. Việc này vô tình làm thoát hoàn toàn khỏi vòng lặp và giết chết luồng TTS vĩnh viễn. Các câu tiếp theo sẽ bị kẹt lại trong hàng đợi mà không thể đọc.
+    2.  **Lệch ngôn ngữ của Qwen**: Qwen2.5:7B tuy rất thông minh nhưng khi nhận đầu vào cực ngắn hoặc trong môi trường cục bộ, đôi khi nó tự chèn thêm câu xã giao bằng chữ Hán ở cuối lời thoại.
+*   **Giải pháp đã tích hợp**:
+    1.  **Sửa lỗi Thread Lifetime**: Đổi điều kiện vòng lặp luồng TTS sang cờ trạng thái dài hạn `while self._is_active:`. Cờ `self._stop_event` được tách biệt hoàn toàn để chỉ dùng để ngắt âm phát hiện tại, và được gọi `clear()` tự động trước khi nạp câu mới.
+    2.  **Bộ lọc Tiếng Trung Triệt Để (Regex-based Filter)**:
+        *   Nâng cấp Prompt hệ thống chỉ định rõ: `"Bạn là trợ lý ảo tiếng Việt tại quầy dịch vụ công Kiosk tự động. Hãy trả lời câu hỏi của người dân bằng TIẾNG VIỆT 100%. TUYỆT ĐỐI KHÔNG dùng chữ Trung Quốc..."`
+        *   Tích hợp bộ lọc Regex mạnh mẽ để lọc bỏ hoàn toàn các ký tự chữ Hán và dấu câu tiếng Trung full-width trong quá trình stream chữ:
+            `clean_token = re.sub(r'[\u4e00-\u9fff\u3000-\u303f\uf900-\ufaff\uff00-\uffef]', '', token)`
+            Đảm bảo hiển thị trên terminal và gửi về Kiosk luôn sạch 100% tiếng Việt.
+
+### Issue 04: Lỗi Vòng Lặp Tự Thoại (Acoustic Echo Loop) & Di Chuyển TTS Về Kiosk (Tổng Hợp Tại Laptop - Phát Tại Kiosk)
+*   **Triệu chứng**: Khi Laptop/Kiosk phát âm thanh trả lời, Microphone của Kiosk thu lại chính giọng đọc đó và gửi ngược lại cho Server xử lý thành câu hỏi mới (`STT FINAL`), tạo nên một chuỗi hội thoại lặp đi lặp lại vô tận.
+*   **Nguyên nhân**: Do Laptop (chạy Server) và Kiosk (chạy Client) đặt gần nhau trong môi trường kiểm thử. Khi phát âm thanh, Microphone thu lại rõ mồm một qua không khí hoặc qua driver loopback, hiểu nhầm đó là tiếng người dùng nói.
+*   **Giải pháp đã tích hợp (Mô hình Phân Tán Kết Hợp Tối Ưu)**:
+    1.  **Tách biệt Cơ chế Tổng hợp (Laptop) và Phát loa (Kiosk)**:
+        *   **Laptop Server (Heavy Lifting)**: Vẫn đảm nhiệm cơ chế xử lý cốt lõi, sử dụng engine WinRT `SpeechSynthesizer` và giọng **Microsoft An** chất lượng cao để tổng hợp văn bản thành **bytes dữ liệu âm thanh WAV thô trực tiếp trong bộ nhớ (in-memory)** một cách siêu tốc và thread-safe.
+        *   **WebSocket Stream**: Dữ liệu WAV thô được mã hóa Base64 và truyền tải ngay lập tức về Kiosk client qua sự kiện WebSocket `tts_audio`.
+        *   **Kiosk Client (Lightweight Playback)**: Kiosk chỉ việc giải mã Base64 và phát âm thanh trực tiếp từ bộ nhớ bằng `winsound.PlaySound(wav_bytes, winsound.SND_MEMORY | winsound.SND_ASYNC)`. Kiosk **hoàn toàn không cần cài đặt engine TTS hay gói ngôn ngữ WinRT**, giảm tối đa độ phức tạp và tài nguyên cho client.
+    2.  **Khử tiếng vọng chủ động bằng cơ chế Mute Microphone tại Client**:
+        *   Trong suốt quá trình `KioskTTSPlayer` đang phát loa trả lời (`self.tts_player.is_speaking() == True`), client Kiosk sẽ **chủ động dừng truyền các gói tin ghi âm nhị phân Microphone sang Laptop Server**.
+        *   Điều này giúp triệt tiêu hoàn toàn 100% tiếng vọng từ loa phát (acoustic/speaker driver) ngay tại nguồn trước khi nó có cơ hội gửi sang Server để nhận dạng.
+        *   Khi Kiosk phát xong câu nói, Microphone tự động truyền tải âm thanh bình thường để nhận diện câu nói tiếp theo của người dùng. Giúp loại bỏ hoàn toàn vòng lặp tự thoại mà vẫn giữ nguyên khả năng ngắt lời chủ động (interruption) khi dứt câu.

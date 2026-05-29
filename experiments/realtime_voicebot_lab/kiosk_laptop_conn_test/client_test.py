@@ -43,11 +43,102 @@ def generate_sample_wav(output_path: Path) -> None:
     
     print(f"{Fore.GREEN}[SUCCESS]{Style.RESET_ALL} Đã tạo file âm thanh mẫu: {Fore.YELLOW}{output_path.absolute()}")
 
+import threading
+import queue
+import tempfile
+import wave as _wave
+
+try:
+    import winsound
+    from winsdk.windows.media.speechsynthesis import SpeechSynthesizer
+    from winsdk.windows.storage.streams import Buffer
+    WINRT_AVAILABLE = True
+except ImportError:
+    WINRT_AVAILABLE = False
+
+class KioskTTSPlayer:
+    def __init__(self):
+        self._queue = queue.Queue()
+        self._thread = None
+        self._stop_event = threading.Event()
+        self._is_active = False
+        self._is_speaking = False
+
+    def start(self):
+        self._is_active = True
+        self._thread = threading.Thread(target=self._worker, daemon=True)
+        self._thread.start()
+
+    def stop(self):
+        self._is_active = False
+        self.interrupt()
+        self._stop_event.set()
+        if self._thread:
+            self._thread.join(timeout=1.0)
+
+    def play_wav_bytes(self, wav_bytes: bytes):
+        if self._is_active:
+            self._queue.put(wav_bytes)
+
+    def is_speaking(self) -> bool:
+        return self._is_speaking or not self._queue.empty()
+
+    def interrupt(self):
+        # Hủy toàn bộ câu chưa phát trong hàng đợi
+        while not self._queue.empty():
+            try:
+                self._queue.get_nowait()
+            except queue.Empty:
+                break
+        
+        # Ngắt lập tức âm thanh đang phát
+        self._stop_event.set()
+        try:
+            winsound.PlaySound(None, winsound.SND_PURGE)
+        except Exception:
+            pass
+
+    def _worker(self):
+        while self._is_active:
+            try:
+                wav_bytes = self._queue.get(timeout=0.2)
+            except queue.Empty:
+                continue
+
+            if wav_bytes:
+                self._stop_event.clear()
+                self._is_speaking = True
+                try:
+                    # Phát âm thanh từ bộ nhớ không chặn (SND_MEMORY | SND_ASYNC)
+                    winsound.PlaySound(wav_bytes, winsound.SND_MEMORY | winsound.SND_ASYNC)
+                    
+                    # Tính toán thời lượng phát của file WAV từ header để biết khi nào xong
+                    duration = 5.0
+                    try:
+                        import io
+                        with wave.open(io.BytesIO(wav_bytes), "rb") as wf:
+                            duration = wf.getnframes() / float(wf.getframerate())
+                    except Exception:
+                        pass
+                    
+                    deadline = time.perf_counter() + duration + 0.5
+                    while time.perf_counter() < deadline and not self._stop_event.is_set():
+                        time.sleep(0.05)
+                except Exception as e:
+                    print(f"{Fore.RED}[TTS ERROR]{Style.RESET_ALL} Lỗi phát loa tại Kiosk: {e}")
+                finally:
+                    self._is_speaking = False
+                    self._queue.task_done()
+
 class ConnectionTestClient:
     def __init__(self, server_url: str, mode: str) -> None:
         self.server_url = server_url
         self.mode = mode
         self.stop_event = asyncio.Event()
+        self.tts_player = None
+        if mode == "stt":
+            self.tts_player = KioskTTSPlayer()
+            self.tts_player.start()
 
     async def run(self, source_mode: str, wav_path: Path | None = None) -> None:
         import websockets
@@ -77,6 +168,9 @@ class ConnectionTestClient:
         except Exception as e:
             print(f"{Fore.RED}[CONNECTION ERROR] Không thể kết nối hoặc duy trì liên lạc với server: {e}")
             print(f"  {Fore.YELLOW}Gợi ý: Kiểm tra IP máy tính chạy server, cổng mạng (8010/8020) và cấu hình Firewall.")
+        finally:
+            if self.tts_player:
+                self.tts_player.stop()
 
     async def receive_messages(self, websocket) -> None:
         try:
@@ -107,12 +201,12 @@ class ConnectionTestClient:
                     if is_final:
                         print(f"{Fore.GREEN}[INFO] Luồng stream hoàn thành. Đóng kết nối.")
                         self.stop_event.set()
-
+ 
                 # Handle ASR acknowledgement
                 elif msg_type == "audio_received":
                     # Silent acknowledgement in STT mode to avoid terminal spam
                     pass
-
+ 
                 # Handle actual STT realtime/final transcripts from Zipformer Server
                 elif msg_type == "realtime":
                     text = data.get("text", "").strip()
@@ -128,13 +222,33 @@ class ConnectionTestClient:
                         sys.stdout.write(f"\r{Style.RESET_ALL}" + " " * 80 + "\r")  # clear line
                         print(f"{Fore.GREEN}{Style.BRIGHT}[STT FINAL] {Fore.WHITE}{text}")
                         sys.stdout.flush()
-
+ 
                 elif msg_type == "llm_response":
                     text = data.get("text", "").strip()
                     if text:
                         print(f"{Fore.CYAN}{Style.BRIGHT}[LLM RESPONSE] {Fore.WHITE}{text}")
                         sys.stdout.flush()
 
+                # Nhận sự kiện tts_audio từ server để phát loa cục bộ tại Kiosk từ bộ nhớ
+                elif msg_type == "tts_audio":
+                    audio_b64 = data.get("audio", "")
+                    text = data.get("text", "").strip()
+                    if audio_b64 and self.tts_player:
+                        import base64
+                        sys.stdout.write(f"\r{Style.RESET_ALL}" + " " * 80 + "\r")  # clear line
+                        print(f"{Fore.MAGENTA}{Style.BRIGHT}[KIOSK SPEAKING] {Fore.WHITE}{text}")
+                        sys.stdout.flush()
+                        wav_bytes = base64.b64decode(audio_b64)
+                        self.tts_player.play_wav_bytes(wav_bytes)
+
+                # Nhận lệnh ngắt loa chủ động khi người dùng bắt đầu nói câu mới
+                elif msg_type == "tts_interrupt":
+                    if self.tts_player:
+                        sys.stdout.write(f"\r{Style.RESET_ALL}" + " " * 80 + "\r")  # clear line
+                        print(f"{Fore.RED}{Style.BRIGHT}[KIOSK TTS INTERRUPTED]{Style.RESET_ALL}")
+                        sys.stdout.flush()
+                        self.tts_player.interrupt()
+ 
                 # Handle errors/warnings
                 elif msg_type in ("error", "warning"):
                     color = Fore.RED if msg_type == "error" else Fore.YELLOW
@@ -273,6 +387,12 @@ class ConnectionTestClient:
                 # Using exception_on_overflow=False prevents crashes when network hiccups occur
                 data = stream.read(DEFAULT_CHUNK_SIZE, exception_on_overflow=False)
                 
+                # NẾU KIOSK ĐANG PHÁT LOA (TTS), KHÔNG GỬI LUỒNG GHI ÂM SANG SERVER
+                # Điều này giúp loại bỏ 100% tiếng vọng từ loa phát (speaker driver/acoustic)
+                if self.tts_player and self.tts_player.is_speaking():
+                    await asyncio.sleep(0.01)
+                    continue
+
                 header = struct.pack("<I", metadata_len)
                 packet = header + metadata_bytes + data
                 await websocket.send(packet)

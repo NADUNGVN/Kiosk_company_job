@@ -659,79 +659,82 @@ class QueueSubmitResult:
 
 import threading
 import queue
+import tempfile
+import winsound
+import time
+import asyncio
+from pathlib import Path
+import wave as _wave
+
 try:
-    import win32com.client
-    import pythoncom
+    from winsdk.windows.media.speechsynthesis import SpeechSynthesizer
+    from winsdk.windows.storage.streams import Buffer
 except ImportError:
     pass
 
 class LaptopTTSPlayer:
     def __init__(self):
-        self._queue = queue.Queue()
+        self._synthesizer = None
+        self._loop = None
         self._thread = None
-        self._stop_event = threading.Event()
-        self._speaker = None
-        self._is_active = False
 
     def start(self):
-        self._is_active = True
-        self._thread = threading.Thread(target=self._worker, daemon=True)
-        self._thread.start()
+        try:
+            synth = SpeechSynthesizer()
+            # Tìm kiếm giọng đọc tiếng Việt (Microsoft An)
+            vietnamese_voice = None
+            for voice in SpeechSynthesizer.all_voices:
+                lang = voice.language.lower()
+                name = voice.display_name.lower()
+                if "vi-vn" in lang or "vietnam" in lang or "an" in name:
+                    vietnamese_voice = voice
+                    break
+            
+            if vietnamese_voice:
+                synth.voice = vietnamese_voice
+                LOGGER.info(f"Selected WinRT Vietnamese voice for Kiosk client: {vietnamese_voice.display_name}")
+            else:
+                LOGGER.warning("No Vietnamese WinRT voice found. Using default voice.")
+                
+            self._synthesizer = synth
+            self._loop = asyncio.new_event_loop()
+            
+            # Khởi chạy loop trong background thread để xử lý các yêu cầu bất đồng bộ từ luồng khác
+            def run_loop(loop):
+                asyncio.set_event_loop(loop)
+                loop.run_forever()
+                
+            self._thread = threading.Thread(target=run_loop, args=(self._loop,), daemon=True)
+            self._thread.start()
+        except Exception as e:
+            LOGGER.error(f"Failed to initialize WinRT SpeechSynthesizer on Laptop: {e}")
 
     def stop(self):
-        self._is_active = False
-        self.interrupt()
-        self._stop_event.set()
+        if self._loop:
+            self._loop.call_soon_threadsafe(self._loop.stop)
         if self._thread:
             self._thread.join(timeout=1.0)
 
-    def speak_sentence(self, sentence):
-        if self._is_active:
-            self._queue.put(sentence)
-
-    def interrupt(self):
-        # Hủy toàn bộ câu chưa đọc trong hàng đợi
-        while not self._queue.empty():
-            try:
-                self._queue.get_nowait()
-            except queue.Empty:
-                break
+    def synthesize(self, text: str) -> bytes | None:
+        if not self._synthesizer or not self._loop:
+            return None
         
-        # Ngắt lập tức âm thanh đang phát của SAPI SpVoice
-        if self._speaker:
+        async def _synth():
             try:
-                # SVSFPurgeBeforeSpeak = 2
-                self._speaker.Speak("", 2)
-            except Exception:
-                pass
-
-    def _worker(self):
-        # Khởi tạo COM cho tiểu trình chạy ẩn này
-        pythoncom.CoInitialize()
+                stream = await self._synthesizer.synthesize_text_to_stream_async(text)
+                buffer = Buffer(stream.size)
+                wav_buffer = await stream.read_async(buffer, stream.size, 0)
+                return bytes(wav_buffer)
+            except Exception as e:
+                LOGGER.error(f"Error in synthesize task: {e}")
+                return None
+                
+        future = asyncio.run_coroutine_threadsafe(_synth(), self._loop)
         try:
-            self._speaker = win32com.client.Dispatch("SAPI.SpVoice")
+            return future.result(timeout=5.0)
         except Exception as e:
-            LOGGER.error(f"Failed to initialize SAPI SpVoice on Laptop: {e}")
-            pythoncom.CoUninitialize()
-            return
-
-        while not self._stop_event.is_set():
-            try:
-                sentence = self._queue.get(timeout=0.2)
-            except queue.Empty:
-                continue
-
-            if sentence:
-                try:
-                    # Phát âm thanh đồng bộ trong worker thread để các câu được đọc nối tiếp tự nhiên
-                    # SVSFDefault = 0
-                    self._speaker.Speak(sentence, 0)
-                except Exception as e:
-                    LOGGER.error(f"Error speaking SAPI sentence: {e}")
-                finally:
-                    self._queue.task_done()
-                    
-        pythoncom.CoUninitialize()
+            LOGGER.error(f"Timeout or error waiting for synthesis: {e}")
+            return None
 
 
 class ConnectionManager:
@@ -828,13 +831,13 @@ class ConnectionManager:
             sys.stdout.flush()
 
             # 2. Gọi API chat streaming của Ollama bằng threadpool executor
-            # Prompt hệ thống được làm sạch tuyệt đối, không nhắc đến <think> để tránh kích hoạt lỗi tiếng Trung của Qwen
+            # Prompt hệ thống được làm sạch tuyệt đối, bắt buộc dùng tiếng Việt 100% và cấm tiếng Trung
             payload = {
                 "model": model_name,
                 "messages": [
                     {
                         "role": "system",
-                        "content": "Bạn là trợ lý ảo phụ trách quầy dịch vụ công tại Kiosk tự động. Hãy trả lời câu hỏi của người dân bằng tiếng Việt một cách trực tiếp, ngắn gọn, dễ hiểu và lịch sự."
+                        "content": "Bạn là trợ lý ảo tiếng Việt tại quầy dịch vụ công Kiosk tự động. Hãy trả lời câu hỏi của người dân bằng TIẾNG VIỆT 100%. TUYỆT ĐỐI KHÔNG dùng chữ Trung Quốc (chữ Hán), không dùng tiếng Trung hay bất cứ ngôn ngữ nào khác ngoài tiếng Việt. Trả lời trực tiếp, ngắn gọn, lịch sự, dễ hiểu."
                     },
                     {"role": "user", "content": cleaned_prompt}
                 ],
@@ -880,25 +883,51 @@ class ConnectionManager:
                                     sys.stdout.write(clean_think)
                                     sys.stdout.flush()
                                 else:
+                                    # Loại bỏ các ký tự tiếng Trung/Nhật/Hàn và các dấu câu tiếng Trung (như ？, ！, 。)
+                                    clean_token = re.sub(r'[\u4e00-\u9fff\u3000-\u303f\uf900-\ufaff\uff00-\uffef]', '', token)
+                                    if not clean_token.strip() and token.strip():
+                                        # Bỏ qua nếu token chỉ chứa chữ Trung Quốc
+                                        continue
+                                    
                                     # In và tích lũy phản hồi chính thức để trả về Kiosk
-                                    sys.stdout.write(token)
+                                    sys.stdout.write(clean_token)
                                     sys.stdout.flush()
-                                    accumulated_text.append(token)
+                                    accumulated_text.append(clean_token)
                                     
                                     # Gom câu bất đồng bộ để phát ra loa Windows TTS
-                                    current_sentence.append(token)
+                                    current_sentence.append(clean_token)
                                     # Gom câu dựa trên các dấu ngắt câu tự nhiên (. , ? ! \n ; :)
-                                    if any(char in token for char in (".", "?", "!", "\n", ";", ",")):
+                                    if any(char in clean_token for char in (".", "?", "!", "\n", ";", ",")):
                                         sentence_text = "".join(current_sentence).strip()
                                         if sentence_text:
-                                            self._tts_player.speak_sentence(sentence_text)
+                                            # Gọi Laptop TTS để tổng hợp câu thoại thành bytes WAV
+                                            wav_bytes = self._tts_player.synthesize(sentence_text)
+                                            if wav_bytes:
+                                                import base64
+                                                audio_b64 = base64.b64encode(wav_bytes).decode("utf-8")
+                                                event = {
+                                                    "type": "tts_audio",
+                                                    "audio": audio_b64,
+                                                    "text": sentence_text
+                                                }
+                                                asyncio.run_coroutine_threadsafe(self.send(session_id, event), self._loop)
                                         current_sentence = []
                 
                 # Phát nốt câu cuối cùng còn lại (nếu có)
                 if current_sentence:
                     sentence_text = "".join(current_sentence).strip()
                     if sentence_text:
-                        self._tts_player.speak_sentence(sentence_text)
+                        # Gọi Laptop TTS tổng hợp câu cuối cùng
+                        wav_bytes = self._tts_player.synthesize(sentence_text)
+                        if wav_bytes:
+                            import base64
+                            audio_b64 = base64.b64encode(wav_bytes).decode("utf-8")
+                            event = {
+                                "type": "tts_audio",
+                                "audio": audio_b64,
+                                "text": sentence_text
+                            }
+                            asyncio.run_coroutine_threadsafe(self.send(session_id, event), self._loop)
                         
                 print("")  # Xuống dòng khi hoàn tất
                 return "".join(accumulated_text)
@@ -935,8 +964,12 @@ class ConnectionManager:
                     sys.stdout.write(f"\r\033[93m[STT REALTIME]\033[0m {text}")
                     sys.stdout.flush()
                 elif msg_type == "final":
-                    # Kích hoạt ngắt lời chủ động lập tức khi có câu hỏi mới
-                    self._tts_player.interrupt()
+                    # Kích hoạt ngắt lời chủ động lập tức trên Kiosk bằng cách gửi tts_interrupt
+                    event = {
+                        "type": "tts_interrupt"
+                    }
+                    if self._loop is not None:
+                        asyncio.run_coroutine_threadsafe(self.send(session_id, event), self._loop)
                     
                     sys.stdout.write("\r" + " " * 80 + "\r")  # Clear the line
                     print(f"\033[92m\033[1m[STT FINAL]\033[0m {text}")
